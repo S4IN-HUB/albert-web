@@ -16,6 +16,16 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from modules.customers.views import ApiLogin, ApiLogout, GetRooms, GetRelays, SendCommand
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^api/login/$', ApiLogin),
+    url(r'^api/logout/$', ApiLogout),
+    url(r'^api/list/rooms/$', GetRooms),
+    url(r'^api/list/relays/$', GetRelays),
+    url(r'^api/list/send-command/$', SendCommand)
+
+
+
 ]
