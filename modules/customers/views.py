@@ -328,7 +328,9 @@ def GetDeviceJson(device):
     if device:
         Data = {
             'id': device.id,
-            'name': device.name
+            'name': device.name,
+            'ip': device.ip,
+            'port': device.port,
         }
     else:
         Data = None
