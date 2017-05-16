@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'modules.connector',
     'modules.customers',
+    'modules.masterpage',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'base.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['/var/www/albert-web/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -86,7 +87,11 @@ DATABASES = {
     }
 }
 
-
+SMTP_USER = 'noreply@albertoakilliev.com'
+SMTP_PASS = 'tdBo717%'
+SMTP_HOST = 'mail.albertoakilliev.com'
+SMTP_PORT = 587
+SMTP_NAME = 'noreply@albertoakilliev.com'
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 

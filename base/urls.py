@@ -17,8 +17,12 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from modules.customers.views import ApiLogin, ApiLogout, GetRooms, GetRelays, SendCommand
-
+from modules.masterpage.views import Index,AboutUs,Contact,SendMessage
 urlpatterns = [
+    url(r'^$', Index, name='index'),
+    url(r'^akilli-ev-sistemi-nedir/$',AboutUs, name='AboutUs'),
+    url(r'^iletisim/$', Contact, name='Contact'),
+    url(r'^send-message/$', SendMessage, name='SendMessage'),
     url(r'^admin/', admin.site.urls),
     url(r'^api/login/$', ApiLogin),
     url(r'^api/logout/$', ApiLogout),
