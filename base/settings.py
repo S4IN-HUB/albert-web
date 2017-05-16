@@ -70,9 +70,10 @@ TEMPLATES = [
         },
     },
 ]
-STATICFILES_DIRS = [
+STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "templates/static/"),
-]
+)
+
 WSGI_APPLICATION = 'base.wsgi.application'
 
 
