@@ -17,4 +17,11 @@ class RelayAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Relays,RelayAdmin)
-admin.site.register(Devices)
+
+
+
+class DevicesAdmin(admin.ModelAdmin):
+    list_display = ('account','name','ip','port',)
+
+
+admin.site.register(Devices,DevicesAdmin)
