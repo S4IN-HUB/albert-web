@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-from modules.customers.views import ApiLogin, ApiLogout, GetRooms, GetRelays, SendCommand
+from modules.customers.views import ApiLogin, ApiLogout, GetRooms, GetRelays, SendCommand, GetLocations
 from modules.masterpage.views import Index,AboutUs,Contact,SendMessage
 urlpatterns = [
     url(r'^$', Index, name='index'),
@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/login/$', ApiLogin),
     url(r'^api/logout/$', ApiLogout),
+    url(r'^api/list/locations/$', GetLocations),
     url(r'^api/list/rooms/$', GetRooms),
     url(r'^api/list/relays/$', GetRelays),
     url(r'^api/list/send-command/$', SendCommand)
