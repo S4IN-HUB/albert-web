@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays
+from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays, IrButtons
 from django.contrib import admin
 
 # Register your models here.
@@ -10,6 +10,7 @@ admin.site.register(Accounts)
 admin.site.register(Locations)
 admin.site.register(Plans)
 admin.site.register(Rooms)
+admin.site.register(IrButtons)
 
 
 class RelayAdmin(admin.ModelAdmin):
