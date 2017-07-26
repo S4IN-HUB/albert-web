@@ -89,8 +89,8 @@ class Relays(models.Model):
 
 class IrButtons(models.Model):
 
-    device = models.ForeignKey(Devices, related_name="Relays", verbose_name="Cihaz")
-    room = models.ForeignKey(Rooms, related_name="Relays", verbose_name="Oda")
+    device = models.ForeignKey(Devices, related_name="IrButtons", verbose_name="Cihaz")
+    room = models.ForeignKey(Rooms, related_name="IrButtons", verbose_name="Oda")
     name = models.CharField(max_length=50, verbose_name="Röle Tanımı")
 
     icon = models.CharField(max_length=20, choices=RelayIcons, verbose_name="Simge")
