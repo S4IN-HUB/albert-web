@@ -40,6 +40,7 @@ class Rooms(models.Model):
 
 class Devices(models.Model):
     account = models.ForeignKey(Accounts, related_name="Devices", verbose_name="Hesap")
+    type = models.CharField(max_length=15, choices=(('relay','16 Röle Kartı'),('ir','IR Modüle')), verbose_name="Cihaz Tipi")
     name = models.CharField(max_length=50, verbose_name="Cihaz Tanımı")
     ip  = models.CharField(max_length=50,verbose_name="IP adresi")
     port = models.IntegerField(verbose_name="Port")
@@ -80,6 +81,23 @@ class Relays(models.Model):
     switch_on_time = models.TimeField(blank=True,null=True, verbose_name="Açma Zaman")
     switch_off_time = models.TimeField(blank=True, null=True, verbose_name="Kapama Zaman")
 
+
+    def __unicode__(self):
+        return "%s %s" % (self.name, self.room.name)
+
+
+
+class IrButtons(models.Model):
+
+    device = models.ForeignKey(Devices, related_name="Relays", verbose_name="Cihaz")
+    room = models.ForeignKey(Rooms, related_name="Relays", verbose_name="Oda")
+    name = models.CharField(max_length=50, verbose_name="Röle Tanımı")
+
+    icon = models.CharField(max_length=20, choices=RelayIcons, verbose_name="Simge")
+
+    ir_type = models.CharField(max_length=20,verbose_name="IR Tipi")
+    ir_code = models.CharField(max_length=16,verbose_name="IR Code")
+    ir_bits = models.IntegerField(verbose_name="Bits")
 
     def __unicode__(self):
         return "%s %s" % (self.name, self.room.name)
