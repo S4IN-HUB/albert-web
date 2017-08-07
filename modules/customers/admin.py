@@ -14,7 +14,7 @@ admin.site.register(Locations,LocationsAdmin)
 admin.site.register(Plans)
 
 class RoomsAdmin(admin.ModelAdmin):
-    list_display = ('account','name',)
+    list_display = ('account','location','name',)
 admin.site.register(Rooms,RoomsAdmin)
 
 
