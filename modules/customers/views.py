@@ -311,7 +311,7 @@ def GetRooms(request):
         response_message = ""
 
 
-        for rooms in _authuser.Accounts.Rooms.all():
+        for rooms in _authuser.Accounts.Rooms.filter(location__id=AllParams.get('location_id')):
             response_data.append({
                 'id': rooms.id,
                 'name': rooms.name,
