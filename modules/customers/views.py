@@ -348,6 +348,33 @@ def GetLocations(request):
 
     return JsonResponser(response_status, response_message, response_data)
 
+@csrf_exempt
+def GetTemp(request):
+
+    AllParams = GetParams(request)
+    Token = AllParams.get("token")
+    room_id = AllParams.get("room_id")
+    _authuser = CheckUserSession(Token)
+    response_data = []
+
+    if _authuser:
+        response_status = True
+        response_data = []
+        response_message = ""
+
+
+        for location in _authuser.Accounts.Locations.all():
+            response_data.append({
+                'id': location.id,
+                'name': location.name,
+            })
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return JsonResponser(response_status, response_message, response_data)
+
+
 
 def GetDeviceJson(device):
 

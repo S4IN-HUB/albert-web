@@ -7,9 +7,17 @@ from django.contrib import admin
 # Register your models here.
 
 admin.site.register(Accounts)
-admin.site.register(Locations)
+class LocationsAdmin(admin.ModelAdmin):
+    list_display = ('account','name','lat','lon')
+
+admin.site.register(Locations,LocationsAdmin)
 admin.site.register(Plans)
-admin.site.register(Rooms)
+
+class RoomsAdmin(admin.ModelAdmin):
+    list_display = ('account','name',)
+admin.site.register(Rooms,RoomsAdmin)
+
+
 admin.site.register(IrButtons)
 
 
