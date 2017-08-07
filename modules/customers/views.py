@@ -316,7 +316,7 @@ def GetRooms(request):
                 'id': rooms.id,
                 'name': rooms.name,
                 'location':rooms.location.name if rooms.location else '',
-                'have_temp':rooms.
+                'have_temp':True if rooms.Devices.all().filter(type='ir').count() > 0 else False,
             })
     else:
         response_status = False
