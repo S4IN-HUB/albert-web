@@ -316,6 +316,7 @@ def GetRooms(request):
                 'id': rooms.id,
                 'name': rooms.name,
                 'location':rooms.location.name if rooms.location else '',
+                'have_temp':rooms.
             })
     else:
         response_status = False
