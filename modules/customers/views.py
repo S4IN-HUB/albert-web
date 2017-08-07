@@ -315,6 +315,7 @@ def GetRooms(request):
             response_data.append({
                 'id': rooms.id,
                 'name': rooms.name,
+                'location':rooms.location.name if rooms.location else '',
             })
     else:
         response_status = False
