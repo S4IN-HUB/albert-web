@@ -33,7 +33,9 @@ class Locations(models.Model):
 
 class Rooms(models.Model):
     account = models.ForeignKey(Accounts, related_name="Rooms", verbose_name="Hesap")
+    location = models.ForeignKey(Locations,related_name="Rooms",verbose_name="Konum")
     name = models.CharField(max_length=50, verbose_name="Oda Tanımı")
+
 
     def __unicode__(self):
         return "%s" % self.name
