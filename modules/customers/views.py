@@ -409,7 +409,7 @@ def GetRelays(request):
 
     AllParams = GetParams(request)
     Token = AllParams.get("token")
-    room_id = AllParams.get("room_id")
+    room_id = AllParams.get("room_id",None)
     _authuser = CheckUserSession(Token)
     response_data = []
 
