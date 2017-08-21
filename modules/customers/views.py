@@ -322,6 +322,7 @@ def GetRooms(request):
                 'location':rooms.location.name if rooms.location else '',
                 'have_temp':True if rooms.Devices.all().filter(type='ir').count() > 0 else False,
                 'have_current': True if rooms.Devices.all().filter(type='relay_current').count() > 0 else False,
+                'device': GetDeviceJson(rooms.Devices.all().filter(type='relay_current')[0]) if rooms.Devices.all().filter(type='relay_current').count() > 0 else False,
             })
     else:
         response_status = False
