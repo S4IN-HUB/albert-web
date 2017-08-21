@@ -497,5 +497,14 @@ def SendCommand(request):
 
 def cron_control(request):
     now_date = datetime.now()
-    crons = Crons.objects.filter(day=now_date.weekday(), switch_on_time__hour=now_date.strftime('%H'),
-                                                           switch_off_time__minute=now_date.strftime('%M'))
+    crons = Crons.objects.filter(day=now_date.weekday(),
+                                 switch_on_time__hour=now_date.strftime('%H'),
+                                 switch_on_time__minute=now_date.strftime('%M'))
+
+    for item in crons:
+        r = requests.get('http://'+item.relay.device.ip+':'+item.relay.device.port + '/?cmd=S&rl_no'+item.relay.relay_no+'&st=0')
+
+
+    for item in crons:
+        r = requests.get(
+            'http://' + item.relay.device.ip + ':' + item.relay.device.port + '/?cmd=S&rl_no' + item.relay.relay_no + '&st=1')
