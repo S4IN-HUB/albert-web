@@ -41,7 +41,7 @@ class RelayAdmin(admin.ModelAdmin):
     close_relay.allow_tags = True
     close_relay.short_description = u'Röleyi aç'
 
-    list_display = ('name','relay_no','type','room','device', open_relay, close_relay)
+    list_display = ('name','relay_no','type','room','device', 'open_relay', 'close_relay')
     inlines = [InlineCrons,]
 
 admin.site.register(Relays,RelayAdmin)
