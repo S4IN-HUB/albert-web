@@ -500,11 +500,11 @@ def relay_control(request):
         relay = Relays.objects.get(pk=request.GET.get("relay"))
     if request.GET.get("action", "") == "open":
         r = requests.get(
-            'http://' + relay.device.ip + ':' + relay.device.port + '/?cmd=S&rl_no' + relay.relay_no + '&st=0')
+            'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no' + str(relay.relay_no) + '&st=0')
         print "request code : ", r.status_code
     elif request.GET.get("action", "") == "close":
         r = requests.get(
-            'http://' + relay.device.ip + ':' + relay.device.port + '/?cmd=S&rl_no' + relay.relay_no + '&st=1')
+            'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no' + str(relay.relay_no) + '&st=1')
         print "request code : ", r.status_code
     return HttpResponse(r.text)
 
@@ -520,7 +520,7 @@ def cron_control(request):
     for item in crons:
         open_count += 1
         r = requests.get(
-            'http://' + item.relay.device.ip + ':' + item.relay.device.port + '/?cmd=S&rl_no' + item.relay.relay_no + '&st=0')
+            'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no' + str(item.relay.relay_no) + '&st=0')
         print "request code : ", r.status_code
 
     crons = Crons.objects.filter(day=now_date.weekday(),
@@ -530,7 +530,7 @@ def cron_control(request):
     for item in crons:
         close_count += 1
         r = requests.get(
-            'http://' + item.relay.device.ip + ':' + item.relay.device.port + '/?cmd=S&rl_no' + item.relay.relay_no + '&st=1')
+            'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no' + str(item.relay.relay_no) + '&st=1')
         print "request code : ", r.status_code
 
     return HttpResponse("Open : %s, Close: %s" % (str(open_count), str(close_count)))
