@@ -310,8 +310,12 @@ def GetRooms(request):
         response_data = []
         response_message = ""
 
+        if AllParams.get('location_id'):
+            _rooms = _authuser.Accounts.Rooms.filter(location__id=AllParams.get('location_id'))
+        else:
+            _rooms = _authuser.Accounts.Rooms.all()
 
-        for rooms in _authuser.Accounts.Rooms.filter(location__id=AllParams.get('location_id')):
+        for rooms in _rooms:
             response_data.append({
                 'id': rooms.id,
                 'name': rooms.name,
