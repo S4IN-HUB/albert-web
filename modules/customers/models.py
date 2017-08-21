@@ -88,6 +88,21 @@ class Relays(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.name, self.room.name)
 
+DAYS = (
+    (1,"Pazartesi"),
+    (2,"Salı"),
+    (3,"Çarşamba"),
+    (4,"Perşembe"),
+    (5,"Cuma"),
+    (6,"Cumartesi"),
+    (7,"Pazar"),
+)
+class Crons(models.Model):
+    relay = models.ForeignKey(Relays,verbose_name="Röle")
+    day = models.IntegerField(choices=DAYS, verbose_name="Uygulanacak Günler")
+    switch_on_time = models.TimeField(verbose_name="Açma Zaman")
+    switch_off_time = models.TimeField(verbose_name="Kapama Zaman")
+
 
 
 class IrButtons(models.Model):

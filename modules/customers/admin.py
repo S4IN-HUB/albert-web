@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays, IrButtons
+from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays, IrButtons, Crons
 from django.contrib import admin
 
 # Register your models here.
@@ -21,9 +21,13 @@ admin.site.register(Rooms,RoomsAdmin)
 admin.site.register(IrButtons)
 
 
+class InlineCrons(admin.StackedInline):
+    model = Crons
+    extra = 1
+
 class RelayAdmin(admin.ModelAdmin):
     list_display = ('name','relay_no','type','room','device')
-
+    inlines = [InlineCrons,]
 
 admin.site.register(Relays,RelayAdmin)
 
