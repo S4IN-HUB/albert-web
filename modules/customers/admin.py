@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays, IrButtons, Crons
 from django.contrib import admin
+
+from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays, IrButtons, Crons
 
 # Register your models here.
 
@@ -26,6 +27,20 @@ class InlineCrons(admin.StackedInline):
     extra = 1
 
 class RelayAdmin(admin.ModelAdmin):
+    def open_relay(self, obj):
+        return '<a class="btn btn-success" href="/relay-control/?relay=' + str(
+            obj.id) + '&action=open"><i class="fa fa-power-off" aria-hidden="true"></i> Aç</a>'
+
+    open_relay.allow_tags = True
+    open_relay.short_description = u'Röleyi aç'
+
+    def close_relay(self, obj):
+        return '<a class="btn btn-danger" href="/relay-control/?relay=' + str(
+            obj.id) + '&action=open"><i class="fa fa-power-off" aria-hidden="true"></i> Kapat</a>'
+
+    close_relay.allow_tags = True
+    close_relay.short_description = u'Röleyi aç'
+
     list_display = ('name','relay_no','type','room','device')
     inlines = [InlineCrons,]
 

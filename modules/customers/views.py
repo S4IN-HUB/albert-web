@@ -5,6 +5,7 @@ import json
 import socket
 from datetime import datetime
 
+import requests
 from django.contrib.auth import authenticate, login as doLogin
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
@@ -494,17 +495,42 @@ def SendCommand(request):
 
     return JsonResponser(True, None, _relay.pressed)
 
+def relay_control(request):
+    if request.GET.get("relay"):
+        relay = Relays.objects.get(id=request.GET("relay"))
+    if request.GET.get("action", "") == "open":
+        r = requests.get(
+            'http://' + relay.device.ip + ':' + relay.device.port + '/?cmd=S&rl_no' + relay.relay_no + '&st=0')
+        print "request code : ", r.status_code
+    elif request.GET.get("action", "") == "close":
+        r = requests.get(
+            'http://' + relay.device.ip + ':' + relay.device.port + '/?cmd=S&rl_no' + relay.relay_no + '&st=1')
+        print "request code : ", r.status_code
+    return HttpResponse(r.text)
+
 
 def cron_control(request):
+    open_count = 0
+    close_count = 0
     now_date = datetime.now()
     crons = Crons.objects.filter(day=now_date.weekday(),
                                  switch_on_time__hour=now_date.strftime('%H'),
                                  switch_on_time__minute=now_date.strftime('%M'))
 
     for item in crons:
-        r = requests.get('http://'+item.relay.device.ip+':'+item.relay.device.port + '/?cmd=S&rl_no'+item.relay.relay_no+'&st=0')
+        open_count += 1
+        r = requests.get(
+            'http://' + item.relay.device.ip + ':' + item.relay.device.port + '/?cmd=S&rl_no' + item.relay.relay_no + '&st=0')
+        print "request code : ", r.status_code
 
+    crons = Crons.objects.filter(day=now_date.weekday(),
+                                 switch_off_time__hour=now_date.strftime('%H'),
+                                 switch_off_time__minute=now_date.strftime('%M'))
 
     for item in crons:
+        close_count += 1
         r = requests.get(
             'http://' + item.relay.device.ip + ':' + item.relay.device.port + '/?cmd=S&rl_no' + item.relay.relay_no + '&st=1')
+        print "request code : ", r.status_code
+
+    return HttpResponse("Open : %s, Close: %s" % (str(open_count), str(close_count)))

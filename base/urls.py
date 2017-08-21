@@ -16,12 +16,16 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-from modules.customers.views import ApiLogin, ApiLogout, GetRooms, GetRelays, SendCommand, GetLocations
-from modules.masterpage.views import Index,AboutUs,Contact,SendMessage
+from modules.customers.views import ApiLogin, ApiLogout, GetRooms, GetRelays, SendCommand, GetLocations, relay_control, \
+    cron_control
+from modules.masterpage.views import Index, AboutUs, Contact, SendMessage
+
 urlpatterns = [
     url(r'^$', Index, name='index'),
-    url(r'^akilli-ev-sistemi-nedir/$',AboutUs, name='AboutUs'),
+    url(r'^akilli-ev-sistemi-nedir/$', AboutUs, name='AboutUs'),
     url(r'^iletisim/$', Contact, name='Contact'),
+    url(r'^relay-control/$', relay_control, name='relay_control'),
+    url(r'^cron-control/$', cron_control, name='cron_control'),
     url(r'^send-message/$', SendMessage, name='SendMessage'),
     url(r'^admin/', admin.site.urls),
     url(r'^api/login/$', ApiLogin),
@@ -30,7 +34,5 @@ urlpatterns = [
     url(r'^api/list/rooms/$', GetRooms),
     url(r'^api/list/relays/$', GetRelays),
     url(r'^api/list/send-command/$', SendCommand)
-
-
 
 ]
