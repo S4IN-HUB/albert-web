@@ -76,13 +76,6 @@ class Relays(models.Model):
     relay_no = models.IntegerField(verbose_name="Röle No")
     type = models.CharField(max_length=20,choices=RelayTypes,verbose_name="Anahtar Tipi")
     icon = models.CharField(max_length=20,choices=RelayIcons,verbose_name="Simge")
-    count = models.PositiveIntegerField(blank=True,null=True, verbose_name="Geri Sayım - dakika")
-
-    days = models.CharField(max_length=7,default="0000000",verbose_name="Uygulanacak Günler")
-    start_day = models.DateField(blank=True,null=True, verbose_name="Başlama Tarihi")
-    finish_day = models.DateField(blank=True,null=True, verbose_name="Bitiş Tarihi")
-    switch_on_time = models.TimeField(blank=True,null=True, verbose_name="Açma Zaman")
-    switch_off_time = models.TimeField(blank=True, null=True, verbose_name="Kapama Zaman")
 
 
     def __unicode__(self):
