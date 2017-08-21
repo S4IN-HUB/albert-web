@@ -132,3 +132,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+SUIT_CONFIG = {
+    # header
+    'ADMIN_NAME': 'Alberto Akıllı Ev Sistemleri',
+    'HEADER_DATE_FORMAT': 'l, j F Y',
+    'HEADER_TIME_FORMAT': 'H:i',
+
+    # forms
+    'SHOW_REQUIRED_ASTERISK': True,  # Default True
+    'CONFIRM_UNSAVED_CHANGES': True, # Default True
+}
