@@ -497,7 +497,7 @@ def SendCommand(request):
 
 def relay_control(request):
     if request.GET.get("relay"):
-        relay = Relays.objects.get(pk=request.GET("relay"))
+        relay = Relays.objects.get(pk=request.GET.get("relay"))
     if request.GET.get("action", "") == "open":
         r = requests.get(
             'http://' + relay.device.ip + ':' + relay.device.port + '/?cmd=S&rl_no' + relay.relay_no + '&st=0')
