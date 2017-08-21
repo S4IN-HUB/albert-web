@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.auth.models import User
-from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, HttpResponseRedirect
-from django.utils.encoding import smart_str
-from django.db.models import Q
-from django.contrib.auth import authenticate, login as doLogin , logout as doLogout
-from django.contrib.sessions.models import Session
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 import json
 import socket
+from datetime import datetime
+
+from django.contrib.auth import authenticate, login as doLogin
+from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Q
+from django.http import HttpResponse
+from django.utils.encoding import smart_str
+from django.views.decorators.csrf import csrf_exempt
+
+from modules.customers.models import Accounts, Relays, Crons
 
 
 def PermitResponse(response):
@@ -36,7 +38,6 @@ def JsonResponser(Status, Message="", Data=None):
 
 
 def GetParams(request):
-
     print request.POST
     print request.GET
 
@@ -47,9 +48,9 @@ def GetParams(request):
     except:
         return {}
 
+
 @csrf_exempt
 def GetUser(request):
-
     AllParams = GetParams(request)
     Token = AllParams.get("token")
     Status = False
@@ -63,7 +64,9 @@ def GetUser(request):
 
     if AllParams.get("keyword"):
 
-        _profiles = Accounts.objects.filter(Q(user__username__contains=AllParams.get("keyword"))|Q(user__first_name__contains=AllParams.get("keyword"))|Q(user__last_name__contains=AllParams.get("keyword")))
+        _profiles = Accounts.objects.filter(Q(user__username__contains=AllParams.get("keyword")) | Q(
+            user__first_name__contains=AllParams.get("keyword")) | Q(
+            user__last_name__contains=AllParams.get("keyword")))
 
         if _profiles.count() > 0:
 
@@ -71,26 +74,27 @@ def GetUser(request):
             for _profile in _profiles:
                 _user = _profile.user
                 JsonContent.append({
-                'userid': str(_user.id),
-                'username': _user.username,
-                #'user_is_staff': _user.is_staff,
-                #'user_is_superuser': _user.is_superuser,
-                #'email': _user.email,
-                'company': GetCompanyInfo(_user.Profiles),
-                'level': _user.Profiles.level.id if _user.Profiles.level else None,
-                'scoring': _user.Profiles.scoring,
-                'official': _user.Profiles.official,
-                'name': unicode(_user.get_full_name()),
-                'avatar': getThumb(_user.Profiles.avatar, '128x128') if _user.Profiles.avatar else 'default_avatar.jpg',
-                #'biography': _user.Profiles.biography,
-                #'is_followed': CheckFollow(_user, _authuser),
-                #'stat_events': _user.Events.all().count(),
-                #'stat_follower': _user.Followers.all().count(),
-                #'stat_following': _user.Profiles.following.all().count(),
-                #'stat_comments': _user.Profiles.Comments.all().count(),
-                #'fav_sports': GetFavSportsJson(_user.Profiles.favorite_sports.all()),
-                #'my_events': GetMyEvents(_user),
-                #'my_comments': GetMyComments(_user),
+                    'userid': str(_user.id),
+                    'username': _user.username,
+                    # 'user_is_staff': _user.is_staff,
+                    # 'user_is_superuser': _user.is_superuser,
+                    # 'email': _user.email,
+                    'company': GetCompanyInfo(_user.Profiles),
+                    'level': _user.Profiles.level.id if _user.Profiles.level else None,
+                    'scoring': _user.Profiles.scoring,
+                    'official': _user.Profiles.official,
+                    'name': unicode(_user.get_full_name()),
+                    'avatar': getThumb(_user.Profiles.avatar,
+                                       '128x128') if _user.Profiles.avatar else 'default_avatar.jpg',
+                    # 'biography': _user.Profiles.biography,
+                    # 'is_followed': CheckFollow(_user, _authuser),
+                    # 'stat_events': _user.Events.all().count(),
+                    # 'stat_follower': _user.Followers.all().count(),
+                    # 'stat_following': _user.Profiles.following.all().count(),
+                    # 'stat_comments': _user.Profiles.Comments.all().count(),
+                    # 'fav_sports': GetFavSportsJson(_user.Profiles.favorite_sports.all()),
+                    # 'my_events': GetMyEvents(_user),
+                    # 'my_comments': GetMyComments(_user),
                 })
             Status = True
         else:
@@ -106,35 +110,32 @@ def GetUser(request):
                 'user_is_staff': _user.is_staff,
                 'user_is_superuser': _user.is_superuser,
                 'email': _user.email,
-                'company':GetCompanyInfo(_user.Profiles),
+                'company': GetCompanyInfo(_user.Profiles),
                 'level': _user.Profiles.level.id if _user.Profiles.level else None,
                 'scoring': _user.Profiles.scoring,
                 'official': _user.Profiles.official,
                 'name': unicode(_user.get_full_name()),
                 'avatar': getThumb(_user.Profiles.avatar, '128x128') if _user.Profiles.avatar else 'default_avatar.jpg',
-                'biography':_user.Profiles.biography,
-                'is_followed': CheckFollow(_user,_authuser),
+                'biography': _user.Profiles.biography,
+                'is_followed': CheckFollow(_user, _authuser),
                 'stat_events': _user.Events.all().count(),
-                'stat_follower':_user.Followers.all().count(),
+                'stat_follower': _user.Followers.all().count(),
                 'stat_following': _user.Profiles.following.all().count(),
                 'stat_comments': _user.Profiles.Comments.all().count(),
                 'fav_sports': GetFavSportsJson(_user.Profiles.favorite_sports.all()),
-                'my_events':GetMyEvents(_user),
+                'my_events': GetMyEvents(_user),
                 'my_comments': GetMyComments(_user),
             }
-            Status=True
+            Status = True
 
     return JsonResponser(Status, Message="", Data=JsonContent)
 
-
-
-
-    MyComments = Comments.objects.filter(user=_user.Profiles,delete=False)
+    MyComments = Comments.objects.filter(user=_user.Profiles, delete=False)
     Data = [{
         'id': item.id,
-        'author':GetUserJson(item.author.user),
-        'message':item.message,
-        'create_date':item.create_date
+        'author': GetUserJson(item.author.user),
+        'message': item.message,
+        'create_date': item.create_date
     } for item in MyComments]
 
     return Data
@@ -177,7 +178,6 @@ def GetUserJson(RemoteUser, **kwargs):
     return JsonContent
 
 
-
 def LoginUser(request, RemoteUser):
     if RemoteUser.is_active:
         RemoteUser.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -190,6 +190,7 @@ def LoginUser(request, RemoteUser):
         Message = "Hesabınız Aktif Değil"
         Status = False
     return (Status, Message, JsonContent)
+
 
 def BaseLogin(request, **kwargs):
     """Logins user. Required parameters are:
@@ -238,17 +239,19 @@ def BaseLogin(request, **kwargs):
         return LoginUser(request, RemoteUser)
     return (Status, Message, JsonContent)
 
+
 def CheckUserSession(Token):
     """Checks wheather user is online or not.
     If user is online means: user has a session, it returns user object, if not: returns False
     """
     try:
-        UserSession = Session.objects.get(session_key = Token)
+        UserSession = Session.objects.get(session_key=Token)
         UserID = UserSession.get_decoded().get('_auth_user_id')
-        SessionUser = User.objects.get(id = UserID)
+        SessionUser = User.objects.get(id=UserID)
         return SessionUser
     except:
         return False
+
 
 @csrf_exempt
 def ApiLogin(request, **kwargs):
@@ -256,6 +259,7 @@ def ApiLogin(request, **kwargs):
 
     JsonResponse = BaseLogin(request, **kwargs)
     return JsonResponser(JsonResponse[0], JsonResponse[1], JsonResponse[2])
+
 
 @csrf_exempt
 def ApiLogout(request):
@@ -275,6 +279,7 @@ def ApiLogout(request):
         Message = "Kullanıcı bulunamadı."
 
     return JsonResponser(Status, Message, None)
+
 
 @csrf_exempt
 def CheckAuth(request):
@@ -297,9 +302,9 @@ def CheckAuth(request):
 
     return JsonResponser(Status, Message, ReqUser)
 
+
 @csrf_exempt
 def GetRooms(request):
-
     AllParams = GetParams(request)
     Token = AllParams.get("token")
     _authuser = CheckUserSession(Token)
@@ -319,10 +324,12 @@ def GetRooms(request):
             response_data.append({
                 'id': rooms.id,
                 'name': rooms.name,
-                'location':rooms.location.name if rooms.location else '',
-                'have_temp':True if rooms.Devices.all().filter(type='ir').count() > 0 else False,
+                'location': rooms.location.name if rooms.location else '',
+                'have_temp': True if rooms.Devices.all().filter(type='ir').count() > 0 else False,
                 'have_current': True if rooms.Devices.all().filter(type='relay_current').count() > 0 else False,
-                'device': GetDeviceJson(rooms.Devices.all().filter(type='relay_current')[0]) if rooms.Devices.all().filter(type='relay_current').count() > 0 else False,
+                'device': GetDeviceJson(
+                    rooms.Devices.all().filter(type='relay_current')[0]) if rooms.Devices.all().filter(
+                    type='relay_current').count() > 0 else False,
             })
     else:
         response_status = False
@@ -333,7 +340,6 @@ def GetRooms(request):
 
 @csrf_exempt
 def GetLocations(request):
-
     AllParams = GetParams(request)
     Token = AllParams.get("token")
     _authuser = CheckUserSession(Token)
@@ -343,7 +349,6 @@ def GetLocations(request):
         response_status = True
         response_data = []
         response_message = ""
-
 
         for location in _authuser.Accounts.Locations.all():
             response_data.append({
@@ -356,9 +361,9 @@ def GetLocations(request):
 
     return JsonResponser(response_status, response_message, response_data)
 
+
 @csrf_exempt
 def GetTemp(request):
-
     AllParams = GetParams(request)
     Token = AllParams.get("token")
     room_id = AllParams.get("room_id")
@@ -370,7 +375,6 @@ def GetTemp(request):
         response_data = []
         response_message = ""
 
-
         for location in _authuser.Accounts.Locations.all():
             response_data.append({
                 'id': location.id,
@@ -383,9 +387,7 @@ def GetTemp(request):
     return JsonResponser(response_status, response_message, response_data)
 
 
-
 def GetDeviceJson(device):
-
     if device:
         Data = {
             'id': device.id,
@@ -398,8 +400,8 @@ def GetDeviceJson(device):
 
     return Data
 
-def GetRoomJson(room):
 
+def GetRoomJson(room):
     if room:
         Data = {
             'id': room.id,
@@ -410,12 +412,12 @@ def GetRoomJson(room):
 
     return Data
 
+
 @csrf_exempt
 def GetRelays(request):
-
     AllParams = GetParams(request)
     Token = AllParams.get("token")
-    room_id = AllParams.get("room_id",None)
+    room_id = AllParams.get("room_id", None)
     _authuser = CheckUserSession(Token)
     response_data = []
 
@@ -425,27 +427,27 @@ def GetRelays(request):
         response_message = ""
 
         if room_id:
-            _relays =  Relays.objects.filter(room__id=room_id,room__account__user=_authuser)
+            _relays = Relays.objects.filter(room__id=room_id, room__account__user=_authuser)
         else:
             _relays = Relays.objects.filter(room__account__user=_authuser)
 
         for relay in _relays:
             response_data.append({
-                'id':relay.id,
-                'device':GetDeviceJson(relay.device),
-                'room_id':relay.room.id,
+                'id': relay.id,
+                'device': GetDeviceJson(relay.device),
+                'room_id': relay.room.id,
                 'room': GetRoomJson(relay.room),
-                'pressed':relay.pressed,
-                'name':relay.name,
-                'relay_no':relay.relay_no,
-                'type':relay.type,
-                'icon':relay.icon,
-                'count':relay.count,
-                'days':relay.days,
-                'start_day':relay.start_day,
-                'finish_day':relay.finish_day,
-                'switch_on_time':relay.switch_on_time,
-                'switch_off_time':relay.switch_off_time,
+                'pressed': relay.pressed,
+                'name': relay.name,
+                'relay_no': relay.relay_no,
+                'type': relay.type,
+                'icon': relay.icon,
+                'count': relay.count,
+                'days': relay.days,
+                'start_day': relay.start_day,
+                'finish_day': relay.finish_day,
+                'switch_on_time': relay.switch_on_time,
+                'switch_off_time': relay.switch_off_time,
             })
 
     else:
@@ -455,16 +457,13 @@ def GetRelays(request):
     return JsonResponser(response_status, response_message, response_data)
 
 
-
 @csrf_exempt
 def SendCommand(request):
-
     AllParams = GetParams(request)
     Token = AllParams.get("token")
     relay_id = AllParams.get("relay_id")
     _command = AllParams.get("command")
     _authuser = CheckUserSession(Token)
-
 
     _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
 
@@ -486,10 +485,17 @@ def SendCommand(request):
             _relay.save()
 
         message = bytearray(
-            [0xaa, 0X0F, _relay.relay_no, cmd, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01,
+            [0xaa, 0X0F, _relay.relay_no, cmd, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01,
+             0X01,
              0X01, 0X01, 0xbb])
         mySocket.send(message)
 
     mySocket.close()
 
     return JsonResponser(True, None, _relay.pressed)
+
+
+def cron_control(request):
+    now_date = datetime.now()
+    crons = Crons.objects.filter(day=now_date.weekday(), switch_on_time__hour=now_date.strftime('%H'),
+                                                           switch_off_time__minute=now_date.strftime('%M'))

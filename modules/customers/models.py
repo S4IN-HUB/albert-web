@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
 
 class Accounts(models.Model):
     user = models.OneToOneField(User, related_name="Accounts",verbose_name="Kullanıcı")
@@ -113,13 +114,13 @@ class Relays(models.Model):
 
 
 DAYS = (
-    (1,"Pazartesi"),
-    (2,"Salı"),
-    (3,"Çarşamba"),
-    (4,"Perşembe"),
-    (5,"Cuma"),
-    (6,"Cumartesi"),
-    (7,"Pazar"),
+    (0,"Pazartesi"),
+    (1,"Salı"),
+    (2,"Çarşamba"),
+    (3,"Perşembe"),
+    (4,"Cuma"),
+    (5,"Cumartesi"),
+    (6,"Pazar"),
 )
 class Crons(models.Model):
     relay = models.ForeignKey(Relays,verbose_name="Röle")
