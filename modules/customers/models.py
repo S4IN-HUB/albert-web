@@ -7,8 +7,14 @@ from django.contrib.auth.models import User
 class Accounts(models.Model):
     user = models.OneToOneField(User, related_name="Accounts",verbose_name="Kullanıcı")
 
+
     def __unicode__(self):
         return "%s" % self.user.username
+
+    class Meta(object):
+        verbose_name = "Hesap"
+        verbose_name_plural = "Hesaplar"
+
 
 plan_status = (
     ('pending','Beklemede'),
@@ -22,6 +28,11 @@ class Plans(models.Model):
     limit = models.IntegerField(default=1,verbose_name="Donanım Limiti")
     status = models.CharField(max_length=15,default='pending',choices=plan_status,verbose_name="Durum")
 
+    class Meta(object):
+        verbose_name = "Üyelik"
+        verbose_name_plural = "Üyelik"
+
+
 class Locations(models.Model):
     account = models.ForeignKey(Accounts, related_name="Locations", verbose_name="Hesap")
     name = models.CharField(max_length=50,verbose_name="Lokasyon Tanımı")
@@ -31,6 +42,10 @@ class Locations(models.Model):
     def __unicode__(self):
         return "%s" % self.name
 
+    class Meta(object):
+        verbose_name = "Konum"
+        verbose_name_plural = "Konumlar"
+
 class Rooms(models.Model):
     account = models.ForeignKey(Accounts, related_name="Rooms", verbose_name="Hesap")
     location = models.ForeignKey(Locations,related_name="Rooms",verbose_name="Konum")
@@ -39,6 +54,10 @@ class Rooms(models.Model):
 
     def __unicode__(self):
         return "%s" % self.name
+
+    class Meta(object):
+        verbose_name = "Odalar"
+        verbose_name_plural = "Oda"
 
 class Devices(models.Model):
     account = models.ForeignKey(Accounts, related_name="Devices", verbose_name="Hesap")
@@ -50,6 +69,12 @@ class Devices(models.Model):
 
     def __unicode__(self):
         return "%s" % self.name
+
+
+    class Meta(object):
+        verbose_name = "Cihaz"
+        verbose_name_plural = "Cihazlar"
+
 
 RelayIcons = (
     ('light','Ampül'),
@@ -81,6 +106,12 @@ class Relays(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.name, self.room.name)
 
+
+    class Meta(object):
+        verbose_name = "Röle"
+        verbose_name_plural = "Röleler"
+
+
 DAYS = (
     (1,"Pazartesi"),
     (2,"Salı"),
@@ -96,6 +127,9 @@ class Crons(models.Model):
     switch_on_time = models.TimeField(verbose_name="Açma Zaman")
     switch_off_time = models.TimeField(verbose_name="Kapama Zaman")
 
+    class Meta(object):
+        verbose_name = "Zamanlama"
+        verbose_name_plural = "Zamanlamalar"
 
 
 class IrButtons(models.Model):
@@ -112,3 +146,7 @@ class IrButtons(models.Model):
 
     def __unicode__(self):
         return "%s %s" % (self.name, self.room.name)
+
+    class Meta(object):
+        verbose_name = "IR"
+        verbose_name_plural = "IR"
