@@ -36,7 +36,7 @@ class RelayAdmin(admin.ModelAdmin):
 
     def close_relay(self, obj):
         return '<a class="btn btn-danger" href="/relay-control/?relay=' + str(
-            obj.id) + '&action=open"><i class="fa fa-power-off" aria-hidden="true"></i> Kapat</a>'
+            obj.id) + '&action=close"><i class="fa fa-power-off" aria-hidden="true"></i> Kapat</a>'
 
     close_relay.allow_tags = True
     close_relay.short_description = u'Röleyi aç'
