@@ -139,10 +139,10 @@ class Relays(models.Model):
     @property
     def total_instant_power(self):
         total_power = 0
-        for relay in self.Relays.all():
-            last_val = relay.CurrentValues.all().order_by("-create_date")[:1]
-            if last_val.count() == 1:
-                total_power = last_val[0].power_cons
+
+        last_val = self.CurrentValues.all().order_by("-create_date")[:1]
+        if last_val.count() == 1:
+            total_power = last_val[0].power_cons
         return total_power
 
     def __unicode__(self):
