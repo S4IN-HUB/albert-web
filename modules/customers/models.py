@@ -70,6 +70,7 @@ class Devices(models.Model):
     name = models.CharField(max_length=50, verbose_name="Cihaz Tanımı")
     ip = models.CharField(max_length=50, verbose_name="IP adresi")
     port = models.IntegerField(verbose_name="Port")
+    status = models.BooleanField(default=True, verbose_name="Durum")
 
     def __unicode__(self):
         return "%s" % self.name
