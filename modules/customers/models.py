@@ -92,7 +92,6 @@ class Devices(models.Model):
                 total_power = last_val[0].power_cons
         return total_power
 
-        total_instant_power.short_description = u'Toplam Anlık Güç'
 
     def __unicode__(self):
         return "%s" % self.name
@@ -128,6 +127,23 @@ class Relays(models.Model):
     relay_no = models.IntegerField(verbose_name="Röle No")
     type = models.CharField(max_length=20, choices=RelayTypes, verbose_name="Anahtar Tipi")
     icon = models.CharField(max_length=20, choices=RelayIcons, verbose_name="Simge")
+
+    @property
+    def total_instant_current(self):
+        total_current = 0
+        last_val = self.CurrentValues.all().order_by("-create_date")[:1]
+        if last_val.count() == 1:
+            total_current = last_val[0].current_value
+        return total_current
+
+    @property
+    def total_instant_power(self):
+        total_power = 0
+        for relay in self.Relays.all():
+            last_val = relay.CurrentValues.all().order_by("-create_date")[:1]
+            if last_val.count() == 1:
+                total_power = last_val[0].power_cons
+        return total_power
 
     def __unicode__(self):
         return "%s %s" % (self.name, self.room.name)
