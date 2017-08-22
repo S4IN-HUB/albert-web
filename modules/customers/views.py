@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import json
 import socket
+from datetime import datetime, timedelta
 
 import requests
 from django.contrib import messages
@@ -13,7 +14,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
@@ -534,7 +534,7 @@ def relay_control(request):
 def cron_control(request):
     open_count = 0
     close_count = 0
-    now_date = timezone.now()
+    now_date = datetime.now() + timedelta(hours=3)
     crons = Crons.objects.filter(day=now_date.weekday(),
                                  switch_on_time__hour=now_date.strftime('%H'),
                                  switch_on_time__minute=now_date.strftime('%M'))
