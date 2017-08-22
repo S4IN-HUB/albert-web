@@ -536,7 +536,7 @@ def cron_control(request):
 
         try:
             r = requests.get(
-                'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no' + str(item.relay.relay_no) + '&st=0')
+                'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no=' + str(item.relay.relay_no) + '&st=0')
             open_count += 1
         except:
             pass
@@ -549,7 +549,7 @@ def cron_control(request):
 
         try:
             r = requests.get(
-                'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no' + str(item.relay.relay_no) + '&st=1')
+                'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no=' + str(item.relay.relay_no) + '&st=1')
             close_count += 1
         except:
             pass
