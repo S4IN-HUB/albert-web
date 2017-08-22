@@ -6,4 +6,4 @@ from django.apps import AppConfig
 
 class ConnectorConfig(AppConfig):
     name = 'modules.customers'
-    verbose_name = _('Hesaplar - İşlemler')
+    verbose_name = 'Hesaplar - İşlemler'
