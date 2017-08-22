@@ -559,21 +559,20 @@ def cron_control(request):
     connected_devices = 0
     updated_relays = 0
     for device in Devices.objects.filter(status=True):
-        # try:
-        r = requests.get('http://' + device.ip + ':' + str(device.port) + '/?cmd=A', timeout=15)
-        connected_devices += 1
-        curr_data = json.loads(r.text)
-        for _relay in curr_data:
-            relay_obj = Relays.objects.filter(device=device, relay_no=_relay.get("N"))[:1]
-            if relay_obj.count() == 1:
-                print _relay.get("A")
-                print _relay.get("W")
-                RelayCurrentValues(relay=relay_obj[0], current_value=_relay.get("A", 0),
-                                   power_cons=_relay.get("W", 0)).save()
-                updated_relays += 1
+        try:
+            r = requests.get('http://' + device.ip + ':' + str(device.port) + '/?cmd=A', timeout=15)
+            connected_devices += 1
+            curr_data = json.loads(r.text)
+            for _relay in curr_data:
+                relay_obj = Relays.objects.filter(device=device, relay_no=_relay.get("N"))[:1]
+                if relay_obj.count() == 1:
 
-        # except:
-        #     pass
+                    RelayCurrentValues(relay=relay_obj[0], current_value=_relay.get("A", 0),
+                                       power_cons=_relay.get("W", 0)).save()
+                    updated_relays += 1
+
+        except:
+            pass
 
     return HttpResponse(
         "Open : %s, Close: %s Time: %s, Connected Devices: %s, Updated Relays: %s" % (
