@@ -3,21 +3,27 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays, IrButtons, Crons
+from modules.customers.models import Accounts, Locations, Plans, Rooms, Devices, Relays, IrButtons, Crons, \
+    RelayCurrentValues
 
 # Register your models here.
 
 admin.site.register(Accounts)
-class LocationsAdmin(admin.ModelAdmin):
-    list_display = ('account','name','lat','lon')
 
-admin.site.register(Locations,LocationsAdmin)
+
+class LocationsAdmin(admin.ModelAdmin):
+    list_display = ('account', 'name', 'lat', 'lon')
+
+
+admin.site.register(Locations, LocationsAdmin)
 admin.site.register(Plans)
 
-class RoomsAdmin(admin.ModelAdmin):
-    list_display = ('account','location','name',)
-admin.site.register(Rooms,RoomsAdmin)
 
+class RoomsAdmin(admin.ModelAdmin):
+    list_display = ('account', 'location', 'name',)
+
+
+admin.site.register(Rooms, RoomsAdmin)
 
 admin.site.register(IrButtons)
 
@@ -25,6 +31,7 @@ admin.site.register(IrButtons)
 class InlineCrons(admin.StackedInline):
     model = Crons
     extra = 1
+
 
 class RelayAdmin(admin.ModelAdmin):
     def open_relay(self, obj):
@@ -41,15 +48,19 @@ class RelayAdmin(admin.ModelAdmin):
     close_relay.allow_tags = True
     close_relay.short_description = u'Röleyi aç'
 
-    list_display = ('name','relay_no','type','room','device', 'open_relay', 'close_relay')
-    inlines = [InlineCrons,]
+    list_display = ('name', 'relay_no', 'type', 'room', 'device', 'open_relay', 'close_relay')
+    inlines = [InlineCrons, ]
 
-admin.site.register(Relays,RelayAdmin)
 
+admin.site.register(Relays, RelayAdmin)
 
 
 class DevicesAdmin(admin.ModelAdmin):
-    list_display = ('account','name','ip','port',)
+    list_display = ('account', 'name', 'ip', 'port',)
 
 
-admin.site.register(Devices,DevicesAdmin)
+admin.site.register(Devices, DevicesAdmin)
+
+class RelayCurrentValuesAdmin(admin.ModelAdmin):
+    list_display = ('relay', 'current_value', 'power_cons', 'create_date')
+admin.site.register(RelayCurrentValues, RelayCurrentValuesAdmin)
