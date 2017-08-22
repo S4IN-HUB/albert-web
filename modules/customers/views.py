@@ -444,12 +444,7 @@ def GetRelays(request):
                 'relay_no': relay.relay_no,
                 'type': relay.type,
                 'icon': relay.icon,
-                'count': relay.count,
-                'days': relay.days,
-                'start_day': relay.start_day,
-                'finish_day': relay.finish_day,
-                'switch_on_time': relay.switch_on_time,
-                'switch_off_time': relay.switch_off_time,
+
             })
 
     else:
