@@ -65,12 +65,34 @@ class Devices(models.Model):
     account = models.ForeignKey(Accounts, related_name="Devices", verbose_name="Hesap")
     room = models.ForeignKey(Rooms, blank=True, null=True, related_name="Devices")
     type = models.CharField(max_length=15, choices=(
-    ('relay_current', 'Akım Sensörlü 16 Röle Kartı'), ('relay', '16 Röle Kartı'), ('ir', 'IR Modüle')),
+        ('relay_current', 'Akım Sensörlü 16 Röle Kartı'), ('relay', '16 Röle Kartı'), ('ir', 'IR Modüle')),
                             verbose_name="Cihaz Tipi")
     name = models.CharField(max_length=50, verbose_name="Cihaz Tanımı")
     ip = models.CharField(max_length=50, verbose_name="IP adresi")
     port = models.IntegerField(verbose_name="Port")
     status = models.BooleanField(default=True, verbose_name="Durum")
+
+    @property
+    def total_instant_current(self):
+        total_current = 0
+        for relay in self.Relays.all():
+            last_val = relay.CurrentValues.all().order_by("-create_date")[:1]
+            if last_val.count() == 1:
+                total_current += last_val[0].current_value
+        return total_current
+
+    total_instant_current.short_description = u'Toplam Anlık Akım'
+
+    @property
+    def total_instant_power(self):
+        total_power = 0
+        for relay in self.Relays.all():
+            last_val = relay.CurrentValues.all().order_by("-create_date")[:1]
+            if last_val.count() == 1:
+                total_power += last_val[0].power_cons
+        return total_power
+
+        total_instant_power.short_description = u'Toplam Anlık Güç'
 
     def __unicode__(self):
         return "%s" % self.name
@@ -131,6 +153,7 @@ class RelayCurrentValues(models.Model):
     class Meta(object):
         verbose_name = "Röle Akım Değeri"
         verbose_name_plural = "Röle Akım Değerleri"
+
 
 DAYS = (
     (0, "Pazartesi"),
