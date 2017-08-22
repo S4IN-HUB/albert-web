@@ -78,7 +78,7 @@ class Devices(models.Model):
         for relay in self.Relays.all():
             last_val = relay.CurrentValues.all().order_by("-create_date")[:1]
             if last_val.count() == 1:
-                total_current += last_val[0].current_value
+                total_current = last_val[0].current_value
         return total_current
 
 
@@ -89,7 +89,7 @@ class Devices(models.Model):
         for relay in self.Relays.all():
             last_val = relay.CurrentValues.all().order_by("-create_date")[:1]
             if last_val.count() == 1:
-                total_power += last_val[0].power_cons
+                total_power = last_val[0].power_cons
         return total_power
 
         total_instant_power.short_description = u'Toplam Anlık Güç'
