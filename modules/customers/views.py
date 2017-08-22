@@ -505,7 +505,7 @@ def relay_control(request):
             url = 'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no=' + str(relay.relay_no) + '&st=0'
             print url
             r = requests.get(url)
-            print r
+            print r.text
         except Exception as e:
             if request.META.get("HTTP_REFERER"):
                 messages.add_message(request, messages.ERROR, 'Hata: %s' % str(e))
@@ -519,7 +519,7 @@ def relay_control(request):
             print url
             r = requests.get(url)
 
-            print r
+            print r.text
         except Exception as e:
             if request.META.get("HTTP_REFERER"):
                 messages.add_message(request, messages.ERROR, 'Hata: %s' % str(e))
