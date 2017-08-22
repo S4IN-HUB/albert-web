@@ -560,7 +560,7 @@ def cron_control(request):
     updated_relays = 0
     for device in Devices.objects.all():
         try:
-            r = requests.get('http://' + device.ip + ':' + str(device.port) + '/?cmd=A')
+            r = requests.get('http://' + device.ip + ':' + str(device.port) + '/?cmd=A', timeout=15)
             connected_devices += 1
             curr_data = json.loads(r.text)
             for _relay in curr_data:
