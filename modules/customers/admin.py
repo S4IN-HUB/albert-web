@@ -56,7 +56,15 @@ admin.site.register(Relays, RelayAdmin)
 
 
 class DevicesAdmin(admin.ModelAdmin):
-    list_display = ('account', 'name', 'ip', 'port','status', '')
+    def get_total_instant_current(self, obj):
+        return obj.total_instant_current
+    get_total_instant_current.short_description = u'Toplam Anlık Akım'
+
+    def get_total_instant_power(self, obj):
+        return obj.total_instant_power
+    get_total_instant_power.short_description = u'Toplam Anlık Akım'
+
+    list_display = ('account', 'name', 'ip', 'port','status', 'get_total_instant_current', 'get_total_instant_power')
 
 
 admin.site.register(Devices, DevicesAdmin)

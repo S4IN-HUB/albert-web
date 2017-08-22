@@ -81,7 +81,7 @@ class Devices(models.Model):
                 total_current += last_val[0].current_value
         return total_current
 
-    total_instant_current.short_description = u'Toplam Anlık Akım'
+
 
     @property
     def total_instant_power(self):
