@@ -558,7 +558,7 @@ def cron_control(request):
 
     connected_devices = 0
     updated_relays = 0
-    for device in Devices.objects.filter(status=True)
+    for device in Devices.objects.filter(status=True):
         try:
             r = requests.get('http://' + device.ip + ':' + str(device.port) + '/?cmd=A', timeout=15)
             connected_devices += 1
