@@ -566,7 +566,9 @@ def cron_control(request):
         for _relay in curr_data:
             relay_obj = Relays.objects.filter(device=device, relay_no=_relay.get("N"))[:1]
             if relay_obj.count() == 1:
-                RelayCurrentValues(relay=relay_obj, current_value=_relay.get("A", 0),
+                print _relay.get("A")
+                print _relay.get("W")
+                RelayCurrentValues(relay=relay_obj[0], current_value=_relay.get("A", 0),
                                    power_cons=_relay.get("W", 0)).save()
                 updated_relays += 1
 
