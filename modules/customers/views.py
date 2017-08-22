@@ -502,7 +502,7 @@ def relay_control(request):
     if request.GET.get("action", "") == "open":
         try:
             r = requests.get(
-                'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no' + str(relay.relay_no) + '&st=0')
+                'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no=' + str(relay.relay_no) + '&st=0')
         except Exception as e:
             if request.META.get("HTTP_REFERER"):
                 messages.add_message(request, messages.ERROR, 'Hata: %s' % str(e))
@@ -512,7 +512,7 @@ def relay_control(request):
     elif request.GET.get("action", "") == "close":
         try:
             r = requests.get(
-                'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no' + str(relay.relay_no) + '&st=1')
+                'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no=' + str(relay.relay_no) + '&st=1')
         except Exception as e:
             if request.META.get("HTTP_REFERER"):
                 messages.add_message(request, messages.ERROR, 'Hata: %s' % str(e))
