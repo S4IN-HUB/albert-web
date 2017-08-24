@@ -3,7 +3,7 @@
 import os
 import socket
 import sys
-import threading
+from thread import start_new_thread
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -12,6 +12,7 @@ if "DJANGO_SETTINGS_MODULE" not in os.environ:
     os.environ["DJANGO_SETTINGS_MODULE"] = "base.settings"
 
 import django
+
 django.setup()
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,15 +22,8 @@ from modules.customers.models import RelayCurrentValues, Relays, Devices
 port = 12121
 
 
-class SocketServer(object):
-    """
-    Socket server Sınıfı
-    """
-    def __init__(self, port):
-        self.get_host_ip = False
-        self.host_addr = socket.gethostname() if self.get_host_ip else ''
-        self.host_port = port
-        self.socket = None
+class DataHandler(object):
+    def __init__(self):
         self.client_conn = None
         self.client_addr = None
         self.client_data = None
@@ -37,28 +31,6 @@ class SocketServer(object):
         self.parsed_data = None
 
         self.device = None
-
-        print "Host Address: %s:%s" % (self.host_addr, self.host_port)
-        self.setup()
-
-    def setup(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-        try:
-            self.socket.bind((self.host_addr, self.host_port))
-            print 'Socket created!'
-        except Exception as uee:
-            print uee
-            self.socket.close()
-            sys.exit()
-        try:
-            self.socket.listen(300)
-            print 'Socket begin to listen.'
-        except Exception as uee:
-            print uee
-            self.socket.close()
-            sys.exit()
 
     def parse_data(self):
         self.splitted_data = self.client_data.split('\r\n')
@@ -74,8 +46,8 @@ class SocketServer(object):
                 continue
             elif self.device and _data[1] != self.device.name:
                 raise Exception(
-                    "Gelen veri %s cihazına ait ama elimizde %s cihazı var. Bağlantı kesiliyor." % (_data[1],
-                                                                                                    self.device.name)
+                    u"Gelen veri %s cihazına ait ama elimizde %s cihazı var. Bağlantı kesiliyor." % (_data[1],
+                                                                                                     self.device.name)
                 )
 
             if _data[0] == "DN":
@@ -117,7 +89,9 @@ class SocketServer(object):
         except:
             raise Exception('unable to send command to Client')
 
-    def run(self):
+    def run(self, client_conn, client_addr):
+        self.client_conn = client_conn
+        self.client_addr = client_addr
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
         # start_new_thread(self.clientthread, (self.client_conn, client_addr))
 
@@ -138,12 +112,48 @@ class SocketServer(object):
                 self.client_conn.close()
                 break
 
+
+class SocketServer(object):
+    """
+    Socket server Sınıfı
+    """
+
+    def __init__(self, _port):
+        self.get_host_ip = False
+        self.host_addr = socket.gethostname() if self.get_host_ip else ''
+        self.host_port = _port
+        self.socket = None
+        self.client_conn = None
+        self.client_addr = None
+
+        print "Host Address: %s:%s" % (self.host_addr, self.host_port)
+        self.setup()
+
+    def setup(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        try:
+            self.socket.bind((self.host_addr, self.host_port))
+            print 'Socket created!'
+        except Exception as uee:
+            print uee
+            self.socket.close()
+            sys.exit()
+        try:
+            self.socket.listen(300)
+            print 'Socket begin to listen.'
+        except Exception as uee:
+            print uee
+            self.socket.close()
+            sys.exit()
+
     def runserver(self):
         while True:
             try:
                 self.client_conn, self.client_addr = self.socket.accept()
-                trd = threading.Thread(target=self.run)
-                trd.start()
+                data_handler = DataHandler()
+                start_new_thread(data_handler.run, (self.client_conn, self.client_addr))
             except socket.timeout:
                 print "Socket read timed out, retrying..."
                 continue
