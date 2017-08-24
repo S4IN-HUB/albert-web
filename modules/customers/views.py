@@ -17,7 +17,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons
+from modules.customers.models import Accounts, Relays, Crons, Devices, RelayCurrentValues
 
 
 def PermitResponse(response):
@@ -491,16 +491,16 @@ def SendCommand(request):
 
     return JsonResponser(True, None, _relay.pressed)
 
+
 def relay_control(request):
     if request.GET.get("relay"):
         relay = Relays.objects.get(pk=request.GET.get("relay"))
 
     if request.GET.get("action", "") == "open":
         try:
-            url = 'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no=' + str(relay.relay_no) + '&st=0'
-            print url
+            url = 'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no=' + str(
+                relay.relay_no) + '&st=0'
             r = requests.get(url)
-            print r.text
         except Exception as e:
             if request.META.get("HTTP_REFERER"):
                 messages.add_message(request, messages.ERROR, 'Hata: %s' % str(e))
@@ -511,10 +511,8 @@ def relay_control(request):
         try:
             url = 'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no=' + str(
                 relay.relay_no) + '&st=1'
-            print url
             r = requests.get(url)
 
-            print r.text
         except Exception as e:
             if request.META.get("HTTP_REFERER"):
                 messages.add_message(request, messages.ERROR, 'Hata: %s' % str(e))
@@ -538,7 +536,8 @@ def cron_control(request):
 
         try:
             r = requests.get(
-                'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no=' + str(item.relay.relay_no) + '&st=0')
+                'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no=' + str(
+                    item.relay.relay_no) + '&st=0')
             open_count += 1
         except:
             pass
@@ -551,9 +550,30 @@ def cron_control(request):
 
         try:
             r = requests.get(
-                'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no=' + str(item.relay.relay_no) + '&st=1')
+                'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no=' + str(
+                    item.relay.relay_no) + '&st=1')
             close_count += 1
         except:
             pass
 
-    return HttpResponse("Open : %s, Close: %s Time: %s" % (str(open_count), str(close_count), now_date.strftime('%H:%M')))
+    connected_devices = 0
+    updated_relays = 0
+    for device in Devices.objects.filter(status=True):
+        try:
+            r = requests.get('http://' + device.ip + ':' + str(device.port) + '/?cmd=A', timeout=15)
+            connected_devices += 1
+            curr_data = json.loads(r.text)
+            for _relay in curr_data:
+                relay_obj = Relays.objects.filter(device=device, relay_no=_relay.get("N"))[:1]
+                if relay_obj.count() == 1:
+
+                    RelayCurrentValues(relay=relay_obj[0], current_value=_relay.get("A", 0),
+                                       power_cons=_relay.get("W", 0)).save()
+                    updated_relays += 1
+
+        except:
+            pass
+
+    return HttpResponse(
+        "Open : %s, Close: %s Time: %s, Connected Devices: %s, Updated Relays: %s" % (
+        str(open_count), str(close_count), now_date.strftime('%H:%M'), str(connected_devices), str(updated_relays)))
