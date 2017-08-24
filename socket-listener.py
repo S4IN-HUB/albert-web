@@ -1,84 +1,87 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import socket
-import sys, os
-import time
-from thread import *
-import threading
-from datetime import datetime, timedelta
-from decimal import Decimal
+import sys
 
+port = 12121
+timeout = 10
 
-class MainProgram:
-    def __init__(self):
-
-        self.HOST = ''
-        self.PORT = 8080
+class SocketServer(object):
+    """
+    Socket server Sınıfı
+    """
+    def __init__(self, port):
+        self.get_host_ip = False
+        self.host_addr = socket.gethostname() if self.get_host_ip else ''
+        self.host_port = port
         self.debug = True
         self.addr = None
         self.device_id = ''
+        self.socket = None
+        print "Host Address: %s:%s" % (self.host_addr, self.host_port)
+        self.setup()
 
-    def clientthread(self, client_socket, addr):
-        while True:
-            data = client_socket.recv(4096)
-
-            if data != '':
-                print data
-
-            if "#DN#" in data:
-                print "Device Name:", data.split("#DN#")[1]
-                client_socket.send("#RC#7#1#")
-                client_socket.send("#RC#8#1#")
-                client_socket.send("#RC#9#1#")
-                time.sleep(3)
-                client_socket.send("#RC#7#0#")
-                client_socket.send("#RC#8#0#")
-                client_socket.send("#RC#9#0#")
-                time.sleep(3)
-                client_socket.send("#RC#7#1#")
-                client_socket.send("#RC#8#1#")
-                client_socket.send("#RC#9#1#")
-
-        print "Soket Baglanti Sonlandi"
-        return "OK"
-
-    def begin(self):
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-        print 'Socket created'
+    def setup(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.setblocking(1)
+        self.socket.settimeout(timeout)
         try:
-            s.bind((self.HOST, self.PORT))
-            s.listen(300)
-            print 'Socket bind complete'
-        except socket.error as msg:
-            print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
-            s.shutdown(1)
-            s.close()
+            self.socket.bind((self.host_addr, self.host_port))
+            print 'Socket created!'
+        except Exception as uee:
+            print uee
+            self.socket.close()
+            sys.exit()
+        try:
+            self.socket.listen(300)
+            print 'Socket begin to listen.'
+        except Exception as uee:
+            print uee
+            self.socket.close()
             sys.exit()
 
-        print 'Socket now listening'
+    def runserver(self):
+        while True:
+            try:
+                client_conn, client_addr = self.socket.accept()
 
-        while 1:
-            conn, addr = s.accept()
-            print 'Connected with ' + addr[0] + ':' + str(addr[1])
-            start_new_thread(self.clientthread, (conn, addr))
+                print 'Client connected from %s:%s address' % (client_addr[0], client_addr[1])
+                # start_new_thread(self.clientthread, (client_conn, client_addr))
 
-        s.close()
+                while True:
+                    try:
+                        client_data = client_conn.recv(1024)
+                        if client_data:
+                            print client_data
+                            # TODO: Burada veri alıp client'a gönderilecek.
+                        if not client_data:
+                            print "No incoming data, breaking connection."
+                            break
+                    except Exception as uee:
+                        print uee
+                        client_conn.close()
+            except socket.timeout:
+                print "Socket read timed out, retrying..."
+                continue
+            except Exception as uee:
+                print uee
+                break
+        self.socket.close()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        sys.exit()
+    if not len(sys.argv) < 2:
+        try:
+            port = int(sys.argv[1])
+        except:
+            print "Kullanım: "
+            print "\t# python socket-listener.py [port numarası]"
+            print " "
+            print "- Port numarası belirtmezseniz %s numaralı porttan çalışacaktır." % port
+            print "- Port numarası nümerik değer olmalıdır."
+            sys.exit()
 
-    a = MainProgram()
-    islem = sys.argv[1]
-
-    if len(sys.argv) == 4:
-        a.device_id = sys.argv[3]
-
-    if hasattr(a, islem):
-        getattr(a, islem)()
-    else:
-        print 'Bilinmeyen islev: %s' % islem
+    SocketServer = SocketServer(port)
+    SocketServer.runserver()
+    sys.exit()
