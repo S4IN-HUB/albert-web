@@ -56,9 +56,9 @@ class RelayAdmin(admin.ModelAdmin):
             obj.id) + '&action=close"><i class="fa fa-power-off" aria-hidden="true"></i> Kapat</a>'
 
     close_relay.allow_tags = True
-    close_relay.short_description = u'Röleyi aç'
+    close_relay.short_description = u'Röleyi Kapat'
 
-    list_display = ('name', 'relay_no', 'type', 'room', 'device', 'open_relay', 'close_relay',
+    list_display = ('name', 'relay_no', 'type', 'room', 'device', 'pressed', 'open_relay', 'close_relay',
                     'get_total_instant_current', 'get_total_instant_power')
     inlines = [InlineCrons, ]
 
