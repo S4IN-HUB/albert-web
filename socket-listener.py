@@ -34,7 +34,7 @@ class SocketServer(object):
         self.socket = None
 
         self.client_data = None
-        self.parsed_date = None
+        self.parsed_data = None
 
         self.device = None
 
@@ -62,26 +62,24 @@ class SocketServer(object):
             sys.exit()
 
     def parse_data(self):
-        self.parsed_data = self.client_data.lstrip('#').split('#')
-        print self.parsed_date
+        self.parsed_data = self.client_data.lstrip('#').replace('\r\n', '').split('#')
+        print self.parsed_data
 
     def process_data(self):
-        if self.parsed_data is not None:
+        if self.parsed_data is not None and len(self.parsed_data) > 1:
             if self.parsed_data[0] == "DN":
                 # Örnek veri: #CV#TANKAR001
                 try:
                     self.device = Devices.objects.get(name=self.parsed_data[1])
                 except ObjectDoesNotExist:
-                    print "%s isimli cihaz kaydı bulunamadı" % (self.parsed_data[1])
-                    
-                    sys.exit()
+                    raise Exception("%s device is not found in DB" % (self.parsed_data[1]))
+
             if self.parsed_data[0] == "CV":
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
                 try:
                     relay = Relays.object.get(device__name=self.parsed_data[1], relay_no=int(self.parsed_data[2]))
                 except ObjectDoesNotExist:
-                    print "%s numaralı röle kaydı bulunamadı" % self.parsed_data[2]
-                    sys.exit()
+                    raise ("%s numaralı röle kaydı bulunamadı" % self.parsed_data[2])
 
                 RelayCurrentValues(relay=relay, current_value=self.parsed_data[3], power_cons=self.parsed_data[4]).save()
 
@@ -91,14 +89,14 @@ class SocketServer(object):
     def runserver(self):
         while True:
             try:
-                client_conn, client_addr = self.socket.accept()
+                self.client_conn, client_addr = self.socket.accept()
 
                 print 'Client connected from %s:%s address' % (client_addr[0], client_addr[1])
-                # start_new_thread(self.clientthread, (client_conn, client_addr))
+                # start_new_thread(self.clientthread, (self.client_conn, client_addr))
 
                 while True:
                     try:
-                        self.client_data = client_conn.recv(1024)
+                        self.client_data = self.client_conn.recv(1024)
                         if self.client_data:
                             self.parse_data()
                             self.process_data()
@@ -108,7 +106,8 @@ class SocketServer(object):
                             break
                     except Exception as uee:
                         print uee
-                        client_conn.close()
+                        self.client_conn.close()
+                        break
             except socket.timeout:
                 print "Socket read timed out, retrying..."
                 continue
