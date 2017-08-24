@@ -75,7 +75,7 @@ class SocketServer(object):
                 except ObjectDoesNotExist:
                     raise Exception("%s device is not found in DB" % (self.parsed_data[1]))
 
-            if self.parsed_data[0] == "CV" and self.parsed_data[1] == self.device.name:
+            elif self.parsed_data[0] == "CV" and self.parsed_data[1] == self.device.name:
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
                 try:
                     relay = Relays.objects.get(device__name=self.parsed_data[1], relay_no=int(self.parsed_data[2]))
@@ -84,8 +84,10 @@ class SocketServer(object):
 
                 RelayCurrentValues(relay=relay, current_value=self.parsed_data[3], power_cons=self.parsed_data[4]).save()
 
+            else:
+                print "Unexpected data: %s" % self.parsed_data
         else:
-            raise Exception("Cihaz verisi process_data metoduna None geldi.")
+            raise Exception("Corrupted data: %s" % self.parsed_data)
 
     def send_command(self):
         try:
@@ -115,7 +117,6 @@ class SocketServer(object):
                             # self.send_command()
                         if not self.client_data:
                             print "No incoming data, breaking connection."
-                            break
                     except Exception as uee:
                         print uee
                         self.client_conn.close()
