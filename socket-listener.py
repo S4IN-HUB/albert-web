@@ -46,8 +46,7 @@ class DataHandler(object):
                 continue
             elif self.device and _data[1] != self.device.name:
                 raise Exception(
-                    u"Gelen veri %s cihazına ait ama elimizde %s cihazı var. Bağlantı kesiliyor." % (_data[1],
-                                                                                                     self.device.name)
+                    "Data arrived from %s but working with %s device. Disconnecting." % (_data[1], self.device.name)
                 )
 
             if _data[0] == "DN":
@@ -62,7 +61,7 @@ class DataHandler(object):
                 try:
                     relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
                 except ObjectDoesNotExist:
-                    raise ("%s numaralı röle kaydı bulunamadı" % _data[2])
+                    raise Exception("%s numbered relay record does not exist!" % _data[2])
 
                 RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
 
@@ -73,7 +72,7 @@ class DataHandler(object):
                     relay.pressed = bool(int(_data[3]))
                     relay.save()
                 except ObjectDoesNotExist:
-                    raise Exception("%s numaralı röle kaydı bulunamadı" % _data[2])
+                    raise Exception("%s numbered relay record does not exist!" % _data[2])
 
             else:
                 print "Unexpected data: %s" % _data
@@ -93,7 +92,6 @@ class DataHandler(object):
         self.client_conn = client_conn
         self.client_addr = client_addr
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
-        # start_new_thread(self.clientthread, (self.client_conn, client_addr))
 
         while True:
             try:
@@ -105,7 +103,7 @@ class DataHandler(object):
                 if not self.client_data:
                     print "No incoming data, breaking connection."
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
-                    # saçmalıyor. O yüzden bağlantının kapatılması gerekmekte.
+                    # saçmalıyor. O yüzden bağlantının kapatılması için while'dan çıkılması gerekmekte.
                     break
             except Exception as uee:
                 print uee
@@ -168,11 +166,11 @@ if __name__ == "__main__":
         try:
             port = int(sys.argv[1])
         except:
-            print "Kullanım: "
-            print "\t# python socket-listener.py [port numarası]"
+            print "Usage: "
+            print "\t# python socket-listener.py [port_number]"
             print " "
-            print "- Port numarası belirtmezseniz %s numaralı porttan çalışacaktır." % port
-            print "- Port numarası nümerik değer olmalıdır."
+            print "- If port number not specified, server associated with default %s numbered port." % port
+            print "- Port number must be numeric."
             sys.exit()
 
     SocketServer = SocketServer(port)
