@@ -3,6 +3,7 @@
 import os
 import socket
 import sys
+import threading
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -18,9 +19,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from modules.customers.models import RelayCurrentValues, Relays, Devices
 
 port = 12121
-timeout = 10
-
-print socket.gethostbyname(socket.gethostname())
 
 
 class SocketServer(object):
@@ -33,8 +31,9 @@ class SocketServer(object):
         self.host_port = port
         self.socket = None
         self.client_conn = None
-
+        self.client_addr = None
         self.client_data = None
+        self.splitted_data = None
         self.parsed_data = None
 
         self.device = None
@@ -45,8 +44,7 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        #self.socket.setblocking(1)
-        #self.socket.settimeout(timeout)
+
         try:
             self.socket.bind((self.host_addr, self.host_port))
             print 'Socket created!'
@@ -63,29 +61,50 @@ class SocketServer(object):
             sys.exit()
 
     def parse_data(self):
-        self.parsed_data = self.client_data.strip('#').replace('\r\n', '').split('#')
+        self.splitted_data = self.client_data.split('\r\n')
+        self.parsed_data = []
+        for item in self.splitted_data:
+            if len(item) > 1:
+                self.parsed_data.append(item.strip('#').split('#'))
         print self.parsed_data
 
     def process_data(self):
-        if self.parsed_data is not None and len(self.parsed_data) > 1:
-            if self.parsed_data[0] == "DN":
+        for _data in self.parsed_data:
+            if _data is None or not _data:
+                continue
+            elif self.device and _data[1] != self.device.name:
+                raise Exception(
+                    "Gelen veri %s cihazına ait ama elimizde %s cihazı var. Bağlantı kesiliyor." % (_data[1],
+                                                                                                    self.device.name)
+                )
+
+            if _data[0] == "DN":
                 # Örnek veri: #CV#TANKAR001
                 try:
-                    self.device = Devices.objects.get(name=self.parsed_data[1])
+                    self.device = Devices.objects.get(name=_data[1])
                 except ObjectDoesNotExist:
-                    raise Exception("%s device is not found in DB" % (self.parsed_data[1]))
+                    raise Exception("%s device is not found in DB" % (_data[1]))
 
-            if self.parsed_data[0] == "CV" and self.parsed_data[1] == self.device.name:
+            elif _data[0] == "CV":
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
                 try:
-                    relay = Relays.objects.get(device__name=self.parsed_data[1], relay_no=int(self.parsed_data[2]))
+                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
                 except ObjectDoesNotExist:
-                    raise ("%s numaralı röle kaydı bulunamadı" % self.parsed_data[2])
+                    raise ("%s numaralı röle kaydı bulunamadı" % _data[2])
 
-                RelayCurrentValues(relay=relay, current_value=self.parsed_data[3], power_cons=self.parsed_data[4]).save()
+                RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
 
-        else:
-            raise Exception("Cihaz verisi process_data metoduna None geldi.")
+            elif _data[0] == "ST" and _data[1] == self.device.name:
+                # Örnek veri: #ST#TANKAR001#1#0
+                try:
+                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                    relay.pressed = bool(int(_data[3]))
+                    relay.save()
+                except ObjectDoesNotExist:
+                    raise Exception("%s numaralı röle kaydı bulunamadı" % _data[2])
+
+            else:
+                print "Unexpected data: %s" % _data
 
     def send_command(self):
         try:
@@ -98,28 +117,33 @@ class SocketServer(object):
         except:
             raise Exception('unable to send command to Client')
 
+    def run(self):
+        print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
+        # start_new_thread(self.clientthread, (self.client_conn, client_addr))
+
+        while True:
+            try:
+                self.client_data = self.client_conn.recv(1024)
+                if self.client_data:
+                    self.parse_data()
+                    self.process_data()
+                    # self.send_command()
+                if not self.client_data:
+                    print "No incoming data, breaking connection."
+                    # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
+                    # saçmalıyor. O yüzden bağlantının kapatılması gerekmekte.
+                    break
+            except Exception as uee:
+                print uee
+                self.client_conn.close()
+                break
+
     def runserver(self):
         while True:
             try:
-                self.client_conn, client_addr = self.socket.accept()
-
-                # print 'Client connected from %s:%s address' % (client_addr[0], client_addr[1])
-                # start_new_thread(self.clientthread, (self.client_conn, client_addr))
-
-                while True:
-                    try:
-                        self.client_data = self.client_conn.recv(1024)
-                        if self.client_data:
-                            self.parse_data()
-                            self.process_data()
-                            # self.send_command()
-                        if not self.client_data:
-                            print "No incoming data, breaking connection."
-                            break
-                    except Exception as uee:
-                        print uee
-                        self.client_conn.close()
-                        break
+                self.client_conn, self.client_addr = self.socket.accept()
+                trd = threading.Thread(target=self.run)
+                trd.start()
             except socket.timeout:
                 print "Socket read timed out, retrying..."
                 continue
