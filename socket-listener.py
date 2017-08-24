@@ -1,10 +1,27 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 import socket
 import sys
 
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+    os.environ["DJANGO_SETTINGS_MODULE"] = "base.settings"
+
+import django
+django.setup()
+from django.core.exceptions import ObjectDoesNotExist
+
+from modules.customers.models import RelayCurrentValues, Relays, Devices
+
 port = 12121
 timeout = 10
+
+print socket.gethostbyname(socket.gethostname())
+
 
 class SocketServer(object):
     """
@@ -14,10 +31,13 @@ class SocketServer(object):
         self.get_host_ip = False
         self.host_addr = socket.gethostname() if self.get_host_ip else ''
         self.host_port = port
-        self.debug = True
-        self.addr = None
-        self.device_id = ''
         self.socket = None
+
+        self.client_data = None
+        self.parsed_date = None
+
+        self.device = None
+
         print "Host Address: %s:%s" % (self.host_addr, self.host_port)
         self.setup()
 
@@ -41,6 +61,33 @@ class SocketServer(object):
             self.socket.close()
             sys.exit()
 
+    def parse_data(self):
+        self.parsed_data = self.client_data.lstrip('#').split('#')
+        print self.parsed_date
+
+    def process_data(self):
+        if self.parsed_data is not None:
+            if self.parsed_data[0] == "DN":
+                # Örnek veri: #CV#TANKAR001
+                try:
+                    self.device = Devices.objects.get(name=self.parsed_data[1])
+                except ObjectDoesNotExist:
+                    print "%s isimli cihaz kaydı bulunamadı" % (self.parsed_data[1])
+                    
+                    sys.exit()
+            if self.parsed_data[0] == "CV":
+                # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
+                try:
+                    relay = Relays.object.get(device__name=self.parsed_data[1], relay_no=int(self.parsed_data[2]))
+                except ObjectDoesNotExist:
+                    print "%s numaralı röle kaydı bulunamadı" % self.parsed_data[2]
+                    sys.exit()
+
+                RelayCurrentValues(relay=relay, current_value=self.parsed_data[3], power_cons=self.parsed_data[4]).save()
+
+        else:
+            print "Cihaz verisi process_data metoduna None geldi."
+
     def runserver(self):
         while True:
             try:
@@ -51,11 +98,12 @@ class SocketServer(object):
 
                 while True:
                     try:
-                        client_data = client_conn.recv(1024)
-                        if client_data:
-                            print client_data
+                        self.client_data = client_conn.recv(1024)
+                        if self.client_data:
+                            self.parse_data()
+                            self.process_data()
                             # TODO: Burada veri alıp client'a gönderilecek.
-                        if not client_data:
+                        if not self.client_data:
                             print "No incoming data, breaking connection."
                             break
                     except Exception as uee:
