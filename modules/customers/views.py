@@ -444,7 +444,8 @@ def GetRelays(request):
                 'relay_no': relay.relay_no,
                 'type': relay.type,
                 'icon': relay.icon,
-
+                'total_instant_current':relay.total_instant_current,
+                'total_instant_power':relay.total_instant_power,
             })
 
     else:

@@ -168,8 +168,6 @@ class RelayCurrentValues(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.relay.name, self.relay.room.name)
 
-
-
     class Meta(object):
         verbose_name = "Röle Akım Değeri"
         verbose_name_plural = "Röle Akım Değerleri"
