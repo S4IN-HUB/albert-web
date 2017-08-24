@@ -18,9 +18,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from modules.customers.models import RelayCurrentValues, Relays, Devices
 
 port = 12121
-timeout = 10
+# timeout = 10
 
 print socket.gethostbyname(socket.gethostname())
+
+
+# def handler()
 
 
 class SocketServer(object):
@@ -46,8 +49,8 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.setblocking(0)
-        self.socket.settimeout(timeout)
+        # self.socket.setblocking(0)
+        # self.socket.settimeout(timeout)
         try:
             self.socket.bind((self.host_addr, self.host_port))
             print 'Socket created!'
