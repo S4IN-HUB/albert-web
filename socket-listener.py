@@ -78,15 +78,16 @@ class DataHandler(object):
                 print "Unexpected data: %s" % _data
 
     def send_command(self):
-        try:
-            command = cache.get()
-        except:
-            raise Exception("Unable to read Cache")
+        command = cache.get(self.device.name, None)
 
-        try:
-            self.client_conn.send(command)
-        except:
-            raise Exception('unable to send command to Client')
+        if command is not None:
+            cache.remove(self.device)
+            parsed_command = "#RC#{name}#{relay}#{cmd}#".format(name=self.device.name, relay=command[0], cmd=command[1])
+            try:
+                self.client_conn.send(parsed_command)
+            except Exception as uee:
+                print uee
+                print('Unable to send command %s to Client' % parsed_command)
 
     def run(self, client_conn, client_addr):
         self.client_conn = client_conn
@@ -99,7 +100,7 @@ class DataHandler(object):
                 if self.client_data:
                     self.parse_data()
                     self.process_data()
-                    # self.send_command()
+                    self.send_command()
                 if not self.client_data:
                     print "No incoming data, breaking connection."
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
