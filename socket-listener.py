@@ -93,8 +93,6 @@ class SocketServer(object):
                 except ObjectDoesNotExist:
                     raise ("%s numaralı röle kaydı bulunamadı" % self.parsed_data[2])
 
-                RelayCurrentValues(relay=relay, current_value=self.parsed_data[3], power_cons=self.parsed_data[4]).save()
-
             else:
                 print "Unexpected data: %s" % self.parsed_data
         else:
