@@ -4,7 +4,6 @@ import os
 import socket
 import sys
 
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
@@ -13,6 +12,7 @@ if "DJANGO_SETTINGS_MODULE" not in os.environ:
 
 import django
 django.setup()
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 
 from modules.customers.models import RelayCurrentValues, Relays, Devices
@@ -62,7 +62,7 @@ class SocketServer(object):
             sys.exit()
 
     def parse_data(self):
-        self.parsed_data = self.client_data.lstrip('#').replace('\r\n', '').split('#')
+        self.parsed_data = self.client_data.strip('#').replace('\r\n', '').split('#')
         print self.parsed_data
 
     def process_data(self):
@@ -74,10 +74,10 @@ class SocketServer(object):
                 except ObjectDoesNotExist:
                     raise Exception("%s device is not found in DB" % (self.parsed_data[1]))
 
-            if self.parsed_data[0] == "CV":
+            if self.parsed_data[0] == "CV" and self.parsed_data[1] == self.device.name:
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
                 try:
-                    relay = Relays.object.get(device__name=self.parsed_data[1], relay_no=int(self.parsed_data[2]))
+                    relay = Relays.objects.get(device__name=self.parsed_data[1], relay_no=int(self.parsed_data[2]))
                 except ObjectDoesNotExist:
                     raise ("%s numaralı röle kaydı bulunamadı" % self.parsed_data[2])
 
@@ -85,6 +85,17 @@ class SocketServer(object):
 
         else:
             raise Exception("Cihaz verisi process_data metoduna None geldi.")
+
+    def send_command(self):
+        try:
+            command = cache.get()
+        except:
+            raise Exception("Unable to read Cache")
+
+        try:
+            self.client_conn.send(command)
+        except:
+            raise Exception('unable to send command to Client')
 
     def runserver(self):
         while True:
@@ -100,7 +111,7 @@ class SocketServer(object):
                         if self.client_data:
                             self.parse_data()
                             self.process_data()
-                            # TODO: Burada veri alıp client'a gönderilecek.
+                            # self.send_command()
                         if not self.client_data:
                             print "No incoming data, breaking connection."
                             break
