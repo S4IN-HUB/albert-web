@@ -166,7 +166,7 @@ class RelayCurrentValues(models.Model):
     create_date = models.DateTimeField(verbose_name='Eklenme Tarihi', auto_now_add=True)
 
     def __unicode__(self):
-        return "%s %s" % (self.name, self.room.name)
+        return "%s %s" % (self.relay.name, self.relay.room.name)
 
     class Meta(object):
         verbose_name = "Röle Akım Değeri"

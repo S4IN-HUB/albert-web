@@ -45,8 +45,8 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.setblocking(1)
-        self.socket.settimeout(timeout)
+        #self.socket.setblocking(1)
+        #self.socket.settimeout(timeout)
         try:
             self.socket.bind((self.host_addr, self.host_port))
             print 'Socket created!'
@@ -103,7 +103,7 @@ class SocketServer(object):
             try:
                 self.client_conn, client_addr = self.socket.accept()
 
-                print 'Client connected from %s:%s address' % (client_addr[0], client_addr[1])
+                # print 'Client connected from %s:%s address' % (client_addr[0], client_addr[1])
                 # start_new_thread(self.clientthread, (self.client_conn, client_addr))
 
                 while True:
