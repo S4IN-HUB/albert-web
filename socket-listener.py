@@ -3,6 +3,7 @@
 import os
 import socket
 import sys
+import threading
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -18,12 +19,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from modules.customers.models import RelayCurrentValues, Relays, Devices
 
 port = 12121
-# timeout = 10
-
-print socket.gethostbyname(socket.gethostname())
-
-
-# def handler()
 
 
 class SocketServer(object):
@@ -36,7 +31,7 @@ class SocketServer(object):
         self.host_port = port
         self.socket = None
         self.client_conn = None
-
+        self.client_addr = None
         self.client_data = None
         self.splitted_data = None
         self.parsed_data = None
@@ -49,8 +44,7 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # self.socket.setblocking(0)
-        # self.socket.settimeout(timeout)
+
         try:
             self.socket.bind((self.host_addr, self.host_port))
             print 'Socket created!'
@@ -67,9 +61,7 @@ class SocketServer(object):
             sys.exit()
 
     def parse_data(self):
-        # print self.client_data.replace('\r\n', '**')
         self.splitted_data = self.client_data.split('\r\n')
-        # print self.splitted_data
         self.parsed_data = []
         for item in self.splitted_data:
             if len(item) > 1:
@@ -125,30 +117,33 @@ class SocketServer(object):
         except:
             raise Exception('unable to send command to Client')
 
+    def run(self):
+        print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
+        # start_new_thread(self.clientthread, (self.client_conn, client_addr))
+
+        while True:
+            try:
+                self.client_data = self.client_conn.recv(1024)
+                if self.client_data:
+                    self.parse_data()
+                    self.process_data()
+                    # self.send_command()
+                if not self.client_data:
+                    print "No incoming data, breaking connection."
+                    # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
+                    # saçmalıyor. O yüzden bağlantının kapatılması gerekmekte.
+                    break
+            except Exception as uee:
+                print uee
+                self.client_conn.close()
+                break
+
     def runserver(self):
         while True:
             try:
-                self.client_conn, client_addr = self.socket.accept()
-
-                print 'Client connected from %s:%s address' % (client_addr[0], client_addr[1])
-                # start_new_thread(self.clientthread, (self.client_conn, client_addr))
-
-                while True:
-                    try:
-                        self.client_data = self.client_conn.recv(1024)
-                        if self.client_data:
-                            self.parse_data()
-                            self.process_data()
-                            # self.send_command()
-                        if not self.client_data:
-                            print "No incoming data, breaking connection."
-                            # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
-                            # saçmalıyor. O yüzden bağlantının kapatılması gerekmekte.
-                            break
-                    except Exception as uee:
-                        print uee
-                        self.client_conn.close()
-                        break
+                self.client_conn, self.client_addr = self.socket.accept()
+                trd = threading.Thread(target=self.run)
+                trd.start()
             except socket.timeout:
                 print "Socket read timed out, retrying..."
                 continue
