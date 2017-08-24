@@ -161,7 +161,7 @@ sensor_types = (('current', 'Akın Sensörü'),)
 class RelayCurrentValues(models.Model):
     relay = models.ForeignKey(Relays, related_name="CurrentValues", verbose_name="Röle")
     current_value = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Akım Değeri (Amper)")
-    power_cons = models.DecimalField(max_digits=5, decimal_places=2, default=0,
+    power_cons = models.DecimalField(max_digits=8, decimal_places=2, default=0,
                                      verbose_name="Kullanılan Güç (Watt/saat)")
     create_date = models.DateTimeField(verbose_name='Eklenme Tarihi', auto_now_add=True)
 
