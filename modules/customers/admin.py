@@ -78,7 +78,7 @@ class DevicesAdmin(admin.ModelAdmin):
 
     get_total_instant_power.short_description = u'Toplam Anlık Güç'
 
-    list_display = ('account', 'name', 'ip', 'port', 'status', 'get_total_instant_current', 'get_total_instant_power')
+    list_display = ('account', 'name', 'description', 'ip', 'port', 'status', 'get_total_instant_current', 'get_total_instant_power')
 
 
 admin.site.register(Devices, DevicesAdmin)
