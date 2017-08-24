@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as doLogin
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Q
@@ -497,32 +498,13 @@ def relay_control(request):
     if request.GET.get("relay"):
         relay = Relays.objects.get(pk=request.GET.get("relay"))
 
-    if request.GET.get("action", "") == "open":
-        try:
-            url = 'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no=' + str(
-                relay.relay_no) + '&st=0'
-            r = requests.get(url)
-        except Exception as e:
-            if request.META.get("HTTP_REFERER"):
-                messages.add_message(request, messages.ERROR, 'Hata: %s' % str(e))
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-            return HttpResponse('Hata: %s' % str(e))
+        if request.GET.get("action", "") == "open":
+            cache.set(relay.device.name, [relay.relay_no, 1])
 
-    elif request.GET.get("action", "") == "close":
-        try:
-            url = 'http://' + relay.device.ip + ':' + str(relay.device.port) + '/?cmd=S&rl_no=' + str(
-                relay.relay_no) + '&st=1'
-            r = requests.get(url)
+        elif request.GET.get("action", "") == "close":
+            cache.set(relay.device.name, [relay.relay_no, 0])
 
-        except Exception as e:
-            if request.META.get("HTTP_REFERER"):
-                messages.add_message(request, messages.ERROR, 'Hata: %s' % str(e))
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-            return HttpResponse('Hata: %s' % str(e))
-    if request.META.get("HTTP_REFERER"):
-        messages.add_message(request, messages.SUCCESS, 'Başarılı: %s' % str(r.text))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-    return HttpResponse(r.text)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
 def cron_control(request):
