@@ -84,6 +84,17 @@ class SocketServer(object):
 
                 RelayCurrentValues(relay=relay, current_value=self.parsed_data[3], power_cons=self.parsed_data[4]).save()
 
+            elif self.parsed_data[0] == "ST" and self.parsed_data[1] == self.device.name:
+                # Örnek veri: #ST#TANKAR001#1#0
+                try:
+                    relay = Relays.objects.get(device__name=self.parsed_data[1], relay_no=int(self.parsed_data[2]))
+                    relay.pressed = bool(int(self.parsed_data[3]))
+                    relay.save()
+                except ObjectDoesNotExist:
+                    raise ("%s numaralı röle kaydı bulunamadı" % self.parsed_data[2])
+
+                RelayCurrentValues(relay=relay, current_value=self.parsed_data[3], power_cons=self.parsed_data[4]).save()
+
             else:
                 print "Unexpected data: %s" % self.parsed_data
         else:
