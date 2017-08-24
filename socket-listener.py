@@ -84,7 +84,7 @@ class SocketServer(object):
                 RelayCurrentValues(relay=relay, current_value=self.parsed_data[3], power_cons=self.parsed_data[4]).save()
 
         else:
-            print "Cihaz verisi process_data metoduna None geldi."
+            raise Exception("Cihaz verisi process_data metoduna None geldi.")
 
     def runserver(self):
         while True:
