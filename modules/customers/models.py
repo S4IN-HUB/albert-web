@@ -67,8 +67,10 @@ class Devices(models.Model):
     type = models.CharField(max_length=15, choices=(
         ('relay_current', 'Akım Sensörlü 16 Röle Kartı'), ('relay', '16 Röle Kartı'), ('ir', 'IR Modüle')),
                             verbose_name="Cihaz Tipi")
-    name = models.CharField(max_length=50, verbose_name="Cihaz Tanımı")
-    ip = models.CharField(max_length=50, verbose_name="IP adresi")
+    name = models.CharField(max_length=50, verbose_name="Cihaz Adı", default='')
+    description = models.CharField(max_length=50, verbose_name="Cihaz Tanımı", default='')
+    wan_ip = models.CharField(max_length=50, verbose_name="WAN IP adresi", default='0.0.0.0')
+    ip = models.CharField(max_length=50, verbose_name="LAN IP adresi")
     port = models.IntegerField(verbose_name="Port")
     status = models.BooleanField(default=True, verbose_name="Durum")
 
