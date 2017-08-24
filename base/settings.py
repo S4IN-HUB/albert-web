@@ -139,3 +139,15 @@ SUIT_CONFIG = {
     'SHOW_REQUIRED_ASTERISK': True,  # Default True
     'CONFIRM_UNSAVED_CHANGES': True,  # Default True
 }
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+        'OPTIONS': {
+            'DB': 1,
+            "CLIENT_CLASS": "redis_cache.client.DefaultClient",
+        },
+    },
+}
