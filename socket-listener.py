@@ -32,6 +32,7 @@ class SocketServer(object):
         self.host_addr = socket.gethostname() if self.get_host_ip else ''
         self.host_port = port
         self.socket = None
+        self.client_conn = None
 
         self.client_data = None
         self.parsed_data = None

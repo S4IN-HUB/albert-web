@@ -58,9 +58,8 @@ class RelayAdmin(admin.ModelAdmin):
     close_relay.allow_tags = True
     close_relay.short_description = u'Röleyi aç'
 
-    list_display = (
-    'name', 'relay_no', 'type', 'room', 'device', 'open_relay', 'close_relay', 'get_total_instant_current',
-    'get_total_instant_power')
+    list_display = ('name', 'relay_no', 'type', 'room', 'device', 'open_relay', 'close_relay',
+                    'get_total_instant_current', 'get_total_instant_power')
     inlines = [InlineCrons, ]
 
 
@@ -78,7 +77,8 @@ class DevicesAdmin(admin.ModelAdmin):
 
     get_total_instant_power.short_description = u'Toplam Anlık Güç'
 
-    list_display = ('account', 'name', 'description', 'ip', 'port', 'status', 'get_total_instant_current', 'get_total_instant_power')
+    list_display = ('account', 'name', 'description', 'wan_ip', 'ip', 'port', 'status', 'get_total_instant_current',
+                    'get_total_instant_power')
 
 
 admin.site.register(Devices, DevicesAdmin)
