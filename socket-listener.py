@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+import psutil
 import socket
 import sys
 from thread import start_new_thread
@@ -182,6 +183,19 @@ class SocketServer(object):
 
 
 if __name__ == "__main__":
+    this_proc = os.getpid()
+
+    greped_proc = False
+    for proc in psutil.process_iter():
+        if proc.name() == 'python' and len(proc.cmdline()) > 1:
+
+            if sys.argv[0] == proc.cmdline()[1] and sys.argv[1] == proc.cmdline()[2]:
+                greped_proc = proc.pid
+
+                if this_proc != greped_proc:
+                    print "Bu islem zaten aktif"
+                    sys.exit()
+
     if not len(sys.argv) < 2:
         try:
             port = int(sys.argv[1])
