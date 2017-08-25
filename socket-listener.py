@@ -69,7 +69,7 @@ class DataHandler(object):
                 # Örnek veri: #ST#TANKAR001#1#0
                 try:
                     relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
-                    relay.pressed = bool(int(_data[3]))
+                    relay.pressed = True if not int(_data[3]) else False
                     relay.save()
                 except ObjectDoesNotExist:
                     raise Exception("%s numbered relay record does not exist!" % _data[2])
@@ -108,7 +108,7 @@ class DataHandler(object):
                     print "No incoming data, breaking connection."
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
                     # saçmalıyor. O yüzden bağlantının kapatılması için while'dan çıkılması gerekmekte.
-                    break
+                    continue
             except Exception as uee:
                 print uee
                 self.client_conn.close()
@@ -134,6 +134,7 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.settimeout(0.1)
 
         try:
             self.socket.bind((self.host_addr, self.host_port))
@@ -157,7 +158,7 @@ class SocketServer(object):
                 data_handler = DataHandler()
                 start_new_thread(data_handler.run, (self.client_conn, self.client_addr))
             except socket.timeout:
-                print "Socket read timed out, retrying..."
+                # print "Socket read timed out, retrying..."
                 continue
             except Exception as uee:
                 print uee
