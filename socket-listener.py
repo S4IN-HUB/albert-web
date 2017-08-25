@@ -92,14 +92,14 @@ class DataHandler(object):
                     print uee
                     print('Unable to send command %s to Client' % parsed_command)
 
-    def run(self, client_conn, client_addr):
+    def read(self, client_conn, client_addr):
         self.client_conn = client_conn
         self.client_addr = client_addr
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
         while True:
-            self.send_command()
             try:
+                # self.send_command()
                 self.client_data = self.client_conn.recv(1024)
                 if self.client_data:
                     self.parse_data()
@@ -111,8 +111,21 @@ class DataHandler(object):
                     continue
             except Exception as uee:
                 print uee
-                self.client_conn.close()
+                # self.client_conn.close()
                 break
+
+    def write(self, client_conn, client_addr):
+        self.client_conn = client_conn
+        self.client_addr = client_addr
+        print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
+
+        while True:
+            try:
+                self.send_command()
+            except Exception as uee:
+                print uee
+                # self.client_conn.close()
+                continue
 
 
 class SocketServer(object):
@@ -134,8 +147,8 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.settimeout(0.1)
-
+        # self.socket.settimeout(0.1)
+        # self.socket.setblocking(0)
         try:
             self.socket.bind((self.host_addr, self.host_port))
             print 'Socket created!'
@@ -156,12 +169,14 @@ class SocketServer(object):
             try:
                 self.client_conn, self.client_addr = self.socket.accept()
                 data_handler = DataHandler()
-                start_new_thread(data_handler.run, (self.client_conn, self.client_addr))
+                start_new_thread(data_handler.read, (self.client_conn, self.client_addr))
+                start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
                 # print "Socket read timed out, retrying..."
                 continue
             except Exception as uee:
                 print uee
+                self.client_conn.close()
                 break
         self.socket.close()
 
@@ -177,7 +192,10 @@ if __name__ == "__main__":
             print "- If port number not specified, server associated with default %s numbered port." % port
             print "- Port number must be numeric."
             sys.exit()
-
-    SocketServer = SocketServer(port)
-    SocketServer.runserver()
-    sys.exit()
+    try:
+        SocketServer = SocketServer(port)
+    except Exception as uee:
+        print uee
+        sys.exit()
+    else:
+        SocketServer.runserver()
