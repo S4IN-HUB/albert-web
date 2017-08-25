@@ -500,9 +500,13 @@ def relay_control(request):
 
         if request.GET.get("action", "") == "open":
             cache.set(relay.device.name, [relay.relay_no, 1])
+            relay.pressed = True
 
         elif request.GET.get("action", "") == "close":
             cache.set(relay.device.name, [relay.relay_no, 0])
+            relay.pressed = False
+
+        relay.save()
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
