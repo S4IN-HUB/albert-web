@@ -189,7 +189,7 @@ if __name__ == "__main__":
     for proc in psutil.process_iter():
         if proc.name() == 'python' and len(proc.cmdline()) > 1:
 
-            if sys.argv[0] == proc.cmdline()[1] and sys.argv[1] == proc.cmdline()[2]:
+            if sys.argv[0] == proc.cmdline()[1]:
                 greped_proc = proc.pid
 
                 if this_proc != greped_proc:
