@@ -131,7 +131,7 @@ STATIC_URL = '/static/'
 
 SUIT_CONFIG = {
     # header
-    'ADMIN_NAME': 'Alberto Akıllı Ev Sistemleri',
+    'ADMIN_NAME': 'Alberto Teknoloji',
     'HEADER_DATE_FORMAT': 'l, j F Y',
     'HEADER_TIME_FORMAT': 'H:i',
 
