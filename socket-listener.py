@@ -58,6 +58,7 @@ class DataHandler(object):
                     raise Exception("%s device is not found in DB" % (_data[1]))
                 finally:
                     self.device.ip = str(_data[2])
+                    self.device.wan_ip = self.client_addr[0]
                     self.device.save()
 
             elif _data[0] == "CV":
