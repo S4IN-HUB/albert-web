@@ -51,15 +51,14 @@ class DataHandler(object):
                 )
 
             if _data[0] == "DN":
-                # Örnek veri: #CV#TANKAR001
+                # Örnek veri: #CV#TANKAR001#0.0.0.0
                 try:
                     self.device = Devices.objects.get(name=_data[1])
-                except ObjectDoesNotExist:
-                    raise Exception("%s device is not found in DB" % (_data[1]))
-                else:
                     self.device.ip = str(_data[2])
                     self.device.wan_ip = self.client_addr[0]
                     self.device.save()
+                except ObjectDoesNotExist:
+                    raise Exception("%s device is not found in DB" % (_data[1]))
 
             elif _data[0] == "CV":
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
