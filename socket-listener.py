@@ -56,7 +56,7 @@ class DataHandler(object):
                     self.device = Devices.objects.get(name=_data[1])
                 except ObjectDoesNotExist:
                     raise Exception("%s device is not found in DB" % (_data[1]))
-                finally:
+                else:
                     self.device.ip = str(_data[2])
                     self.device.wan_ip = self.client_addr[0]
                     self.device.save()
