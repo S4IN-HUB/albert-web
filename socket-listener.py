@@ -56,6 +56,9 @@ class DataHandler(object):
                     self.device = Devices.objects.get(name=_data[1])
                 except ObjectDoesNotExist:
                     raise Exception("%s device is not found in DB" % (_data[1]))
+                finally:
+                    self.device.ip = str(_data[2])
+                    self.device.save()
 
             elif _data[0] == "CV":
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
