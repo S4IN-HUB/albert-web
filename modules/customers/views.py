@@ -475,6 +475,13 @@ def SendCommand(request):
 
         return JsonResponser(True, None, stats)
 
+    if _command == 'CIW':
+        _relays = Relays.objects.filter(device__id=_device_id, room__account__user=_authuser)
+        stats = []
+        for item in _relays:
+            stats.append({"DN":item.device.name,"RN":item.relay_no,"I":item.total_instant_current,"W":item.total_instant_power})
+
+        return JsonResponser(True, None, stats)
 
     _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
 
