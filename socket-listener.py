@@ -56,7 +56,7 @@ class DataHandler(object):
                     self.device = Devices.objects.get(name=_data[1])
                     self.device.ip = str(_data[2])
                     self.device.wan_ip = self.client_addr[0]
-                    self.device.port = self.client_addr[1]
+                    #self.device.port = self.client_addr[1]
                     self.device.save()
                     if not self.device.status:
                         raise PermissionDenied("Device is disabled via admin!")
