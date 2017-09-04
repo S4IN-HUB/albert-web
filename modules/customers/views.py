@@ -463,7 +463,17 @@ def SendCommand(request):
     Token = AllParams.get("token")
     relay_id = AllParams.get("relay_id")
     _command = AllParams.get("command")
+    _device_id = AllParams.get("device_id")
     _authuser = CheckUserSession(Token)
+
+
+    if _command == 'LST':
+        _relays = Relays.objects.filter(device__id=_device_id, room__account__user=_authuser)
+        stats = []
+        for item in _relays:
+            stats.append({"DN":item.device.name,"RN":item.relay_no,"S":int(item.pressed)})
+
+        return JsonResponser(True, None, _relay.pressed)
 
     _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
 
