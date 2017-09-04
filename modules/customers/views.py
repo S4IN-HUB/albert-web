@@ -486,13 +486,15 @@ def SendCommand(request):
             cache.set(_relay.device.name, [_relay.relay_no, 1])
             _relay.pressed = True
             _relay.save()
+            return HttpResponse('OK-' + _relay.relay_no + '-' + 1)
         else:
             cache.set(_relay.device.name, [_relay.relay_no, 0])
             _relay.pressed = False
             _relay.save()
+            return HttpResponse('OK-' + _relay.relay_no + '-' + 0)
 
 
-    return JsonResponser(True, None, _relay.pressed)
+
 
 
 def relay_control(request):
