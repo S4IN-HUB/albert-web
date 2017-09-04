@@ -475,6 +475,7 @@ def SendCommand(request):
 
         return JsonResponser(True, None, _relay.pressed)
 
+
     _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
 
     host = _relay.device.ip
