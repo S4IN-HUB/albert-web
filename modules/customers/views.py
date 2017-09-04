@@ -472,11 +472,11 @@ def SendCommand(request):
 
     if _relay.type == 'switch' or _relay.type == 'push':
         if _command == '1':
-            cmd = 1
+            cache.set(_relay.device.name, [_relay.relay_no, 1])
             _relay.pressed = True
             _relay.save()
         else:
-            cmd = 2
+            cache.set(_relay.device.name, [_relay.relay_no, 0])
             _relay.pressed = False
             _relay.save()
 
