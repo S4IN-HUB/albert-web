@@ -470,10 +470,6 @@ def SendCommand(request):
     host = _relay.device.ip
     port = _relay.device.port
 
-    mySocket = socket.socket()
-    mySocket.settimeout(2)
-    mySocket.connect((host, port))
-
     if _relay.type == 'switch' or _relay.type == 'push':
         if _command == '1':
             cmd = 1
@@ -484,13 +480,6 @@ def SendCommand(request):
             _relay.pressed = False
             _relay.save()
 
-        message = bytearray(
-            [0xaa, 0X0F, _relay.relay_no, cmd, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01,
-             0X01,
-             0X01, 0X01, 0xbb])
-        mySocket.send(message)
-
-    mySocket.close()
 
     return JsonResponser(True, None, _relay.pressed)
 
