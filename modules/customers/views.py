@@ -473,7 +473,7 @@ def SendCommand(request):
         for item in _relays:
             stats.append({"DN":item.device.name,"RN":item.relay_no,"S":int(item.pressed)})
 
-        return JsonResponser(True, None, _relay.pressed)
+        return JsonResponser(True, None, stats)
 
 
     _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
