@@ -25,7 +25,7 @@ def PermitResponse(response):
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Credentials'] = 'true'
     response['Access-Control-Allow-Headers'] = 'Content-Type'
-
+    response['Cache-Control'] = 'no-store, no-cache'
     return response
 
 
