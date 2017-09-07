@@ -528,6 +528,8 @@ def relay_control(request):
 
         relay.save()
 
+        print cache
+
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
