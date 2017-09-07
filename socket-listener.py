@@ -99,7 +99,7 @@ class DataHandler(object):
                     print uee
                     print('Unable to send command %s to Client' % parsed_command)
 
-            cache.delete(self.device)
+            #cache.delete(self.device)
 
     def read(self, client_conn, client_addr):
         self.client_conn = client_conn
