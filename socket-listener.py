@@ -86,20 +86,22 @@ class DataHandler(object):
                 print "Unexpected data: %s" % _data
 
     def send_command(self):
+
         if self.device:
             commands = cache.get(self.device.name, [])
-            for cmd in commands:
+            if len(commands) > 0:
+                for cmd in commands:
 
-                parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
-                print parsed_command
-                try:
-                    self.client_conn.send(parsed_command)
-                    sleep(0.2)
-                except Exception as uee:
-                    print uee
-                    print('Unable to send command %s to Client' % parsed_command)
+                    parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
+                    print parsed_command
+                    try:
+                        self.client_conn.send(parsed_command)
+                        sleep(0.2)
+                    except Exception as uee:
+                        print uee
+                        print('Unable to send command %s to Client' % parsed_command)
 
-            cache.delete(self.device)
+                cache.delete(self.device)
 
     def read(self, client_conn, client_addr):
         self.client_conn = client_conn
