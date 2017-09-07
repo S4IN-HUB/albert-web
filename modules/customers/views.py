@@ -515,16 +515,16 @@ def relay_control(request):
 
         if request.GET.get("action", "") == "open":
 
-            _cmd = cache.get(relay.relay.device.name, [])
-            _cmd.append({"CMD": "RC", "RN": relay.relay.relay_no, "ST": 1})
-            cache.set(relay.relay.device.name, _cmd)
+            _cmd = cache.get(relay.device.name, [])
+            _cmd.append({"CMD": "RC", "RN": relay.relay_no, "ST": 1})
+            cache.set(relay.device.name, _cmd)
 
             relay.pressed = True
 
         elif request.GET.get("action", "") == "close":
-            _cmd = cache.get(relay.relay.device.name, [])
-            _cmd.append({"CMD": "RC", "RN": relay.relay.relay_no, "ST": 0})
-            cache.set(relay.relay.device.name, _cmd)
+            _cmd = cache.get(relay.device.name, [])
+            _cmd.append({"CMD": "RC", "RN": relay.relay_no, "ST": 0})
+            cache.set(relay.device.name, _cmd)
 
             relay.pressed = False
 
