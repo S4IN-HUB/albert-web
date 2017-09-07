@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+from time import sleep
+
 import psutil
 import socket
 import sys
@@ -133,6 +135,7 @@ class DataHandler(object):
                 print uee
                 # self.client_conn.close()
                 continue
+            sleep(0.3)
 
 
 class SocketServer(object):
@@ -180,6 +183,9 @@ class SocketServer(object):
                 start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
                 # print "Socket read timed out, retrying..."
+                continue
+            except PermissionDenied as pd:
+                print pd
                 continue
             except Exception as uee:
                 print uee
