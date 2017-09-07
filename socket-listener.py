@@ -87,18 +87,19 @@ class DataHandler(object):
 
     def send_command(self):
         if self.device:
-            command = cache.get(self.device.name, None)
+            commands = cache.get(self.device.name, [])
+            for cmd in commands:
 
-            if command is not None:
-                print command
-                cache.delete(self.device)
-                parsed_command = "#RC#{relay}#{cmd}#".format(relay=command[0], cmd=command[1])
+                parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
                 print parsed_command
                 try:
                     self.client_conn.send(parsed_command)
+                    sleep(0.5)
                 except Exception as uee:
                     print uee
                     print('Unable to send command %s to Client' % parsed_command)
+
+            cache.delete(self.device)
 
     def read(self, client_conn, client_addr):
         self.client_conn = client_conn
@@ -134,7 +135,6 @@ class DataHandler(object):
                 print uee
                 # self.client_conn.close()
                 continue
-            sleep(0.3)
 
 
 class SocketServer(object):
