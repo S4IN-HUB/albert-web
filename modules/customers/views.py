@@ -25,7 +25,7 @@ def PermitResponse(response):
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Credentials'] = 'true'
     response['Access-Control-Allow-Headers'] = 'Content-Type'
-
+    response['Cache-Control'] = 'no-store, no-cache'
     return response
 
 
@@ -395,7 +395,8 @@ def GetDeviceJson(device):
         Data = {
             'id': device.id,
             'name': device.name,
-            'ip': device.ip,
+            'lan_ip': device.ip,
+            'wan_ip': device.wan_ip,
             'port': device.port,
         }
     else:
@@ -462,36 +463,45 @@ def SendCommand(request):
     Token = AllParams.get("token")
     relay_id = AllParams.get("relay_id")
     _command = AllParams.get("command")
+    _device_id = AllParams.get("device_id")
     _authuser = CheckUserSession(Token)
+
+
+    if _command == 'LST':
+        _relays = Relays.objects.filter(device__id=_device_id, room__account__user=_authuser)
+        stats = []
+        for item in _relays:
+            stats.append({"DN":item.device.name,"RN":item.relay_no,"S":int(item.pressed)})
+
+        return JsonResponser(True, None, stats)
+
+    if _command == 'CIW':
+        _relays = Relays.objects.filter(device__id=_device_id, room__account__user=_authuser)
+        stats = []
+        for item in _relays:
+            stats.append({"DN":item.device.name,"RN":item.relay_no,"I":item.total_instant_current,"W":item.total_instant_power})
+
+        return JsonResponser(True, None, stats)
 
     _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
 
     host = _relay.device.ip
     port = _relay.device.port
 
-    mySocket = socket.socket()
-    mySocket.settimeout(2)
-    mySocket.connect((host, port))
-
     if _relay.type == 'switch' or _relay.type == 'push':
         if _command == '1':
-            cmd = 1
+            cache.set(_relay.device.name, [_relay.relay_no, 1])
             _relay.pressed = True
             _relay.save()
+            return HttpResponse('OK-' + str(_relay.relay_no) + '-1')
         else:
-            cmd = 2
+            cache.set(_relay.device.name, [_relay.relay_no, 0])
             _relay.pressed = False
             _relay.save()
+            return HttpResponse('OK-' + str(_relay.relay_no) + '-0')
 
-        message = bytearray(
-            [0xaa, 0X0F, _relay.relay_no, cmd, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01, 0X01,
-             0X01,
-             0X01, 0X01, 0xbb])
-        mySocket.send(message)
 
-    mySocket.close()
 
-    return JsonResponser(True, None, _relay.pressed)
 
 
 def relay_control(request):
