@@ -490,12 +490,20 @@ def SendCommand(request):
 
     if _relay.type == 'switch' or _relay.type == 'push':
         if _command == '1':
-            cache.set(_relay.device.name, [_relay.relay_no, 1])
+
+            _cmd = cache.get(_relay.relay.device.name, [])
+            _cmd.append({"CMD": "RC", "RN": _relay.relay.relay_no, "ST": 1})
+            cache.set(_relay.relay.device.name, _cmd)
+
             _relay.pressed = True
             _relay.save()
             return HttpResponse('OK-' + str(_relay.relay_no) + '-1')
         else:
-            cache.set(_relay.device.name, [_relay.relay_no, 0])
+            _cmd = cache.get(_relay.relay.device.name, [])
+            _cmd.append({"CMD": "RC", "RN": _relay.relay.relay_no, "ST": 0})
+            cache.set(_relay.relay.device.name, _cmd)
+
+
             _relay.pressed = False
             _relay.save()
             return HttpResponse('OK-' + str(_relay.relay_no) + '-0')
@@ -509,11 +517,18 @@ def relay_control(request):
         relay = Relays.objects.get(pk=request.GET.get("relay"))
 
         if request.GET.get("action", "") == "open":
-            cache.set(relay.device.name, [relay.relay_no, 1])
+
+            _cmd = cache.get(relay.relay.device.name, [])
+            _cmd.append({"CMD": "RC", "RN": relay.relay.relay_no, "ST": 1})
+            cache.set(relay.relay.device.name, _cmd)
+
             relay.pressed = True
 
         elif request.GET.get("action", "") == "close":
-            cache.set(relay.device.name, [relay.relay_no, 0])
+            _cmd = cache.get(relay.relay.device.name, [])
+            _cmd.append({"CMD": "RC", "RN": relay.relay.relay_no, "ST": 0})
+            cache.set(relay.relay.device.name, _cmd)
+
             relay.pressed = False
 
         relay.save()
@@ -532,10 +547,9 @@ def cron_control(request):
     for item in crons:
 
         try:
-            cache.set(item.relay.device.name, [item.relay.relay_no, 1])
-            # r = requests.get(
-            #     'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no=' + str(
-            #         item.relay.relay_no) + '&st=0')
+            _cmd = cache.get(item.relay.device.name, [])
+            _cmd.append({"CMD":"RC", "RN":item.relay.relay_no, "ST":1 })
+            cache.set(item.relay.device.name, _cmd)
             open_count += 1
         except:
             pass
@@ -547,10 +561,9 @@ def cron_control(request):
     for item in crons:
 
         try:
-            cache.set(item.relay.device.name, [item.relay.relay_no, 0])
-            # r = requests.get(
-            #     'http://' + item.relay.device.ip + ':' + str(item.relay.device.port) + '/?cmd=S&rl_no=' + str(
-            #         item.relay.relay_no) + '&st=1')
+            _cmd = cache.get(item.relay.device.name, [])
+            _cmd.append({"CMD": "RC", "RN": item.relay.relay_no, "ST": 0})
+            cache.set(item.relay.device.name, _cmd)
             close_count += 1
         except:
             pass
