@@ -509,9 +509,6 @@ def SendCommand(request):
             return HttpResponse('OK-' + str(_relay.relay_no) + '-0')
 
 
-
-
-
 def relay_control(request):
     if request.GET.get("relay"):
         relay = Relays.objects.get(pk=request.GET.get("relay"))
