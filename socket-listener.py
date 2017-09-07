@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-from time import sleep
-
-import psutil
-import socket
 import sys
-from thread import start_new_thread
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -15,6 +10,10 @@ if "DJANGO_SETTINGS_MODULE" not in os.environ:
     os.environ["DJANGO_SETTINGS_MODULE"] = "base.settings"
 
 import django
+import psutil
+import socket
+from thread import start_new_thread
+from time import sleep
 
 django.setup()
 from django.core.cache import cache
