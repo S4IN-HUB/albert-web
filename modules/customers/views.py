@@ -528,7 +528,7 @@ def relay_control(request):
 
         relay.save()
 
-        print cache
+        print cache.get(relay.device.name,[])
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
