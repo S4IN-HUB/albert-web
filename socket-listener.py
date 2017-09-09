@@ -57,7 +57,7 @@ class DataHandler(object):
                     self.device = Devices.objects.get(name=_data[1])
                     self.device.ip = str(_data[2])
                     self.device.wan_ip = self.client_addr[0]
-                    #self.device.port = self.client_addr[1]
+                    # self.device.port = self.client_addr[1]
                     self.device.save()
                     if not self.device.status:
                         raise PermissionDenied("Device is disabled via admin!")
@@ -88,10 +88,13 @@ class DataHandler(object):
     def send_command(self):
 
         if self.device:
-            commands = cache.get(self.device.name, [])
-            if len(commands) > 0:
-                for cmd in commands:
+            cache_commands = cache.get(self.device.name, [])
+            commands = {}
+            for _cmd in cache_commands:  # to get only final values for each relays.
+                commands.update({_cmd['RN']: _cmd})
 
+            if len(commands) > 0:
+                for key, cmd in commands.iteritems():
                     parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
                     print parsed_command
                     try:
