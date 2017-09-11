@@ -323,6 +323,7 @@ def GetRooms(request):
         else:
             _rooms = _authuser.Accounts.Rooms.all()
 
+
         for rooms in _rooms:
             response_data.append({
                 'id': rooms.id,
@@ -441,6 +442,8 @@ def GetRelays(request):
             _relays = Relays.objects.filter(room__id=room_id, room__account__user=_authuser)
         else:
             _relays = Relays.objects.filter(room__account__user=_authuser)
+
+        _relays = _relays.order_by("relay_no")
 
         for relay in _relays:
             response_data.append({
