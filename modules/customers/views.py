@@ -392,15 +392,16 @@ def GetTemp(request):
 
 
 def GetDeviceJson(devices):
-    for device in devices:
-        Data = {device: {
-                'id': device.id,
-                'name': device.name,
-                'lan_ip': device.ip,
-                'wan_ip': device.wan_ip,
-                'port': device.port,
+    if devices:
+        for device in devices:
+            Data = {device: {
+                    'id': device.id,
+                    'name': device.name,
+                    'lan_ip': device.ip,
+                    'wan_ip': device.wan_ip,
+                    'port': device.port,
+                }
             }
-        }
     else:
         Data = None
 
