@@ -391,14 +391,15 @@ def GetTemp(request):
     return JsonResponser(response_status, response_message, response_data)
 
 
-def GetDeviceJson(device):
-    if device:
-        Data = {
-            'id': device.id,
-            'name': device.name,
-            'lan_ip': device.ip,
-            'wan_ip': device.wan_ip,
-            'port': device.port,
+def GetDeviceJson(devices):
+    for device in devices:
+        Data = {device: {
+                'id': device.id,
+                'name': device.name,
+                'lan_ip': device.ip,
+                'wan_ip': device.wan_ip,
+                'port': device.port,
+            }
         }
     else:
         Data = None
