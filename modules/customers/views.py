@@ -393,8 +393,9 @@ def GetTemp(request):
 
 def GetDeviceJson(devices):
     if devices:
+        dev_nr = 0
         for device in devices:
-            Data = {device.name: {
+            Data = {dev_nr: {
                     'id': device.id,
                     'name': device.name,
                     'lan_ip': device.ip,
@@ -402,6 +403,7 @@ def GetDeviceJson(devices):
                     'port': device.port,
                 }
             }
+            dev_nr += 1
     else:
         Data = None
 
