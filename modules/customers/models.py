@@ -112,6 +112,7 @@ RelayIcons = (
     ('fan', 'Fan'),
     ('su', 'Su Vanası'),
     ('gas', 'Gaz Vanası'),
+    ('blinds', 'Pajnur'),
 )
 
 RelayTypes = (

@@ -35,11 +35,13 @@ class InlineCrons(admin.StackedInline):
 
 class RelayAdmin(admin.ModelAdmin):
     def get_total_instant_current(self, obj):
+        return 0
         return obj.total_instant_current
 
     get_total_instant_current.short_description = u'Toplam Anlık Akım'
 
     def get_total_instant_power(self, obj):
+        return 0
         return obj.total_instant_power
 
     get_total_instant_power.short_description = u'Toplam Anlık Akım'
