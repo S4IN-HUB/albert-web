@@ -393,6 +393,7 @@ def GetTemp(request):
 
 def GetDeviceJson(devices):
     if devices:
+        assert 0, devices
         for device in devices:
             Data = {device: {
                     'id': device.id,
