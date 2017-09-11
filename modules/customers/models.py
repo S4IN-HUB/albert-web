@@ -62,11 +62,14 @@ class Rooms(models.Model):
 
 
 class Devices(models.Model):
+    device_types = (
+        ('relay_current', 'Akım Sensörlü 16 Röle Kartı'),
+        ('relay', '16 Röle Kartı'),
+        ('ir', 'IR Modüle')
+    )
     account = models.ForeignKey(Accounts, related_name="Devices", verbose_name="Hesap")
     room = models.ForeignKey(Rooms, blank=True, null=True, related_name="Devices")
-    type = models.CharField(max_length=15, choices=(
-        ('relay_current', 'Akım Sensörlü 16 Röle Kartı'), ('relay', '16 Röle Kartı'), ('ir', 'IR Modüle')),
-                            verbose_name="Cihaz Tipi")
+    type = models.CharField(max_length=15, choices=device_types, verbose_name="Cihaz Tipi")
     name = models.CharField(max_length=50, verbose_name="Cihaz Adı", default='')
     description = models.CharField(max_length=50, verbose_name="Cihaz Tanımı", default='')
     wan_ip = models.CharField(max_length=50, verbose_name="WAN IP adresi", default='0.0.0.0')
