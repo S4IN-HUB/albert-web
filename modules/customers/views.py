@@ -443,7 +443,7 @@ def GetRelays(request):
         else:
             _relays = Relays.objects.filter(room__account__user=_authuser)
 
-        _relays = _relays.order_by("relay_no")
+        _relays = _relays.order_by("device","relay_no")
 
         for relay in _relays:
             response_data.append({
