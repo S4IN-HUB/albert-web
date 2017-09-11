@@ -70,7 +70,7 @@ class Devices(models.Model):
     name = models.CharField(max_length=50, verbose_name="Cihaz Adı", default='')
     description = models.CharField(max_length=50, verbose_name="Cihaz Tanımı", default='')
     wan_ip = models.CharField(max_length=50, verbose_name="WAN IP adresi", default='0.0.0.0')
-    ip = models.CharField(max_length=50, verbose_name="LAN IP adresi")
+    ip = models.CharField(max_length=50, verbose_name="LAN IP adresi", default='0.0.0.0')
     port = models.IntegerField(verbose_name="Port")
     status = models.BooleanField(default=True, verbose_name="Durum")
 
