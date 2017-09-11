@@ -445,7 +445,7 @@ def GetRelays(request):
         for relay in _relays:
             response_data.append({
                 'id': relay.id,
-                'device': GetDeviceJson(relay.device),
+                'device': GetDeviceJson(relay.device.objects.all()),
                 'room_id': relay.room.id,
                 'room': GetRoomJson(relay.room),
                 'pressed': relay.pressed,
