@@ -503,7 +503,7 @@ def SendCommand(request):
 
             _cmd = cache.get(_relay.relay.device.name, [])
             _cmd.append({"CMD": "RC", "RN": _relay.relay.relay_no, "ST": 1})
-            cache.set(_relay.relay.device.name, _cmd)
+            cache.set(_relay.device.name, _cmd)
 
             _relay.pressed = True
             _relay.save()
@@ -511,7 +511,7 @@ def SendCommand(request):
         else:
             _cmd = cache.get(_relay.relay.device.name, [])
             _cmd.append({"CMD": "RC", "RN": _relay.relay.relay_no, "ST": 0})
-            cache.set(_relay.relay.device.name, _cmd)
+            cache.set(_relay.device.name, _cmd)
 
 
             _relay.pressed = False
