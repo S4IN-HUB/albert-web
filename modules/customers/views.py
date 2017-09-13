@@ -502,7 +502,7 @@ def SendCommand(request):
         if _command == '1':
 
             _cmd = cache.get(_relay.relay.device.name, [])
-            _cmd.append({"CMD": "RC", "RN": _relay.relay.relay_no, "ST": 1})
+            _cmd.append({"CMD": "RC", "RN": _relay.relay_no, "ST": 1})
             cache.set(_relay.device.name, _cmd)
 
             _relay.pressed = True
@@ -510,7 +510,7 @@ def SendCommand(request):
             return HttpResponse('OK-' + str(_relay.relay_no) + '-1')
         else:
             _cmd = cache.get(_relay.relay.device.name, [])
-            _cmd.append({"CMD": "RC", "RN": _relay.relay.relay_no, "ST": 0})
+            _cmd.append({"CMD": "RC", "RN": _relay.relay_no, "ST": 0})
             cache.set(_relay.device.name, _cmd)
 
 
