@@ -22,6 +22,16 @@ class LocationsAdmin(admin.ModelAdmin):
             return qs.filter(account__user=request.user)
 
 
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        if db_field.name == "account":
+            if not request.user.is_superuser:
+                Queryset = Accounts.objects.filter(user=request.user)
+                kwargs["queryset"] = Queryset
+
+        return super(LocationsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 admin.site.register(Locations, LocationsAdmin)
 admin.site.register(Plans)
 
@@ -35,6 +45,23 @@ class RoomsAdmin(admin.ModelAdmin):
             return qs
         else:
             return qs.filter(account__user=request.user)
+
+
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        if db_field.name == "account":
+            if not request.user.is_superuser:
+                Queryset = Accounts.objects.filter(user=request.user)
+                kwargs["queryset"] = Queryset
+
+        if db_field.name == "location":
+            if not request.user.is_superuser:
+                Queryset = Locations.objects.filter(account__user=request.user)
+                kwargs["queryset"] = Queryset
+
+        return super(RoomsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 admin.site.register(Rooms, RoomsAdmin)
 
@@ -57,6 +84,21 @@ class RelayAdmin(admin.ModelAdmin):
             return qs
         else:
             return qs.filter(device__account__user=request.user)
+
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        if db_field.name == "account":
+            if not request.user.is_superuser:
+                Queryset = Accounts.objects.filter(user=request.user)
+                kwargs["queryset"] = Queryset
+
+        if db_field.name == "room":
+            if not request.user.is_superuser:
+                Queryset = Rooms.objects.filter(account__user=request.user)
+                kwargs["queryset"] = Queryset
+
+        return super(RelayAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
     def get_total_instant_current(self, obj):
@@ -147,5 +189,15 @@ class RelayCurrentValuesAdmin(admin.ModelAdmin):
         else:
             return qs.filter(relay__device__account__user=request.user)
 
+
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        if db_field.name == "relay":
+            if not request.user.is_superuser:
+                Queryset = Relays.objects.filter(device__account__user=request.user)
+                kwargs["queryset"] = Queryset
+
+        return super(RelayCurrentValuesAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(RelayCurrentValues, RelayCurrentValuesAdmin)
