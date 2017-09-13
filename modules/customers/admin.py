@@ -105,6 +105,21 @@ class DevicesAdmin(admin.ModelAdmin):
             return qs.filter(account__user=request.user)
 
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        if db_field.name == "account":
+            if not request.user.is_superuser:
+                Queryset = Accounts.objects.filter(user=request.user)
+                kwargs["queryset"] = Queryset
+
+        if db_field.name == "room":
+            if not request.user.is_superuser:
+                Queryset = Rooms.objects.filter(account__user=request.user)
+                kwargs["queryset"] = Queryset
+
+        return super(DevicesAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
     def get_total_instant_current(self, obj):
         return obj.total_instant_current
 
