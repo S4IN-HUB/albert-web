@@ -93,6 +93,11 @@ class RelayAdmin(admin.ModelAdmin):
                 Queryset = Accounts.objects.filter(user=request.user)
                 kwargs["queryset"] = Queryset
 
+        if db_field.name == "device":
+            if not request.user.is_superuser:
+                Queryset = Devices.objects.filter(account__user=request.user)
+                kwargs["queryset"] = Queryset
+
         if db_field.name == "room":
             if not request.user.is_superuser:
                 Queryset = Rooms.objects.filter(account__user=request.user)
