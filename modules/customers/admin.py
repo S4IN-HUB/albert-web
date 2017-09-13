@@ -14,6 +14,13 @@ admin.site.register(Accounts)
 class LocationsAdmin(admin.ModelAdmin):
     list_display = ('account', 'name', 'lat', 'lon')
 
+    def get_queryset(self, request):
+        qs = super(LocationsAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(account__user=request.user)
+
 
 admin.site.register(Locations, LocationsAdmin)
 admin.site.register(Plans)
@@ -22,6 +29,12 @@ admin.site.register(Plans)
 class RoomsAdmin(admin.ModelAdmin):
     list_display = ('account', 'location', 'name',)
 
+    def get_queryset(self, request):
+        qs = super(RoomsAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(account__user=request.user)
 
 admin.site.register(Rooms, RoomsAdmin)
 
@@ -81,6 +94,17 @@ admin.site.register(Relays, RelayAdmin)
 
 
 class DevicesAdmin(admin.ModelAdmin):
+
+
+    def get_queryset(self, request):
+
+        qs = super(DevicesAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(account__user=request.user)
+
+
     def get_total_instant_current(self, obj):
         return obj.total_instant_current
 
@@ -100,6 +124,13 @@ admin.site.register(Devices, DevicesAdmin)
 
 class RelayCurrentValuesAdmin(admin.ModelAdmin):
     list_display = ('relay', 'current_value', 'power_cons', 'create_date')
+
+    def get_queryset(self, request):
+        qs = super(RelayCurrentValuesAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(relay__device__account__user=request.user)
 
 
 admin.site.register(RelayCurrentValues, RelayCurrentValuesAdmin)
