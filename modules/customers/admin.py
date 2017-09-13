@@ -34,6 +34,18 @@ class InlineCrons(admin.StackedInline):
 
 
 class RelayAdmin(admin.ModelAdmin):
+
+
+
+    def get_queryset(self, request):
+
+        qs = super(RelayAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(device__account__user=request.user)
+
+
     def get_total_instant_current(self, obj):
         return 0
         return obj.total_instant_current
