@@ -92,6 +92,8 @@ class DataHandler(object):
             in_process = cache.get("in_process", {})
             if in_process.get(self.device.name, True):
 
+                print in_process
+
                 commands = cache.get(self.device.name, [])
                 # commands = {}
                 # for _cmd in cache_commands:  # to get only final values for each relays.
