@@ -627,7 +627,7 @@ def cron_control(request):
     #     except:
     #         pass
     #
-
+    return HttpResponse(_cmd)
     return HttpResponse(
         "Open : %s, Close: %s Time: %s," % (
         str(open_count), str(close_count), now_date.strftime('%H:%M')))
