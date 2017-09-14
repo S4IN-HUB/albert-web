@@ -549,9 +549,7 @@ def cron_control(request):
     close_count = 0
     now_date = datetime.now()
 
-    _devices = Crons.objects.filter(day=now_date.weekday(),
-                                 switch_on_time__hour=now_date.strftime('%H'),
-                                 switch_on_time__minute=now_date.strftime('%M')).values('relay__device').distinct()
+    _devices = Crons.objects.filter(day=now_date.weekday()).values('relay__device').distinct()
 
     for item in _devices:
 
@@ -566,7 +564,7 @@ def cron_control(request):
 
         crons = Crons.objects.filter(day=now_date.weekday(),
                                      switch_on_time__hour=now_date.strftime('%H'),
-                                     switch_on_time__minute=now_date.strftime('%M'),
+                                     #switch_on_time__minute=now_date.strftime('%M'),
                                      relay__device=_device
                                      )
         for item in crons:
