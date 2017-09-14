@@ -554,7 +554,10 @@ def cron_control(request):
                                  switch_on_time__minute=now_date.strftime('%M')).values('relay__device').distinct()
 
     for item in _devices:
+
         device_id = item['relay__device']
+
+
         _device = Devices.objects.get(pk=device_id)
 
         _inprocess = cache.get("in_process", {})
