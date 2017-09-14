@@ -603,9 +603,9 @@ def cron_control(request):
             _cmd.append({"CMD": "RC", "RN": i, "ST": 1})
             cache.set("TANKAR101", _cmd)
 
-        #_inprocess = cache.get("in_process", {})
-        #del _inprocess["TANKAR101"]
-        #cache.set("in_process", _inprocess)
+        _inprocess = cache.get("in_process", {})
+        del _inprocess["TANKAR101"]
+        cache.set("in_process", _inprocess)
 
 
     # connected_devices = 0
