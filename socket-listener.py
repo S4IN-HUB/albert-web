@@ -103,7 +103,7 @@ class DataHandler(object):
                         print parsed_command
                         try:
                             self.client_conn.send(parsed_command)
-                            sleep(0.1)
+                            sleep(0.2)
                         except Exception as uee:
                             print uee
                             print('Unable to send command %s to Client' % parsed_command)
