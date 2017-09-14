@@ -595,17 +595,17 @@ def cron_control(request):
     if request.GET.get('test'):
 
         _inprocess = cache.get("in_process", {})
-        _inprocess.update({"TANKAR101": True})
+        _inprocess.update({"TANKAR102": True})
         cache.set("in_process", _inprocess)
 
-        _cmd = cache.get("TANKAR101", [])
+        _cmd = cache.get("TANKAR102", [])
         for i in range(0,1):
             _cmd.append({"CMD": "RC", "RN": i, "ST": 1})
 
-        cache.set("TANKAR101", _cmd)
+        cache.set("TANKAR102", _cmd)
 
         _inprocess = cache.get("in_process", {})
-        del _inprocess["TANKAR101"]
+        del _inprocess["TANKAR102"]
         cache.set("in_process", _inprocess)
 
 
