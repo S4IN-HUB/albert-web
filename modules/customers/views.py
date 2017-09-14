@@ -549,7 +549,7 @@ def cron_control(request):
     now_date = datetime.now()
     crons = Crons.objects.filter(day=now_date.weekday(),
                                  switch_on_time__hour=now_date.strftime('%H'),
-                                 switch_on_time__minute=now_date.strftime('%M'))
+                                 switch_on_time__minute=now_date.strftime('%M')).order_by('relay__device')
 
     for item in crons:
         _inprocess = cache.get("in_process", {})
@@ -570,7 +570,7 @@ def cron_control(request):
 
     crons = Crons.objects.filter(day=now_date.weekday(),
                                  switch_off_time__hour=now_date.strftime('%H'),
-                                 switch_off_time__minute=now_date.strftime('%M'))
+                                 switch_off_time__minute=now_date.strftime('%M')).order_by('relay__device')
 
     for item in crons:
 
