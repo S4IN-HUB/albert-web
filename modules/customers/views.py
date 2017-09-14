@@ -608,7 +608,7 @@ def cron_control(request):
         del _inprocess["TANKAR102"]
         cache.set("in_process", _inprocess)
 
-
+    print _cmd
     # connected_devices = 0
     # updated_relays = 0
     # for device in Devices.objects.filter(status=True):
@@ -627,7 +627,6 @@ def cron_control(request):
     #     except:
     #         pass
     #
-    return HttpResponse(_cmd)
     return HttpResponse(
         "Open : %s, Close: %s Time: %s," % (
         str(open_count), str(close_count), now_date.strftime('%H:%M')))
