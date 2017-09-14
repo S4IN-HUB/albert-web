@@ -599,7 +599,7 @@ def cron_control(request):
         cache.set("in_process", _inprocess)
 
         _cmd = cache.get("TANKAR102", [])
-        for i in range(0,1):
+        for i in range(0,3):
             _cmd.append({"CMD": "RC", "RN": i, "ST": 1})
 
         cache.set("TANKAR102", _cmd)
