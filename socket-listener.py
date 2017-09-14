@@ -88,10 +88,10 @@ class DataHandler(object):
     def send_command(self):
 
         if self.device:
-            cache_commands = cache.get(self.device.name, [])
-            commands = {}
-            for _cmd in cache_commands:  # to get only final values for each relays.
-                commands.update({_cmd['RN']: _cmd})
+            commands = cache.get(self.device.name, [])
+            # commands = {}
+            # for _cmd in cache_commands:  # to get only final values for each relays.
+            #     commands.update({_cmd['RN']: _cmd})
 
             if len(commands) > 0:
                 for key, cmd in commands.iteritems():
