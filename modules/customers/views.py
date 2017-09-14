@@ -554,7 +554,7 @@ def cron_control(request):
 
     for item in crons:
         _inprocess = cache.get("in_process", {})
-        _inprocess.update({item.relay.device.name:False})
+        _inprocess.update({item.relay.device.name:True})
         cache.set("in_process", _inprocess)
 
         try:
@@ -576,7 +576,7 @@ def cron_control(request):
     for item in crons:
 
         _inprocess = cache.get("in_process", {})
-        _inprocess.update({item.relay.device.name: False})
+        _inprocess.update({item.relay.device.name: True})
         cache.set("in_process", _inprocess)
 
         try:
@@ -595,7 +595,7 @@ def cron_control(request):
     if request.GET.get('test'):
 
         _inprocess = cache.get("in_process", {})
-        _inprocess.update({"TANKAR101": False})
+        _inprocess.update({"TANKAR101": True})
         cache.set("in_process", _inprocess)
 
         for i in range(0,1):

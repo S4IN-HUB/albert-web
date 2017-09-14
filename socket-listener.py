@@ -90,10 +90,7 @@ class DataHandler(object):
         if self.device:
 
             in_process = cache.get("in_process", {})
-            if in_process.get(self.device.name, True):
-
-                if self.device.name == "TANKAR101":
-                    print in_process
+            if not in_process.get(self.device.name):
 
                 commands = cache.get(self.device.name, [])
                 # commands = {}
