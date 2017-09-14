@@ -550,90 +550,84 @@ def cron_control(request):
     now_date = datetime.now()
 
 
-    Devices.objects.filter()
-    crons = Crons.objects.filter(day=now_date.weekday(),
-                                 switch_on_time__hour=now_date.strftime('%H'),
-                                 switch_on_time__minute=now_date.strftime('%M')).order_by('relay__device')
+    # _devices = Crons.objects.filter(day=now_date.weekday(),
+    #                              switch_on_time__hour=now_date.strftime('%H'),
+    #                              switch_on_time__minute=now_date.strftime('%M')).values('relay__device').distinct()
 
-    _inprocess = cache.get("in_process", {})
-    _inprocess.update({item.relay.device.name: True})
-    cache.set("in_process", _inprocess)
+    _devices = Crons.objects.all().values('relay__device').distinct()
 
-    for item in crons:
-        try:
-            _cmd = cache.get(item.relay.device.name, [])
-            _cmd.append({"CMD":"RC", "RN":item.relay.relay_no, "ST":1 })
-            cache.set(item.relay.device.name, _cmd)
-            open_count += 1
-        except:
-            pass
+    for item in _devices:
 
-    _inprocess = cache.get("in_process", {})
-    del _inprocess[item.relay.device.name]
-    cache.set("in_process", _inprocess)
+        device_id = item['relay__device']
 
-    crons = Crons.objects.filter(day=now_date.weekday(),
-                                 switch_off_time__hour=now_date.strftime('%H'),
-                                 switch_off_time__minute=now_date.strftime('%M')).order_by('relay__device')
+        print device_id
 
-    _inprocess = cache.get("in_process", {})
-    _inprocess.update({item.relay.device.name: True})
-    cache.set("in_process", _inprocess)
-
-    for item in crons:
-        try:
-            _cmd = cache.get(item.relay.device.name, [])
-            _cmd.append({"CMD": "RC", "RN": item.relay.relay_no, "ST": 0})
-            cache.set(item.relay.device.name, _cmd)
-            close_count += 1
-        except:
-            pass
-
-    _inprocess = cache.get("in_process", {})
-    del _inprocess[item.relay.device.name]
-    cache.set("in_process", _inprocess)
-
-
-    if request.GET.get('test'):
-
-        _inprocess = cache.get("in_process", {})
-        _inprocess.update({"TANKAR101": True})
-        cache.set("in_process", _inprocess)
-
-
-        for i in range(0,3):
-            _cmd = cache.get("TANKAR101", [])
-            _cmd.append({"CMD": "RC", "RN": i, "ST": 1})
-            cache.set("TANKAR101", _cmd)
-
-        for i in range(0,3):
-            _cmd = cache.get("TANKAR101", [])
-            _cmd.append({"CMD": "RC", "RN": i, "ST": 0})
-            cache.set("TANKAR101", _cmd)
-
-        _inprocess = cache.get("in_process", {})
-        del _inprocess["TANKAR101"]
-        cache.set("in_process", _inprocess)
-
-    print _cmd
-    # connected_devices = 0
-    # updated_relays = 0
-    # for device in Devices.objects.filter(status=True):
+    #
+    # _inprocess = cache.get("in_process", {})
+    # _inprocess.update({item.relay.device.name: True})
+    # cache.set("in_process", _inprocess)
+    #
+    # for item in crons:
     #     try:
-    #         r = requests.get('http://' + device.ip + ':' + str(device.port) + '/?cmd=A', timeout=15)
-    #         connected_devices += 1
-    #         curr_data = json.loads(r.text)
-    #         for _relay in curr_data:
-    #             relay_obj = Relays.objects.filter(device=device, relay_no=_relay.get("N"))[:1]
-    #             if relay_obj.count() == 1:
-    #
-    #                 RelayCurrentValues(relay=relay_obj[0], current_value=_relay.get("A", 0),
-    #                                    power_cons=_relay.get("W", 0)).save()
-    #                 updated_relays += 1
-    #
+    #         _cmd = cache.get(item.relay.device.name, [])
+    #         _cmd.append({"CMD":"RC", "RN":item.relay.relay_no, "ST":1 })
+    #         cache.set(item.relay.device.name, _cmd)
+    #         open_count += 1
     #     except:
     #         pass
     #
+    # _inprocess = cache.get("in_process", {})
+    # del _inprocess[item.relay.device.name]
+    # cache.set("in_process", _inprocess)
+    #
+    # crons = Crons.objects.filter(day=now_date.weekday(),
+    #                              switch_off_time__hour=now_date.strftime('%H'),
+    #                              switch_off_time__minute=now_date.strftime('%M')).order_by('relay__device')
+    #
+    # _inprocess = cache.get("in_process", {})
+    # _inprocess.update({item.relay.device.name: True})
+    # cache.set("in_process", _inprocess)
+    #
+    # for item in crons:
+    #     try:
+    #         _cmd = cache.get(item.relay.device.name, [])
+    #         _cmd.append({"CMD": "RC", "RN": item.relay.relay_no, "ST": 0})
+    #         cache.set(item.relay.device.name, _cmd)
+    #         close_count += 1
+    #     except:
+    #         pass
+    #
+    # _inprocess = cache.get("in_process", {})
+    # del _inprocess[item.relay.device.name]
+    # cache.set("in_process", _inprocess)
+    #
+    #
+    # if request.GET.get('test'):
+    #
+    #     _inprocess = cache.get("in_process", {})
+    #     _inprocess.update({"TANKAR101": True})
+    #     cache.set("in_process", _inprocess)
+    #
+    #
+    #     for i in range(0,3):
+    #         _cmd = cache.get("TANKAR101", [])
+    #         _cmd.append({"CMD": "RC", "RN": i, "ST": 1})
+    #         cache.set("TANKAR101", _cmd)
+    #
+    #     for i in range(0,3):
+    #         _cmd = cache.get("TANKAR101", [])
+    #         _cmd.append({"CMD": "RC", "RN": i, "ST": 0})
+    #         cache.set("TANKAR101", _cmd)
+    #
+    #     _inprocess = cache.get("in_process", {})
+    #     del _inprocess["TANKAR101"]
+    #     cache.set("in_process", _inprocess)
+    #
+    # print _cmd
+
+
+
+
     return HttpResponse(
         "Open : %s, Close: %s Time: %s," % (
         str(open_count), str(close_count), now_date.strftime('%H:%M')))
