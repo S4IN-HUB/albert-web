@@ -552,11 +552,11 @@ def cron_control(request):
                                  switch_on_time__hour=now_date.strftime('%H'),
                                  switch_on_time__minute=now_date.strftime('%M')).order_by('relay__device')
 
-    for item in crons:
-        _inprocess = cache.get("in_process", {})
-        _inprocess.update({item.relay.device.name:True})
-        cache.set("in_process", _inprocess)
+    _inprocess = cache.get("in_process", {})
+    _inprocess.update({item.relay.device.name: True})
+    cache.set("in_process", _inprocess)
 
+    for item in crons:
         try:
             _cmd = cache.get(item.relay.device.name, [])
             _cmd.append({"CMD":"RC", "RN":item.relay.relay_no, "ST":1 })
@@ -565,20 +565,19 @@ def cron_control(request):
         except:
             pass
 
-        _inprocess = cache.get("in_process", {})
-        del _inprocess[item.relay.device.name]
-        cache.set("in_process", _inprocess)
+    _inprocess = cache.get("in_process", {})
+    del _inprocess[item.relay.device.name]
+    cache.set("in_process", _inprocess)
 
     crons = Crons.objects.filter(day=now_date.weekday(),
                                  switch_off_time__hour=now_date.strftime('%H'),
                                  switch_off_time__minute=now_date.strftime('%M')).order_by('relay__device')
 
+    _inprocess = cache.get("in_process", {})
+    _inprocess.update({item.relay.device.name: True})
+    cache.set("in_process", _inprocess)
+
     for item in crons:
-
-        _inprocess = cache.get("in_process", {})
-        _inprocess.update({item.relay.device.name: True})
-        cache.set("in_process", _inprocess)
-
         try:
             _cmd = cache.get(item.relay.device.name, [])
             _cmd.append({"CMD": "RC", "RN": item.relay.relay_no, "ST": 0})
@@ -587,9 +586,9 @@ def cron_control(request):
         except:
             pass
 
-        _inprocess = cache.get("in_process", {})
-        del _inprocess[item.relay.device.name]
-        cache.set("in_process", _inprocess)
+    _inprocess = cache.get("in_process", {})
+    del _inprocess[item.relay.device.name]
+    cache.set("in_process", _inprocess)
 
 
     if request.GET.get('test'):
