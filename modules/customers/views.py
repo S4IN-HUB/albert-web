@@ -594,9 +594,9 @@ def cron_control(request):
 
     if request.GET.get('test'):
 
-        for i in range(1,3):
+        for i in range(0,1):
             _cmd = cache.get("TANKAR101", [])
-            _cmd.append({"CMD": "RC", "RN": i, "ST": 0})
+            _cmd.append({"CMD": "RC", "RN": i, "ST": 1})
             cache.set("TANKAR101", _cmd)
 
     # connected_devices = 0
