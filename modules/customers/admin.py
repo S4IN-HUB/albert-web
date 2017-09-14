@@ -184,7 +184,10 @@ admin.site.register(Devices, DevicesAdmin)
 
 
 class RelayCurrentValuesAdmin(admin.ModelAdmin):
-    list_display = ('relay', 'relay__device__name', 'current_value', 'power_cons', 'create_date')
+    list_display = ('relay', 'device_name', 'current_value', 'power_cons', 'create_date')
+
+    def device_name(self,obj):
+        return obj.relay.device.name
 
     def get_queryset(self, request):
         qs = super(RelayCurrentValuesAdmin, self).get_queryset(request)
