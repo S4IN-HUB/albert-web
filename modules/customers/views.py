@@ -544,6 +544,7 @@ def relay_control(request):
 
 
 def cron_control(request):
+
     open_count = 0
     close_count = 0
     now_date = datetime.now()
