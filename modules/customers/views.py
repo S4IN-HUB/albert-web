@@ -614,5 +614,5 @@ def cron_control(request):
     #
 
     return HttpResponse(
-        "Open : %s, Close: %s Time: %s, Connected Devices: %s, Updated Relays: %s" % (
+        "Open : %s, Close: %s Time: %s," % (
         str(open_count), str(close_count), now_date.strftime('%H:%M')))
