@@ -92,7 +92,8 @@ class DataHandler(object):
             in_process = cache.get("in_process", {})
             if in_process.get(self.device.name, True):
 
-                print in_process
+                if self.device.name == "TANKAR101":
+                    print in_process
 
                 commands = cache.get(self.device.name, [])
                 # commands = {}
@@ -110,7 +111,7 @@ class DataHandler(object):
                             print uee
                             print('Unable to send command %s to Client' % parsed_command)
 
-                    cache.delete(self.device)
+                    cache.delete(self.device.name)
 
     def read(self, client_conn, client_addr):
         self.client_conn = client_conn
