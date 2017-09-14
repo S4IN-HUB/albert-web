@@ -76,7 +76,6 @@ class InlineCrons(admin.StackedInline):
 class RelayAdmin(admin.ModelAdmin):
 
 
-
     def get_queryset(self, request):
 
         qs = super(RelayAdmin, self).get_queryset(request)
@@ -185,7 +184,7 @@ admin.site.register(Devices, DevicesAdmin)
 
 
 class RelayCurrentValuesAdmin(admin.ModelAdmin):
-    list_display = ('relay', 'current_value', 'power_cons', 'create_date')
+    list_display = ('relay', 'relay__device__name', 'current_value', 'power_cons', 'create_date')
 
     def get_queryset(self, request):
         qs = super(RelayCurrentValuesAdmin, self).get_queryset(request)
