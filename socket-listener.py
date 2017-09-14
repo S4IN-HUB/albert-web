@@ -94,7 +94,7 @@ class DataHandler(object):
             #     commands.update({_cmd['RN']: _cmd})
 
             if len(commands) > 0:
-                for key, cmd in commands.iteritems():
+                for cmd in commands:
                     parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
                     print parsed_command
                     try:
