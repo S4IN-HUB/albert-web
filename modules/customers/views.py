@@ -552,6 +552,9 @@ def cron_control(request):
                                  switch_on_time__minute=now_date.strftime('%M'))
 
     for item in crons:
+        _inprocess = cache.get("in_process", {})
+        _inprocess.update({item.relay.device.name:False})
+        cache.set("in_process", _inprocess)
 
         try:
             _cmd = cache.get(item.relay.device.name, [])
@@ -561,11 +564,19 @@ def cron_control(request):
         except:
             pass
 
+        _inprocess = cache.get("in_process", {})
+        del _inprocess[item.relay.device.name]
+        cache.set("in_process", _inprocess)
+
     crons = Crons.objects.filter(day=now_date.weekday(),
                                  switch_off_time__hour=now_date.strftime('%H'),
                                  switch_off_time__minute=now_date.strftime('%M'))
 
     for item in crons:
+
+        _inprocess = cache.get("in_process", {})
+        _inprocess.update({item.relay.device.name: False})
+        cache.set("in_process", _inprocess)
 
         try:
             _cmd = cache.get(item.relay.device.name, [])
@@ -574,6 +585,13 @@ def cron_control(request):
             close_count += 1
         except:
             pass
+
+        _inprocess = cache.get("in_process", {})
+        del _inprocess[item.relay.device.name]
+        cache.set("in_process", _inprocess)
+
+
+
 
     # connected_devices = 0
     # updated_relays = 0

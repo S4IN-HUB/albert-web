@@ -88,23 +88,27 @@ class DataHandler(object):
     def send_command(self):
 
         if self.device:
-            commands = cache.get(self.device.name, [])
-            # commands = {}
-            # for _cmd in cache_commands:  # to get only final values for each relays.
-            #     commands.update({_cmd['RN']: _cmd})
 
-            if len(commands) > 0:
-                for cmd in commands:
-                    parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
-                    print parsed_command
-                    try:
-                        self.client_conn.send(parsed_command)
-                        sleep(0.2)
-                    except Exception as uee:
-                        print uee
-                        print('Unable to send command %s to Client' % parsed_command)
+            in_process = cache.get("in_process", {})
+            if in_process.get(self.device.name, True):
 
-                cache.delete(self.device)
+                commands = cache.get(self.device.name, [])
+                # commands = {}
+                # for _cmd in cache_commands:  # to get only final values for each relays.
+                #     commands.update({_cmd['RN']: _cmd})
+
+                if len(commands) > 0:
+                    for cmd in commands:
+                        parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
+                        print parsed_command
+                        try:
+                            self.client_conn.send(parsed_command)
+                            sleep(0.2)
+                        except Exception as uee:
+                            print uee
+                            print('Unable to send command %s to Client' % parsed_command)
+
+                    cache.delete(self.device)
 
     def read(self, client_conn, client_addr):
         self.client_conn = client_conn
