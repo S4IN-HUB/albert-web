@@ -594,10 +594,19 @@ def cron_control(request):
 
     if request.GET.get('test'):
 
+        _inprocess = cache.get("in_process", {})
+        _inprocess.update({item.relay.device.name: False})
+        cache.set("in_process", _inprocess)
+
         for i in range(0,1):
             _cmd = cache.get("TANKAR101", [])
             _cmd.append({"CMD": "RC", "RN": i, "ST": 1})
             cache.set("TANKAR101", _cmd)
+
+        _inprocess = cache.get("in_process", {})
+        del _inprocess[item.relay.device.name]
+        cache.set("in_process", _inprocess)
+
 
     # connected_devices = 0
     # updated_relays = 0
