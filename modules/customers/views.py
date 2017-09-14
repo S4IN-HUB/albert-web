@@ -548,6 +548,9 @@ def cron_control(request):
     open_count = 0
     close_count = 0
     now_date = datetime.now()
+
+
+    Devices.objects.filter()
     crons = Crons.objects.filter(day=now_date.weekday(),
                                  switch_on_time__hour=now_date.strftime('%H'),
                                  switch_on_time__minute=now_date.strftime('%M')).order_by('relay__device')

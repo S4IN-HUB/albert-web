@@ -189,7 +189,7 @@ DAYS = (
 
 
 class Crons(models.Model):
-    relay = models.ForeignKey(Relays, verbose_name="Röle")
+    relay = models.ForeignKey(Relays, related_name="Crons", verbose_name="Röle")
     day = models.IntegerField(choices=DAYS, verbose_name="Uygulanacak Günler")
     switch_on_time = models.TimeField(verbose_name="Açma Zaman")
     switch_off_time = models.TimeField(verbose_name="Kapama Zaman")
