@@ -187,7 +187,6 @@ DAYS = (
     (6, "Pazar"),
 )
 
-
 class Crons(models.Model):
     relay = models.ForeignKey(Relays, related_name="Crons", verbose_name="Röle")
     day = models.IntegerField(choices=DAYS, verbose_name="Uygulanacak Günler")
