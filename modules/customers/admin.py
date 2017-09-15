@@ -163,16 +163,6 @@ class DevicesAdmin(admin.ModelAdmin):
         return super(DevicesAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-    def get_total_instant_current(self, obj):
-        return obj.total_instant_current
-
-    get_total_instant_current.short_description = u'Toplam Anlık Akım'
-
-    def get_total_instant_power(self, obj):
-        return obj.total_instant_power
-
-    get_total_instant_power.short_description = u'Toplam Anlık Güç'
-
     list_display = ('account', 'name', 'description', 'wan_ip', 'ip', 'port', 'status', 'get_total_instant_current',
                     'get_total_instant_power')
 
