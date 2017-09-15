@@ -134,22 +134,9 @@ class Relays(models.Model):
     type = models.CharField(max_length=20, choices=RelayTypes, verbose_name="Anahtar Tipi")
     icon = models.CharField(max_length=20, choices=RelayIcons, verbose_name="Simge")
 
-    @property
-    def total_instant_current(self):
-        total_current = 0
-        last_val = self.CurrentValues.all().order_by("-create_date")[:1]
-        if last_val.count() == 1:
-            total_current = last_val[0].current_value
-        return total_current
+    total_instant_current = models.DecimalField(max_digits=8 , decimal_places=2, verbose_name="Anlık Akım")
+    total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt")
 
-    @property
-    def total_instant_power(self):
-        total_power = 0
-
-        last_val = self.CurrentValues.all().order_by("-create_date")[:1]
-        if last_val.count() == 1:
-            total_power = last_val[0].power_cons
-        return total_power
 
     def __unicode__(self):
         return "%s %s" % (self.name, self.room.name)
@@ -175,6 +162,13 @@ class RelayCurrentValues(models.Model):
     class Meta(object):
         verbose_name = "Röle Akım Değeri"
         verbose_name_plural = "Röle Akım Değerleri"
+
+
+    def save(self, *args,**kwargs):
+        super(RelayCurrentValues,self).save(*args,**kwargs)
+        self.relay.total_instant_current = self.current_value
+        self.relay.total_instant_power = self.power_cons
+        self.relay.save()
 
 
 DAYS = (
