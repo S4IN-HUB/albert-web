@@ -111,6 +111,7 @@ class RelayAdmin(admin.ModelAdmin):
     get_total_instant_current.short_description = u'Toplam Anlık Akım'
 
     def get_total_instant_power(self, obj):
+        return 5
         return obj.total_instant_power
 
     get_total_instant_power.short_description = u'Toplam Anlık Akım'
