@@ -104,16 +104,6 @@ class RelayAdmin(admin.ModelAdmin):
         return super(RelayAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-    def get_total_instant_current(self, obj):
-        return obj.total_instant_current
-
-    get_total_instant_current.short_description = u'Toplam Anlık Akım'
-
-    def get_total_instant_power(self, obj):
-        return obj.total_instant_power
-
-    get_total_instant_power.short_description = u'Toplam Anlık Akım'
-
     def open_relay(self, obj):
         return '<a class="btn btn-success" href="/relay-control/?relay=' + str(
             obj.id) + '&action=open" target="process"><i class="fa fa-power-off" aria-hidden="true"></i> Aç</a>'
@@ -129,7 +119,7 @@ class RelayAdmin(admin.ModelAdmin):
     close_relay.short_description = u'Röleyi Kapat'
 
     list_display = ('name', 'relay_no', 'type', 'room', 'device', 'pressed', 'open_relay', 'close_relay',
-                    'get_total_instant_current', 'get_total_instant_power')
+                    'total_instant_current', 'total_instant_power')
     inlines = [InlineCrons, ]
 
 
@@ -162,6 +152,16 @@ class DevicesAdmin(admin.ModelAdmin):
 
         return super(DevicesAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+
+    def get_total_instant_current(self, obj):
+        return obj.total_instant_current
+
+    get_total_instant_current.short_description = u'Toplam Anlık Akım'
+
+    def get_total_instant_power(self, obj):
+        return obj.total_instant_power
+
+    get_total_instant_power.short_description = u'Toplam Anlık Güç'
 
     list_display = ('account', 'name', 'description', 'wan_ip', 'ip', 'port', 'status', 'get_total_instant_current',
                     'get_total_instant_power')
