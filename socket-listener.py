@@ -122,14 +122,17 @@ class DataHandler(object):
                 self.client_data = self.client_conn.recv(128)
                 if self.client_data:
                     # add redis lock to device, then release the lock.
-                    socket_lock = cache.get("socket_locks", {})
-                    socket_lock.update({self.device.name: True})
-                    cache.set("socket_locks", socket_lock)
+                    if self.device:
+                        socket_locked = True
+                        socket_lock = cache.get("socket_locks", {})
+                        socket_lock.update({self.device.name: True})
+                        cache.set("socket_locks", socket_lock)
                     self.parse_data()
                     self.process_data()
-                    socket_lock = cache.get("in_process_socket", {})
-                    socket_lock.update({self.device.name: False})
-                    cache.set("in_process_socket", socket_lock)
+                    if socket_locked:
+                        socket_lock = cache.get("in_process_socket", {})
+                        socket_lock.update({self.device.name: False})
+                        cache.set("in_process_socket", socket_lock)
                 if not self.client_data:
                     print "No incoming data, breaking connection."
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
