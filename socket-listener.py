@@ -14,7 +14,6 @@ import psutil
 import socket
 from thread import start_new_thread
 from time import sleep
-import fcntl
 
 django.setup()
 from django.core.cache import cache
@@ -26,7 +25,6 @@ port = 12121
 
 
 class DataHandler(object):
-
     def __init__(self):
         self.client_conn = None
         self.client_addr = None
@@ -119,7 +117,7 @@ class DataHandler(object):
 
         while True:
             try:
-                self.send_command()
+                # self.send_command()
                 self.client_data = self.client_conn.recv(128)
                 if self.client_data:
                     self.parse_data()
@@ -167,7 +165,6 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.settimeout(1)
         try:
             self.socket.bind((self.host_addr, self.host_port))
             print 'Socket created!'
@@ -189,7 +186,7 @@ class SocketServer(object):
                 self.client_conn, self.client_addr = self.socket.accept()
                 data_handler = DataHandler()
                 start_new_thread(data_handler.read, (self.client_conn, self.client_addr))
-                # start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
+                start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
                 # print "Socket read timed out, retrying..."
                 continue
@@ -198,8 +195,8 @@ class SocketServer(object):
                 continue
             except Exception as uee:
                 print uee
-                #self.client_conn.close()
-                #break
+                self.client_conn.close()
+                break
         self.socket.close()
 
 
