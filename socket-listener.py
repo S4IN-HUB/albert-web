@@ -86,9 +86,8 @@ class DataHandler(object):
                 print "Unexpected data: %s" % _data
 
     def send_command(self):
-
         if self.device:
-            #checks locks and processes.
+            # checks locks and processes.
             in_process = cache.get("in_process", {})
             socket_lock = cache.get("socket_locks", {})
             if not in_process.get(self.device.name, False) and not socket_lock.get(self.device.name, False):
