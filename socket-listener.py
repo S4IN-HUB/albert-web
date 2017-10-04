@@ -154,6 +154,7 @@ class DataHandler(object):
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
         while True:
+            self.send_command()
             try:
                 self.send_command()
             except Exception as uee:
