@@ -14,6 +14,7 @@ import psutil
 import socket
 from thread import start_new_thread
 from time import sleep
+import fcntl
 
 django.setup()
 from django.core.cache import cache
@@ -25,6 +26,7 @@ port = 12121
 
 
 class DataHandler(object):
+
     def __init__(self):
         self.client_conn = None
         self.client_addr = None
@@ -165,6 +167,7 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        fcntl.fcntl(self.socket, fcntl.F_SETFL, os.O_NONBLOCK)
         try:
             self.socket.bind((self.host_addr, self.host_port))
             print 'Socket created!'
@@ -196,7 +199,7 @@ class SocketServer(object):
             except Exception as uee:
                 print uee
                 self.client_conn.close()
-                break
+                #break
         self.socket.close()
 
 
