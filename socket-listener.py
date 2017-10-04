@@ -112,7 +112,7 @@ class DataHandler(object):
                         except Exception as uee:
                             cmd.update({'send': False})
                             print uee
-                            self.client_conn.close()
+                            #self.client_conn.close()
                             print('Unable to send command %s to Client' % parsed_command)
                             break
 
