@@ -131,7 +131,7 @@ class DataHandler(object):
                     continue
             except Exception as uee:
                 print uee
-                # self.client_conn.close()
+                self.client_conn.close()
                 break
 
     def write(self, client_conn, client_addr):
