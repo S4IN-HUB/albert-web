@@ -5,8 +5,14 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+account_types = (
+    (0, 'Ev'),
+    (1, 'Endüstriyel')
+)
+
 class Accounts(models.Model):
     user = models.OneToOneField(User, related_name="Accounts", verbose_name="Kullanıcı")
+    user_type = models.PositiveSmallIntegerField(default=0, choices=account_types, verbose_name="Hesap Tipi")
 
     def __unicode__(self):
         return "%s" % self.user.username

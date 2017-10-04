@@ -176,6 +176,7 @@ def GetUserJson(RemoteUser, **kwargs):
             'email': RemoteUser.email,
             'name': unicode(RemoteUser.get_full_name()),
             'avatar': 'default_avatar.jpg',
+            'account_type': RemoteUser.Accounts.user_type
         }
 
     return JsonContent
