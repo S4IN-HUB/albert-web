@@ -117,8 +117,8 @@ class DataHandler(object):
 
         while True:
             try:
-                # self.send_command()
-                self.client_data = self.client_conn.recv(1024)
+                self.send_command()
+                self.client_data = self.client_conn.recv(128)
                 if self.client_data:
                     self.parse_data()
                     self.process_data()
@@ -186,7 +186,7 @@ class SocketServer(object):
                 self.client_conn, self.client_addr = self.socket.accept()
                 data_handler = DataHandler()
                 start_new_thread(data_handler.read, (self.client_conn, self.client_addr))
-                start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
+                # start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
                 # print "Socket read timed out, retrying..."
                 continue
