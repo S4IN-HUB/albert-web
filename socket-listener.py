@@ -90,6 +90,7 @@ class DataHandler(object):
             # checks locks and processes.
             in_process = cache.get("in_process", {})
             socket_lock = cache.get("socket_locks", {})
+            print "device locked? : ", str( socket_lock.get(self.device.name, False))
             if not in_process.get(self.device.name, False) and not socket_lock.get(self.device.name, False):
 
                 commands = cache.get(self.device.name, [])
@@ -127,12 +128,14 @@ class DataHandler(object):
                         socket_lock = cache.get("socket_locks", {})
                         socket_lock.update({self.device.name: True})
                         cache.set("socket_locks", socket_lock)
+                        print "%s locked" % self.device.name
                     self.parse_data()
                     self.process_data()
                     if socket_locked:
                         socket_lock = cache.get("in_process_socket", {})
                         socket_lock.update({self.device.name: False})
                         cache.set("in_process_socket", socket_lock)
+                        print "%s unlocked" % self.device.name
                 if not self.client_data:
                     print "No incoming data, breaking connection."
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
