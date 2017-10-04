@@ -198,7 +198,7 @@ class SocketServer(object):
                 continue
             except Exception as uee:
                 print uee
-                self.client_conn.close()
+                #self.client_conn.close()
                 #break
         self.socket.close()
 
