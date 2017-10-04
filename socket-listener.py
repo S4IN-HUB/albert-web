@@ -89,7 +89,7 @@ class DataHandler(object):
         if self.device:
             # checks locks and processes.
             in_process = cache.get("in_process", {})
-            socket_lock = cache.get("socket_locks", {})
+            socket_lock = cache.get("socket_locks", {}).get(self.device.name, False)
 
             if not in_process.get(self.device.name, False):
 
@@ -99,17 +99,17 @@ class DataHandler(object):
                 #     commands.update({_cmd['RN']: _cmd})
 
                 if len(commands) > 0:
-                    if not socket_lock.get(self.device.name, False):
-                        print "device locked? : ", str( socket_lock.get(self.device.name, False))
+                    if not socket_lock:
+                        print "device locked!"
                     for cmd in commands:
                         parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
                         print parsed_command
-                        # try:
-                        self.client_conn.send(parsed_command)
-                        sleep(0.2)
-                        # except Exception as uee:
-                        #     print uee
-                        #     print('Unable to send command %s to Client' % parsed_command)
+                        try:
+                            self.client_conn.send(parsed_command)
+                            sleep(0.2)
+                        except Exception as uee:
+                            print uee
+                            print('Unable to send command %s to Client' % parsed_command)
 
                     cache.delete(self.device.name)
 
@@ -154,7 +154,6 @@ class DataHandler(object):
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
         while True:
-            self.send_command()
             try:
                 self.send_command()
             except Exception as uee:
