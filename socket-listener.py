@@ -121,6 +121,7 @@ class DataHandler(object):
                             unsend_commands.append(cmd)
                     if len(unsend_commands) > 0:
                         cache.set(self.device.name, unsend_commands)
+                        raise Exception("There are unsend commands in stack!")
                     else:
                         cache.delete(self.device.name)
 
@@ -169,8 +170,8 @@ class DataHandler(object):
                 self.send_command()
             except Exception as uee:
                 print uee
-                # self.client_conn.close()
-                continue
+                self.client_conn.close()
+                return False
 
 
 class SocketServer(object):
