@@ -122,6 +122,7 @@ class DataHandler(object):
                 self.client_data = self.client_conn.recv(128)
                 if self.client_data:
                     # add redis lock to device, then release the lock.
+                    socket_locked = False
                     if self.device:
                         socket_locked = True
                         socket_lock = cache.get("socket_locks", {})
