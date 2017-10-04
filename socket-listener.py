@@ -91,7 +91,7 @@ class DataHandler(object):
             #checks locks and processes.
             in_process = cache.get("in_process", {})
             socket_lock = cache.get("socket_locks", {})
-            if not in_process.get(self.device.name) and not socket_lock.get(self.device.name):
+            if not in_process.get(self.device.name, False) and not socket_lock.get(self.device.name, False):
 
                 commands = cache.get(self.device.name, [])
                 # commands = {}
