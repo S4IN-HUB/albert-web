@@ -97,7 +97,7 @@ class DataHandler(object):
                 # commands = {}
                 # for _cmd in cache_commands:  # to get only final values for each relays.
                 #     commands.update({_cmd['RN']: _cmd})
-                unsend_commands = []
+                send_commands = []
                 if len(commands) > 0:
                     if not socket_lock:
                         print "device locked!"
@@ -108,9 +108,12 @@ class DataHandler(object):
                             self.client_conn.send(parsed_command)
                             sleep(0.2)
                         except Exception as uee:
-                            unsend_commands.append(cmd)
+                            send_commands.append(cmd)
                             print uee
+                            self.client_conn.close()
+                            break
                             print('Unable to send command %s to Client' % parsed_command)
+                    unsend_commands = list(set(commands) - set(send_commands))
                     if len(unsend_commands) > 0:
                         cache.set(self.device.name, unsend_commands)
                     else:
