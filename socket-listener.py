@@ -90,8 +90,8 @@ class DataHandler(object):
             # checks locks and processes.
             in_process = cache.get("in_process", {})
             socket_lock = cache.get("socket_locks", {})
-            print "device locked? : ", str( socket_lock.get(self.device.name, False))
-            if not in_process.get(self.device.name, False) and not socket_lock.get(self.device.name, False):
+
+            if not in_process.get(self.device.name, False):
 
                 commands = cache.get(self.device.name, [])
                 # commands = {}
@@ -99,6 +99,8 @@ class DataHandler(object):
                 #     commands.update({_cmd['RN']: _cmd})
 
                 if len(commands) > 0:
+                    if not socket_lock.get(self.device.name, False):
+                        print "device locked? : ", str( socket_lock.get(self.device.name, False))
                     for cmd in commands:
                         parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
                         print parsed_command
