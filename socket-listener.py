@@ -167,7 +167,7 @@ class SocketServer(object):
     def setup(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        fcntl.fcntl(self.socket, fcntl.F_SETFL, os.O_NONBLOCK)
+        self.socket.settimeout(1)
         try:
             self.socket.bind((self.host_addr, self.host_port))
             print 'Socket created!'
