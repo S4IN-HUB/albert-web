@@ -152,9 +152,11 @@ class DataHandler(object):
                         print "%s unlocked" % self.device.name
                 if not self.client_data:
                     print "No incoming data, breaking connection."
+                    self.client_conn.close()
+                    return False
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
                     # saçmalıyor. O yüzden bağlantının kapatılması için while'dan çıkılması gerekmekte.
-                    continue
+                    # continue
             except Exception as uee:
                 print uee
                 self.client_conn.close()
