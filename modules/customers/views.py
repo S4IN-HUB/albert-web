@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json
 from datetime import datetime
 
+from django.contrib import messages
 from django.contrib.auth import authenticate, login as do_login
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
@@ -15,7 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons, Devices
+from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton
 
 
 def permit_response(response):
@@ -602,3 +603,39 @@ def cron_control(request):
     return HttpResponse(
         "Open : %s, Close: %s Time: %s," % (
             str(open_count), str(close_count), now_date.strftime('%H:%M')))
+
+
+def set_ir_command(request, time_out=10):
+    """
+    IR Modülünü Kumandalarına ait herhangi bir butonun IR Komutunu seçilen butona SET edebilmek için
+    CACHE'e SET edilecek butona ait parametre ekler.
+    Socket Listener IR modülünden alacağı IR set Komutu ile CACHE'de belirtilen butona gönderilen komutu kayıt eder.
+    BIR IR modülüne ait AYNI ANDA SADECE BİR BUTON SET EDİLEBİLİR.
+
+    Cache'e eklenen Buton bilgisinin time_out süresi kadar ömrü olacaktır. Bu süre içinde set edilmeyen buton bilgisi
+    Cache'ten silinir. Butona komut atamak için tekrar buntonun set edileceği uygulama ya da arayüz tarafından
+    Cache yazılmalıdır.
+
+    :param request:
+    :param time_out: Cache Set Timeout.
+    :return:
+    """
+    if request.GET.get("button", None):
+        button = IrButton.objects.get(pk=request.GET.get("button"))
+
+        try:
+            if cache.get(button.ir_remote_id, False):
+                cache.delete(button.ir_remote.device.name[button.ir_remote_id])
+
+            cache.set(button.ir_remote.device.name, {button.ir_remote_id, button.id}, time_out)
+            messages.error(request,
+                           "%s Butonu ayarlama işlemi başladı. "
+                           "%s Saniye içinde işlem yapılmazsa otomatik olarak sonlanacak." % (button.name, time_out))
+
+        except Exception as uee:
+            print uee
+            messages.error(request, "%s Butonu ayarlama işlemi başlatılamadı" % button.name)
+
+        print "-"*20
+        print cache.get(button.ir_remote.device.name[button.ir_remote_id])
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
