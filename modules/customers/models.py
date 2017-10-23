@@ -4,13 +4,14 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 
-
 account_types = (
     (0, 'Ev'),
     (1, 'Endüstriyel')
 )
 
+
 class Accounts(models.Model):
+    """ Kullanıcı Hesapları, genişletilmiş Django AuthUser modeli. """
     user = models.OneToOneField(User, related_name="Accounts", verbose_name="Kullanıcı")
     user_type = models.PositiveSmallIntegerField(default=0, choices=account_types, verbose_name="Hesap Tipi")
 
@@ -31,6 +32,7 @@ plan_status = (
 
 
 class Plans(models.Model):
+    """Hesap Durumu modeli"""
     account = models.ForeignKey(Accounts, related_name="Plans", verbose_name="Hesap")
     limit = models.IntegerField(default=1, verbose_name="Donanım Limiti")
     status = models.CharField(max_length=15, default='pending', choices=plan_status, verbose_name="Durum")
@@ -41,8 +43,11 @@ class Plans(models.Model):
 
 
 class Locations(models.Model):
-    account = models.ForeignKey(Accounts, related_name="Locations", verbose_name="Hesap")
-    name = models.CharField(max_length=50, verbose_name="Lokasyon Tanımı")
+    """Hesabın kullanılacağı adresin GPS Koordinatı"""
+    account = models.ForeignKey(Accounts, related_name="Locations", verbose_name="Hesap",
+                                help_text="Konumun bağlanacağı hesap")
+    name = models.CharField(max_length=50, verbose_name="Konum Adı",
+                            help_text="Hesaba bağlı cihazların kurulacağı adresin konumu için isimlendirme")
     lat = models.DecimalField(default=0, max_digits=10, decimal_places=8, verbose_name="Enlem")
     lon = models.DecimalField(default=0, max_digits=10, decimal_places=8, verbose_name="Boylam")
 
@@ -68,6 +73,7 @@ class Rooms(models.Model):
 
 
 class Devices(models.Model):
+    """Cihazların kayıt edildiği model"""
     device_types = (
         ('relay_current', 'Akım Sensörlü 16 Röle Kartı'),
         ('relay', '16 Röle Kartı'),
@@ -92,8 +98,6 @@ class Devices(models.Model):
                 total_current = last_val[0].current_value
         return total_current
 
-
-
     @property
     def total_instant_power(self):
         total_power = 0
@@ -103,7 +107,6 @@ class Devices(models.Model):
                 total_power = last_val[0].power_cons
         return total_power
 
-
     def __unicode__(self):
         return "%s" % self.name
 
@@ -112,40 +115,46 @@ class Devices(models.Model):
         verbose_name_plural = "Cihazlar"
 
 
-RelayIcons = (
+Icons = (
     ('light', 'Ampül'),
     ('aircond', 'Klima'),
-    ('fan', 'Fan'),
-    ('su', 'Su Vanası'),
+    ('fan', 'Havalandırma'),
+    ('watervalve', 'Su Vanası'),
     ('gas', 'Gaz Vanası'),
     ('blinds', 'Pajnur'),
-)
-
-RelayTypes = (
-    ('switch', 'Aç / Kapat'),
-    ('push', 'Bas - çek'),
-    ('count', 'Geri Sayım'),
-    ('scheduled', 'Zamanlanmış'),
+    ('television', 'Televizyon'),
+    ('satellite', 'Uydu'),
+    ('digitalreceiver', 'Dijital Yayın'),
+    ('musicbox', 'Müzik Seti'),
+    ('projector', 'Projektör'),
+    ('dvdplayer', 'DVD Oynatıcı'),
+    ('camera', 'Kamera')
 )
 
 
 class Relays(models.Model):
-    device = models.ForeignKey(Devices, related_name="Relays", verbose_name="Cihaz")
+    """Rölelerin kayıt edildiği model"""
+    RelayTypes = (
+        ('switch', 'Aç / Kapat'),
+        ('push', 'Bas - çek'),
+        ('count', 'Geri Sayım'),
+        ('scheduled', 'Zamanlanmış'),
+    )
     room = models.ForeignKey(Rooms, related_name="Relays", verbose_name="Oda")
+    device = models.ForeignKey(Devices, related_name="Relays", verbose_name="Cihaz")
     name = models.CharField(max_length=50, verbose_name="Röle Tanımı")
 
     pressed = models.BooleanField(default=False, verbose_name="Basılı mı?")
 
     relay_no = models.IntegerField(verbose_name="Röle No")
     type = models.CharField(max_length=20, choices=RelayTypes, verbose_name="Anahtar Tipi")
-    icon = models.CharField(max_length=20, choices=RelayIcons, verbose_name="Simge")
+    icon = models.CharField(max_length=20, choices=Icons, verbose_name="Simge")
 
-    total_instant_current = models.DecimalField(max_digits=8 , decimal_places=2, verbose_name="Anlık Akım")
+    total_instant_current = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Akım")
     total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt")
 
-
     def __unicode__(self):
-        return "%s %s" % (self.name, self.room.name)
+        return "%s %s" % (self.name, self.device.room.name)
 
     class Meta(object):
         verbose_name = "Röle"
@@ -156,6 +165,7 @@ sensor_types = (('current', 'Akın Sensörü'),)
 
 
 class RelayCurrentValues(models.Model):
+    """Röle Akım değerlerinin kayıt edildiği model"""
     relay = models.ForeignKey(Relays, related_name="CurrentValues", verbose_name="Röle")
     current_value = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Akım Değeri (Amper)")
     power_cons = models.DecimalField(max_digits=8, decimal_places=2, default=0,
@@ -163,15 +173,14 @@ class RelayCurrentValues(models.Model):
     create_date = models.DateTimeField(verbose_name='Eklenme Tarihi', auto_now_add=True)
 
     def __unicode__(self):
-        return "%s %s" % (self.relay.name, self.relay.room.name)
+        return "%s %s" % (self.relay.name, self.relay.device.room.name)
 
     class Meta(object):
         verbose_name = "Röle Akım Değeri"
         verbose_name_plural = "Röle Akım Değerleri"
 
-
-    def save(self, *args,**kwargs):
-        super(RelayCurrentValues,self).save(*args,**kwargs)
+    def save(self, *args, **kwargs):
+        super(RelayCurrentValues, self).save(*args, **kwargs)
         self.relay.total_instant_current = self.current_value
         self.relay.total_instant_power = self.power_cons
         self.relay.save()
@@ -187,6 +196,7 @@ DAYS = (
     (6, "Pazar"),
 )
 
+
 class Crons(models.Model):
     relay = models.ForeignKey(Relays, related_name="Crons", verbose_name="Röle")
     day = models.IntegerField(choices=DAYS, verbose_name="Uygulanacak Günler")
@@ -198,20 +208,32 @@ class Crons(models.Model):
         verbose_name_plural = "Zamanlamalar"
 
 
-class IrButtons(models.Model):
+class IrRemote(models.Model):
     device = models.ForeignKey(Devices, related_name="IrButtons", verbose_name="Cihaz")
     room = models.ForeignKey(Rooms, related_name="IrButtons", verbose_name="Oda")
-    name = models.CharField(max_length=50, verbose_name="Röle Tanımı")
+    name = models.CharField(max_length=50, verbose_name="Uzaktan Kumanda Adı")
 
-    icon = models.CharField(max_length=20, choices=RelayIcons, verbose_name="Simge")
+    def __unicode__(self):
+        return '%s %s (%s)' % (self.room.name, self.name, self.device.description)
+
+    class Meta(object):
+        verbose_name = "IR Kumanda"
+        verbose_name_plural = "IR Kumandalar"
+
+
+class IrButton(models.Model):
+    ir_remote = models.ForeignKey(IrRemote, related_name="IrButtons", verbose_name="Kumanda")
+    name = models.CharField(verbose_name="Buton Adı", max_length=50)
+
+    icon = models.CharField(max_length=20, choices=Icons, verbose_name="Simge")
 
     ir_type = models.CharField(max_length=20, verbose_name="IR Tipi")
     ir_code = models.CharField(max_length=16, verbose_name="IR Code")
     ir_bits = models.IntegerField(verbose_name="Bits")
 
     def __unicode__(self):
-        return "%s %s" % (self.name, self.room.name)
+        return "%s %s" % (self.ir_remote, self.name)
 
     class Meta(object):
-        verbose_name = "IR"
-        verbose_name_plural = "IR"
+        verbose_name = "IR Buton"
+        verbose_name_plural = "IR Butonları"
