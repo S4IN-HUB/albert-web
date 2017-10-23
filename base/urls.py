@@ -16,23 +16,23 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-from modules.customers.views import ApiLogin, ApiLogout, GetRooms, GetRelays, SendCommand, GetLocations, relay_control, \
-    cron_control
-from modules.masterpage.views import Index, AboutUs, Contact, SendMessage
+from modules.customers.views import (api_login, api_logout, get_rooms, get_relays, send_command, get_locations,
+                                     relay_control, cron_control)
+from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
-    url(r'^$', Index, name='index'),
-    url(r'^akilli-ev-sistemi-nedir/$', AboutUs, name='AboutUs'),
-    url(r'^iletisim/$', Contact, name='Contact'),
+    url(r'^$', index, name='index'),
+    url(r'^akilli-ev-sistemi-nedir/$', about_us, name='AboutUs'),
+    url(r'^iletisim/$', contact, name='Contact'),
     url(r'^relay-control/$', relay_control, name='relay_control'),
     url(r'^cron-control/$', cron_control, name='cron_control'),
-    url(r'^send-message/$', SendMessage, name='SendMessage'),
+    url(r'^send-message/$', send_message, name='SendMessage'),
     url(r'^admin/', admin.site.urls),
-    url(r'^api/login/$', ApiLogin),
-    url(r'^api/logout/$', ApiLogout),
-    url(r'^api/list/locations/$', GetLocations),
-    url(r'^api/list/rooms/$', GetRooms),
-    url(r'^api/list/relays/$', GetRelays),
-    url(r'^api/list/send-command/$', SendCommand)
+    url(r'^api/login/$', api_login),
+    url(r'^api/logout/$', api_logout),
+    url(r'^api/list/locations/$', get_locations),
+    url(r'^api/list/rooms/$', get_rooms),
+    url(r'^api/list/relays/$', get_relays),
+    url(r'^api/list/send-command/$', send_command)
 
 ]
