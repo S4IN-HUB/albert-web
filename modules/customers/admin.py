@@ -6,8 +6,28 @@ from django.contrib import admin
 from modules.customers.models import (Accounts, Locations, Plans, Rooms, Devices, Relays, Crons, RelayCurrentValues,
                                       IrRemote, IrButton)
 
-admin.site.register(Accounts)
-admin.site.register(Plans)
+
+@admin.register(Plans)
+class PlansAdmin(admin.ModelAdmin):
+    list_display = ('account', 'limit', 'status')
+
+
+@admin.register(Accounts)
+class AccountsAdmin(admin.ModelAdmin):
+    list_display = ('user', 'first_name', 'last_name', 'user_type')
+    list_display_links = ('user', 'first_name', 'last_name', 'user_type')
+
+    def first_name(self, obj):
+        return obj.user.first_name
+
+    first_name.short_description = 'Adı'
+    first_name.admin_order_field = 'user'
+
+    def last_name(self, obj):
+        return obj.user.last_name
+
+    last_name.short_description = 'Soyadı'
+    last_name.admin_order_field = 'user'
 
 
 @admin.register(Locations)
@@ -68,6 +88,7 @@ class RoomsAdmin(admin.ModelAdmin):
 @admin.register(Devices)
 class DevicesAdmin(admin.ModelAdmin):
     """BURAYA AÇIKLAMA GELECEK"""
+
     def get_queryset(self, request):
 
         qs = super(DevicesAdmin, self).get_queryset(request)
@@ -103,10 +124,10 @@ class DevicesAdmin(admin.ModelAdmin):
     def room_location(self, obj):
         return obj.room.location
 
-    room_location.short_description = 'Location'
+    room_location.short_description = 'Konum'
     room_location.admin_order_field = 'room'
 
-    list_display = ('room_location', 'room', 'name', 'description', 'wan_ip', 'ip', 'port', 'status',
+    list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'ip', 'port', 'status',
                     'get_total_instant_current', 'get_total_instant_power')
 
 
@@ -119,6 +140,7 @@ class InlineCrons(admin.StackedInline):
 @admin.register(Relays)
 class RelayAdmin(admin.ModelAdmin):
     """BURAYA AÇIKLAMA GELECEK"""
+
     def get_queryset(self, request):
 
         qs = super(RelayAdmin, self).get_queryset(request)
@@ -190,13 +212,29 @@ class RelayCurrentValuesAdmin(admin.ModelAdmin):
         return super(RelayCurrentValuesAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(IrButton)
-class IrButtonAdmin(admin.ModelAdmin):
-    """BURAYA AÇIKLAMA GELECEK"""
-    pass
-
-
 @admin.register(IrRemote)
 class IrRemoteAdmin(admin.ModelAdmin):
-    """BURAYA AÇIKLAMA GELECEK"""
-    pass
+    """IR Kumanda listesi"""
+    list_display = ('name', 'device', 'room')
+
+
+@admin.register(IrButton)
+class IrButtonAdmin(admin.ModelAdmin):
+    """IR Kumanda butonları yönetim paneli"""
+
+    list_display = ('icon', 'name', 'ir_remote', 'ir_type', 'ir_code', 'ir_bits', 'set_ir_command')
+    list_display_links = ('icon', 'name', 'ir_remote')
+
+    def set_ir_command(self, obj):
+        """
+        Seçilen butona IR komutunun set edilmesi için CACHE'e o butonun set edilebilir olduğuna dair ibare yazmaya yarar
+        Bir butona set edilmek için tıklandığında cacheteki butonun bağlı olduğunu cihaza ait diğer butonların SET
+        dururmu kapatılır. BIR IR modülüne ait AYNI ANDA SADECE BİR BUTON SET EDİLEBİLİR.
+        :param obj:
+        :return:
+        """
+        return '<a class="btn btn-danger" href="/set_ir_command/?button=' + str(
+            obj.id) + '"  target="process"><i class="fa fa-gear" aria-hidden="true"></i></a>'
+
+    set_ir_command.allow_tags = True
+    set_ir_command.short_description = u'Ayarla'
