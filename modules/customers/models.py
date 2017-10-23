@@ -80,7 +80,7 @@ class Devices(models.Model):
         ('ir', 'IR Modüle')
     )
     account = models.ForeignKey(Accounts, related_name="Devices", verbose_name="Hesap")
-    room = models.ForeignKey(Rooms, blank=True, null=True, related_name="Devices")
+    room = models.ForeignKey(Rooms, blank=True, null=True, related_name="Devices", verbose_name='Oda')
     type = models.CharField(max_length=15, choices=device_types, verbose_name="Cihaz Tipi")
     name = models.CharField(max_length=50, verbose_name="Cihaz Adı", default='')
     description = models.CharField(max_length=50, verbose_name="Cihaz Tanımı", default='')
@@ -227,9 +227,9 @@ class IrButton(models.Model):
 
     icon = models.CharField(max_length=20, choices=Icons, verbose_name="Simge")
 
-    ir_type = models.CharField(max_length=20, verbose_name="IR Tipi")
-    ir_code = models.CharField(max_length=16, verbose_name="IR Code")
-    ir_bits = models.IntegerField(verbose_name="Bits")
+    ir_type = models.CharField(max_length=20, verbose_name="IR Tipi", null=True, blank=True)
+    ir_code = models.CharField(max_length=16, verbose_name="IR Code", null=True, blank=True)
+    ir_bits = models.IntegerField(verbose_name="Bits", null=True, blank=True)
 
     def __unicode__(self):
         return "%s %s" % (self.ir_remote, self.name)
