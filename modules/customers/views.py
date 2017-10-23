@@ -2,12 +2,9 @@
 from __future__ import unicode_literals
 
 import json
-import socket
 from datetime import datetime
 
-import requests
-from django.contrib import messages
-from django.contrib.auth import authenticate, login as doLogin
+from django.contrib.auth import authenticate, login as do_login
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.core.cache import cache
@@ -18,10 +15,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons, Devices, RelayCurrentValues
+from modules.customers.models import Accounts, Relays, Crons, Devices
 
 
-def PermitResponse(response):
+def permit_response(response):
+    """BURAYA AÇIKLAMA GELECEK"""
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Credentials'] = 'true'
     response['Access-Control-Allow-Headers'] = 'Content-Type'
@@ -29,66 +27,68 @@ def PermitResponse(response):
     return response
 
 
-def JsonResponser(Status, Message="", Data=None):
-    JsonData = {'response_message': Message,
-                'response_code': Status,
-                'response_data': Data
-                }
+def json_responser(status, message="", data=None):
+    """BURAYA AÇIKLAMA GELECEK"""
+    json_data = {'response_message': message,
+                 'response_code': status,
+                 'response_data': data
+                 }
 
-    JsonData = json.dumps(JsonData, cls=DjangoJSONEncoder)
-    response = HttpResponse(JsonData)
-    return PermitResponse(response)
+    json_data = json.dumps(json_data, cls=DjangoJSONEncoder)
+    response = HttpResponse(json_data)
+    return permit_response(response)
 
 
-def GetParams(request):
-    print request.POST
-    print request.GET
-
+def get_params(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    # print request.POST
+    # print request.GET
     try:
         if request.POST:
             return request.POST
         return request.GET
-    except:
+    except Exception as uee:
         return {}
 
 
 @csrf_exempt
-def GetUser(request):
-    AllParams = GetParams(request)
-    Token = AllParams.get("token")
-    Status = False
-    Message = "Yeterli argüman gönderilmedi."
-    JsonContent = {}
+def get_user(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    status = False
+    json_content = {}
 
-    _authuser = CheckUserSession(Token)
+    _authuser = check_user_session(token)
 
     if not _authuser:
-        return JsonResponser(False, Message="Oturum Kapandı", Data=None)
+        return json_responser(False, message="Oturum Kapandı")
 
-    if AllParams.get("keyword"):
+    if all_params.get("keyword"):
 
-        _profiles = Accounts.objects.filter(Q(user__username__contains=AllParams.get("keyword")) | Q(
-            user__first_name__contains=AllParams.get("keyword")) | Q(
-            user__last_name__contains=AllParams.get("keyword")))
+        _profiles = Accounts.objects.filter(
+            Q(user__username__contains=all_params.get("keyword")) |
+            Q(user__first_name__contains=all_params.get("keyword")) |
+            Q(user__last_name__contains=all_params.get("keyword")))
 
         if _profiles.count() > 0:
 
-            JsonContent = []
+            json_content = []
             for _profile in _profiles:
                 _user = _profile.user
-                JsonContent.append({
+                json_content.append({
                     'userid': str(_user.id),
                     'username': _user.username,
                     # 'user_is_staff': _user.is_staff,
                     # 'user_is_superuser': _user.is_superuser,
                     # 'email': _user.email,
-                    'company': GetCompanyInfo(_user.Profiles),
+                    # 'company': GetCompanyInfo(_user.Profiles),
                     'level': _user.Profiles.level.id if _user.Profiles.level else None,
                     'scoring': _user.Profiles.scoring,
                     'official': _user.Profiles.official,
                     'name': unicode(_user.get_full_name()),
-                    'avatar': getThumb(_user.Profiles.avatar,
-                                       '128x128') if _user.Profiles.avatar else 'default_avatar.jpg',
+                    # 'avatar': getThumb(_user.Profiles.avatar,
+                    #                    '128x128') if _user.Profiles.avatar else 'default_avatar.jpg',
                     # 'biography': _user.Profiles.biography,
                     # 'is_followed': CheckFollow(_user, _authuser),
                     # 'stat_events': _user.Events.all().count(),
@@ -99,104 +99,106 @@ def GetUser(request):
                     # 'my_events': GetMyEvents(_user),
                     # 'my_comments': GetMyComments(_user),
                 })
-            Status = True
+            status = True
         else:
-            return JsonResponser(False, Message="Not found any matched user", Data=None)
+            return json_responser(False, message="Not found any matched user")
 
-    if AllParams.get("id"):
-        _user = User.objects.get(pk=AllParams.get("id"))
+    if all_params.get("id"):
+        _user = User.objects.get(pk=all_params.get("id"))
 
         if _user:
-            JsonContent = {
+            json_content = {
                 'userid': str(_user.id),
                 'username': _user.username,
                 'user_is_staff': _user.is_staff,
                 'user_is_superuser': _user.is_superuser,
                 'email': _user.email,
-                'company': GetCompanyInfo(_user.Profiles),
+                # 'company': GetCompanyInfo(_user.Profiles),
                 'level': _user.Profiles.level.id if _user.Profiles.level else None,
                 'scoring': _user.Profiles.scoring,
                 'official': _user.Profiles.official,
                 'name': unicode(_user.get_full_name()),
-                'avatar': getThumb(_user.Profiles.avatar, '128x128') if _user.Profiles.avatar else 'default_avatar.jpg',
+                # 'avatar': getThumb(_user.Profiles.avatar, '128x128') if _user.Profiles.avatar else 'default_avatar.jpg',
                 'biography': _user.Profiles.biography,
-                'is_followed': CheckFollow(_user, _authuser),
+                # 'is_followed': CheckFollow(_user, _authuser),
                 'stat_events': _user.Events.all().count(),
                 'stat_follower': _user.Followers.all().count(),
                 'stat_following': _user.Profiles.following.all().count(),
                 'stat_comments': _user.Profiles.Comments.all().count(),
-                'fav_sports': GetFavSportsJson(_user.Profiles.favorite_sports.all()),
-                'my_events': GetMyEvents(_user),
-                'my_comments': GetMyComments(_user),
+                # 'fav_sports': GetFavSportsJson(_user.Profiles.favorite_sports.all()),
+                # 'my_events': GetMyEvents(_user),
+                # 'my_comments': GetMyComments(_user),
             }
-            Status = True
+            status = True
 
-    return JsonResponser(Status, Message="", Data=JsonContent)
+    return json_responser(status, message="", data=json_content)
 
-    MyComments = Comments.objects.filter(user=_user.Profiles, delete=False)
-    Data = [{
-        'id': item.id,
-        'author': GetUserJson(item.author.user),
-        'message': item.message,
-        'create_date': item.create_date
-    } for item in MyComments]
+    # MyComments = Comments.objects.filter(user=_user.Profiles, delete=False)
+    # Data = [{
+    #     'id': item.id,
+    #     'author': GetUserJson(item.author.user),
+    #     'message': item.message,
+    #     'create_date': item.create_date
+    # } for item in MyComments]
+    #
+    # return Data
 
-    return Data
 
+def get_user_json(remote_user, **kwargs):
+    """BURAYA AÇIKLAMA GELECEK"""
+    get_all_info = kwargs.get("get_all", False)
 
-def GetUserJson(RemoteUser, **kwargs):
-    GetAllInfo = kwargs.get("GetAll")
+    if get_all_info:
 
-    if GetAllInfo:
-
-        if len(list(RemoteUser.groups.all())) > 0:
-            Groups = []
-            for grp in RemoteUser.groups.all():
-                Groups.append(grp.name)
+        if len(list(remote_user.groups.all())) > 0:
+            groups = []
+            for grp in remote_user.groups.all():
+                groups.append(grp.name)
         else:
-            Groups = None
+            groups = None
 
-        JsonContent = {
-            'userid': str(RemoteUser.id),
-            'username': RemoteUser.username,
+        json_content = {
+            'userid': str(remote_user.id),
+            'username': remote_user.username,
             'token': str(request.session.session_key),
-            'user_is_staff': RemoteUser.is_staff,
-            'user_is_superuser': RemoteUser.is_superuser,
-            'user_groups': Groups,
-            'email': RemoteUser.email,
-            'name': unicode(RemoteUser.get_full_name())
+            'user_is_staff': remote_user.is_staff,
+            'user_is_superuser': remote_user.is_superuser,
+            'user_groups': groups,
+            'email': remote_user.email,
+            'name': unicode(remote_user.get_full_name())
         }
 
     else:
-        JsonContent = {
-            'userid': str(RemoteUser.id),
-            'username': RemoteUser.username,
-            'user_is_staff': RemoteUser.is_staff,
-            'user_is_superuser': RemoteUser.is_superuser,
-            'email': RemoteUser.email,
-            'name': unicode(RemoteUser.get_full_name()),
+        json_content = {
+            'userid': str(remote_user.id),
+            'username': remote_user.username,
+            'user_is_staff': remote_user.is_staff,
+            'user_is_superuser': remote_user.is_superuser,
+            'email': remote_user.email,
+            'name': unicode(remote_user.get_full_name()),
             'avatar': 'default_avatar.jpg',
-            'account_type': RemoteUser.Accounts.user_type
+            'account_type': remote_user.Accounts.user_type
         }
 
-    return JsonContent
+    return json_content
 
 
-def LoginUser(request, RemoteUser):
-    if RemoteUser.is_active:
-        RemoteUser.backend = 'django.contrib.auth.backends.ModelBackend'
-        doLogin(request, RemoteUser)
-        JsonContent = GetUserJson(RemoteUser)
-        JsonContent.update({'token': str(request.session.session_key)})
-        Status = True
-        Message = "Giriş Başarılı"
+def login_user(request, remote_user):
+    if remote_user.is_active:
+        remote_user.backend = 'django.contrib.auth.backends.ModelBackend'
+        do_login(request, remote_user)
+        json_content = get_user_json(remote_user)
+        json_content.update({'token': str(request.session.session_key)})
+        message = "Giriş Başarılı"
+        status = True
     else:
-        Message = "Hesabınız Aktif Değil"
-        Status = False
-    return (Status, Message, JsonContent)
+        json_content = {}
+        message = "Hesabınız Aktif Değil"
+        status = False
+    return status, message, json_content
 
 
-def BaseLogin(request, **kwargs):
+def base_login(request, **kwargs):
     """Logins user. Required parameters are:
             username, password.
         returns:
@@ -207,111 +209,111 @@ def BaseLogin(request, **kwargs):
                 'user_groups': Groups,
                 'email': RemoteUser.email,
                 'name': unicode(RemoteUser.get_full_name())
-        as a dict, or returns Status (False) and Error Message.
+        as a dict, or returns status (False) and Error Message.
     """
 
-    AllParams = GetParams(request)
+    all_params = get_params(request)
     for key, val in kwargs.iteritems():
-        AllParams.update({key, val})
-    Status = False
-    Message = "Yeterli argüman gönderilmedi."
-    JsonContent = {}
-    UserName = AllParams.get("username")
-    Password = AllParams.get("password")
-    print UserName, Password
+        all_params.update({key, val})
 
-    RemoteUser = None
+    status = False
+    message = "Yeterli argüman gönderilmedi."
+    json_content = {}
+    user_name = all_params.get("username")
+    password = all_params.get("password")
+    print user_name, password
 
-    if UserName and Password:
+    remote_user = None
+
+    if user_name and password:
         try:
             try:
-                RemoteUser = User.objects.get(username=UserName.lower())
+                remote_user = User.objects.get(username=user_name.lower())
             except:
-                RemoteUser = User.objects.get(email=UserName.lower())
+                remote_user = User.objects.get(email=user_name.lower())
 
-            RemoteUser = authenticate(username=RemoteUser.username, password=Password)
-            if RemoteUser is None:
-                Message = "Kullanıcı adı veya parolanız hatalı."
+            remote_user = authenticate(username=remote_user.username, password=password)
+            if remote_user is None:
+                message = "Kullanıcı adı veya parolanız hatalı."
         except ObjectDoesNotExist:
-            Message = "'%s' Kullanıcısı Bulunamadı." % smart_str(UserName)
-            Status = False
-        except:
-            Message = "Şifre yanlış."
-            Status = False
+            message = "'%s' Kullanıcısı Bulunamadı." % smart_str(user_name)
+            status = False
+        except Exception as uee:
+            message = "Şifre yanlış."
+            status = False
 
-    if RemoteUser:
-        return LoginUser(request, RemoteUser)
-    return (Status, Message, JsonContent)
+    if remote_user:
+        return login_user(request, remote_user)
+    return status, message, json_content
 
 
-def CheckUserSession(Token):
+def check_user_session(token):
     """Checks wheather user is online or not.
     If user is online means: user has a session, it returns user object, if not: returns False
     """
     try:
-        UserSession = Session.objects.get(session_key=Token)
-        UserID = UserSession.get_decoded().get('_auth_user_id')
-        SessionUser = User.objects.get(id=UserID)
-        return SessionUser
+        user_session = Session.objects.get(session_key=token)
+        user_id = user_session.get_decoded().get('_auth_user_id')
+        session_user = User.objects.get(id=user_id)
+        return session_user
     except:
         return False
 
 
 @csrf_exempt
-def ApiLogin(request, **kwargs):
+def api_login(request, **kwargs):
     """Logins user"""
-
-    JsonResponse = BaseLogin(request, **kwargs)
-    return JsonResponser(JsonResponse[0], JsonResponse[1], JsonResponse[2])
+    json_response = base_login(request, **kwargs)
+    return json_responser(json_response[0], json_response[1], json_response[2])
 
 
 @csrf_exempt
-def ApiLogout(request):
-    AllParams = GetParams(request)
-    Token = AllParams.get("token")
-    Status = False
-    Message = "Yeterli argüman gönderilmedi."
+def api_logout(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
 
-    RequestedUser = CheckUserSession(Token)
-    if RequestedUser:
-        UserSession = Session.objects.get(session_key=Token)
-        UserSession.delete()
-        Status = True
-        Message = "Çıkış başarılı."
+    requested_user = check_user_session(token)
+    if requested_user:
+        user_session = Session.objects.get(session_key=token)
+        user_session.delete()
+        status = True
+        message = "Çıkış başarılı."
     else:
-        Status = False
-        Message = "Kullanıcı bulunamadı."
+        status = False
+        message = "Kullanıcı bulunamadı."
 
-    return JsonResponser(Status, Message, None)
+    return json_responser(status, message, None)
 
 
 @csrf_exempt
-def CheckAuth(request):
-    AllParams = GetParams(request)
-    Token = AllParams.get("token")
-    Status = False
-    Message = "Yeterli argüman gönderilmedi."
+def check_auth(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    status = False
 
-    RequestedUser = CheckUserSession(Token)
-    if RequestedUser is False:
-        Message = "Kullanıcı oturumu kapalı."
-        ReqUser = None
+    requested_user = check_user_session(token)
+    if requested_user is False:
+        message = "Kullanıcı oturumu kapalı."
+        req_user = None
     else:
-        Status = True
-        Message = "Kullanıcı Oturumu açık."
-        ReqUser = {'username': RequestedUser.username,
-                   'firstName': RequestedUser.first_name,
-                   'lastName': RequestedUser.last_name,
-                   }
+        status = True
+        message = "Kullanıcı Oturumu açık."
+        req_user = {'username': requested_user.username,
+                    'firstName': requested_user.first_name,
+                    'lastName': requested_user.last_name,
+                    }
 
-    return JsonResponser(Status, Message, ReqUser)
+    return json_responser(status, message, req_user)
 
 
 @csrf_exempt
-def GetRooms(request):
-    AllParams = GetParams(request)
-    Token = AllParams.get("token")
-    _authuser = CheckUserSession(Token)
+def get_rooms(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _authuser = check_user_session(token)
     response_data = []
 
     if _authuser:
@@ -319,11 +321,10 @@ def GetRooms(request):
         response_data = []
         response_message = ""
 
-        if AllParams.get('location_id'):
-            _rooms = _authuser.Accounts.Rooms.filter(location__id=AllParams.get('location_id'))
+        if all_params.get('location_id'):
+            _rooms = _authuser.Accounts.Locations.Rooms.filter(location__id=all_params.get('location_id'))
         else:
-            _rooms = _authuser.Accounts.Rooms.all()
-
+            _rooms = _authuser.Accounts.Locations.Rooms.all()
 
         for rooms in _rooms:
             response_data.append({
@@ -335,20 +336,21 @@ def GetRooms(request):
                 # 'device': GetDeviceJson(
                 #     rooms.Devices.all().filter(type='relay_current')[0]) if rooms.Devices.all().filter(
                 #     type='relay_current').count() > 0 else False,
-                'device': GetDeviceJson(rooms.Devices.all()) if rooms.Devices.all().count() > 0 else False,
+                'device': get_device_json(rooms.Devices.all()) if rooms.Devices.all().count() > 0 else False,
             })
     else:
         response_status = False
         response_message = "Oturum kapalı"
 
-    return JsonResponser(response_status, response_message, response_data)
+    return json_responser(response_status, response_message, response_data)
 
 
 @csrf_exempt
-def GetLocations(request):
-    AllParams = GetParams(request)
-    Token = AllParams.get("token")
-    _authuser = CheckUserSession(Token)
+def get_locations(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _authuser = check_user_session(token)
     response_data = []
 
     if _authuser:
@@ -365,15 +367,15 @@ def GetLocations(request):
         response_status = False
         response_message = "Oturum kapalı"
 
-    return JsonResponser(response_status, response_message, response_data)
+    return json_responser(response_status, response_message, response_data)
 
 
 @csrf_exempt
-def GetTemp(request):
-    AllParams = GetParams(request)
-    Token = AllParams.get("token")
-    room_id = AllParams.get("room_id")
-    _authuser = CheckUserSession(Token)
+def get_temp(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _authuser = check_user_session(token)
     response_data = []
 
     if _authuser:
@@ -390,15 +392,16 @@ def GetTemp(request):
         response_status = False
         response_message = "Oturum kapalı"
 
-    return JsonResponser(response_status, response_message, response_data)
+    return json_responser(response_status, response_message, response_data)
 
 
-def GetDeviceJson(devices):
-    Data = {}
+def get_device_json(devices):
+    """BURAYA AÇIKLAMA GELECEK"""
+    data = {}
     if devices:
         dev_nr = 0
         for device in devices:
-            Data.update({
+            data.update({
                 dev_nr: {
                     'id': device.id,
                     'name': device.name,
@@ -409,29 +412,31 @@ def GetDeviceJson(devices):
             })
             dev_nr += 1
     else:
-        Data = None
+        data = None
 
-    return Data
+    return data
 
 
-def GetRoomJson(room):
+def get_room_json(room):
+    """BURAYA AÇIKLAMA GELECEK"""
     if room:
-        Data = {
+        data = {
             'id': room.id,
             'name': room.name
         }
     else:
-        Data = None
+        data = None
 
-    return Data
+    return data
 
 
 @csrf_exempt
-def GetRelays(request):
-    AllParams = GetParams(request)
-    Token = AllParams.get("token")
-    room_id = AllParams.get("room_id", None)
-    _authuser = CheckUserSession(Token)
+def get_relays(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    room_id = all_params.get("room_id", None)
+    _authuser = check_user_session(token)
     response_data = []
 
     if _authuser:
@@ -444,64 +449,62 @@ def GetRelays(request):
         else:
             _relays = Relays.objects.filter(room__account__user=_authuser)
 
-        _relays = _relays.order_by("device","relay_no")
+        _relays = _relays.order_by("device", "relay_no")
 
         for relay in _relays:
             response_data.append({
                 'id': relay.id,
-                'device': GetDeviceJson([relay.device]),
+                'device': get_device_json([relay.device]),
                 'room_id': relay.room.id,
-                'room': GetRoomJson(relay.room),
+                'room': get_room_json(relay.room),
                 'pressed': relay.pressed,
                 'name': relay.name,
                 'relay_no': relay.relay_no,
                 'type': relay.type,
                 'icon': relay.icon,
-                'total_instant_current':relay.total_instant_current,
-                'total_instant_power':relay.total_instant_power,
+                'total_instant_current': relay.total_instant_current,
+                'total_instant_power': relay.total_instant_power,
             })
 
     else:
         response_status = False
         response_message = "Oturum kapalı"
 
-    return JsonResponser(response_status, response_message, response_data)
+    return json_responser(response_status, response_message, response_data)
 
 
 @csrf_exempt
-def SendCommand(request):
-    AllParams = GetParams(request)
+def send_command(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    AllParams = get_params(request)
     Token = AllParams.get("token")
     relay_id = AllParams.get("relay_id")
     _command = AllParams.get("command")
     _device_id = AllParams.get("device_id")
-    _authuser = CheckUserSession(Token)
-
+    _authuser = check_user_session(Token)
 
     if _command == 'LST':
         _relays = Relays.objects.filter(device__id=_device_id, room__account__user=_authuser)
         stats = []
         for item in _relays:
-            stats.append({"DN":item.device.name,"RN":item.relay_no,"S":int(item.pressed)})
+            stats.append({"DN": item.device.name, "RN": item.relay_no, "S": int(item.pressed)})
 
-        return JsonResponser(True, None, stats)
+        return json_responser(status=True, data=stats)
 
     if _command == 'CIW':
         _relays = Relays.objects.filter(device__id=_device_id, room__account__user=_authuser)
         stats = []
         for item in _relays:
-            stats.append({"DN":item.device.name,"RN":item.relay_no,"I":item.total_instant_current,"W":item.total_instant_power})
+            stats.append({"DN": item.device.name, "RN": item.relay_no, "I": item.total_instant_current,
+                          "W": item.total_instant_power})
 
-        return JsonResponser(True, None, stats)
+        return json_responser(status=True, data=stats)
 
     _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
 
-    host = _relay.device.ip
-    port = _relay.device.port
-
     if _relay.type == 'switch' or _relay.type == 'push':
-        if _command == '1':
 
+        if _command == '1':
             _cmd = cache.get(_relay.device.name, [])
             _cmd.append({"CMD": "RC", "RN": _relay.relay_no, "ST": 1})
             cache.set(_relay.device.name, _cmd)
@@ -514,13 +517,13 @@ def SendCommand(request):
             _cmd.append({"CMD": "RC", "RN": _relay.relay_no, "ST": 0})
             cache.set(_relay.device.name, _cmd)
 
-
             _relay.pressed = False
             _relay.save()
             return HttpResponse('OK-' + str(_relay.relay_no) + '-0')
 
 
 def relay_control(request):
+    """BURAYA AÇIKLAMA GELECEK"""
     if request.GET.get("relay"):
         relay = Relays.objects.get(pk=request.GET.get("relay"))
 
@@ -539,25 +542,24 @@ def relay_control(request):
 
         relay.save()
 
-        print cache.get(relay.device.name,[])
+        print cache.get(relay.device.name, [])
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
 def cron_control(request):
-
+    """BURAYA AÇIKLAMA GELECEK"""
     open_count = 0
     close_count = 0
     now_date = datetime.now()
 
     _devices = Crons.objects.filter(day=now_date.weekday(),
-                                 switch_on_time__hour=now_date.strftime('%H'),
-                                 switch_on_time__minute=now_date.strftime('%M')).values('relay__device').distinct()
+                                    switch_on_time__hour=now_date.strftime('%H'),
+                                    switch_on_time__minute=now_date.strftime('%M')).values('relay__device').distinct()
 
     for item in _devices:
 
         device_id = item['relay__device']
-
 
         _device = Devices.objects.get(pk=device_id)
 
@@ -573,7 +575,7 @@ def cron_control(request):
         for item in crons:
             try:
                 _cmd = cache.get(item.relay.device.name, [])
-                _cmd.append({"CMD":"RC", "RN":item.relay.relay_no, "ST":1 })
+                _cmd.append({"CMD": "RC", "RN": item.relay.relay_no, "ST": 1})
                 cache.set(item.relay.device.name, _cmd)
                 open_count += 1
             except:
@@ -593,14 +595,10 @@ def cron_control(request):
             except:
                 pass
 
-
         _inprocess = cache.get("in_process", {})
         del _inprocess[_device.name]
         cache.set("in_process", _inprocess)
 
-
-
-
     return HttpResponse(
         "Open : %s, Close: %s Time: %s," % (
-        str(open_count), str(close_count), now_date.strftime('%H:%M')))
+            str(open_count), str(close_count), now_date.strftime('%H:%M')))
