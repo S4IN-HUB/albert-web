@@ -100,25 +100,28 @@ class DataHandler(object):
                 elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button', None) is None:
                     raise Exception("The cached IR BUTTON data for device %s is unavailable" % self.device.name)
                 else:
-                    for key, value in cache.get(self.device.name)['set_ir_button']:
+                    try:
+                        for key, value in cache.get(self.device.name)['set_ir_button']:
 
-                        try:
-                            remote = IrRemote.objects.get(pk=key)
-                        except ObjectDoesNotExist:
-                            cache.set(self.device.name, {'set_ir_button': None})
-                            raise Exception("%s numbered IR REMOTE record does not exist!" % value)
+                            try:
+                                remote = IrRemote.objects.get(pk=key)
+                            except ObjectDoesNotExist:
+                                cache.set(self.device.name, {'set_ir_button': None})
+                                raise Exception("%s numbered IR REMOTE record does not exist!" % value)
 
-                        try:
-                            button = IrButton.objects.get(ir_remote=remote, id=value)
-                            button.ir_type = _data[1]
-                            button.ir_code = _data[3]
-                            button.ir_bits = _data[5]
-                            button.save()
-                        except ObjectDoesNotExist:
-                            cache.set(self.device.name, {'set_ir_button': None})
-                            raise Exception("%s numbered button record does not exist!" % value)
+                            try:
+                                button = IrButton.objects.get(ir_remote=remote, id=value)
+                                button.ir_type = _data[1]
+                                button.ir_code = _data[3]
+                                button.ir_bits = _data[5]
+                                button.save()
+                            except ObjectDoesNotExist:
+                                cache.set(self.device.name, {'set_ir_button': None})
+                                raise Exception("%s numbered button record does not exist!" % value)
 
-                    cache.set(self.device.name, {'set_ir_button': None})
+                        cache.set(self.device.name, {'set_ir_button': None})
+                    except:
+                        print "STRING INDICES MUST BE INTEGERS"
 
             else:
                 print "Unexpected data: %s" % _data
