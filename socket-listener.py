@@ -127,6 +127,7 @@ class DataHandler(object):
                     print "Unexpected data: %s" % _data
         except:
             print "STRING INDICES MUST BE INTEGERS"
+        print "process değil."
 
     def send_command(self):
         """
