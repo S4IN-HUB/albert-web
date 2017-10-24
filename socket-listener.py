@@ -196,8 +196,7 @@ class DataHandler(object):
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
         while True:
-            if True:
-            # try:
+            try:
                 # self.send_command()
                 self.client_data = self.client_conn.recv(128)
                 print "Raw DATA: ", self.client_data
@@ -224,10 +223,13 @@ class DataHandler(object):
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
                     # saçmalıyor. O yüzden bağlantının kapatılması için while'dan çıkılması gerekmekte.
                     # continue
-            # except Exception as uee:
-            #     print uee
-            #     self.client_conn.close()
-            #     break
+            except Exception as uee:
+                print uee
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
+                self.client_conn.close()
+                break
 
     def write(self, client_conn, client_addr):
         """
