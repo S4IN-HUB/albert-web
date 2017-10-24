@@ -66,7 +66,9 @@ class DataHandler(object):
 
             if _data[0] == "DN":
                 print "Hata Burada DN"
-                print _data
+                print self.client_addr
+                print self.client_addr[0]
+                print self.client_addr[1]
                 # Örnek veri: #DN#TANKAR001#0.0.0.0
                 if True:
                 # try:
