@@ -184,9 +184,7 @@ class DataHandler(object):
             try:
                 # self.send_command()
                 self.client_data = self.client_conn.recv(128)
-                print "1:", self.client_data
-                self.client_data = self.client_data.encode('utf-8')
-                print "2:", self.client_data
+                print "Raw DATA: ", self.client_data
                 if self.client_data:
                     # add redis lock to device, then release the lock.
                     socket_locked = False
