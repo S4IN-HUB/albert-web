@@ -64,8 +64,6 @@ class DataHandler(object):
                     "Data arrived from %s but working with %s device. Disconnecting." % (_data[1], self.device.name)
                 )
 
-            print len(_data), _data
-
             if _data[0] == "DN":
                 # Örnek veri: #DN#TANKAR001#0.0.0.0
                 try:
@@ -91,23 +89,26 @@ class DataHandler(object):
 
                 RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
 
-            elif _data[0] == "ST" and _data[1] == self.device.name:
-                # Örnek veri: #ST#TANKAR001#1#0
-                try:
-                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
-                    relay.pressed = True if not int(_data[3]) else False
-                    relay.save()
-                except ObjectDoesNotExist:
-                    raise Exception("%s numbered relay record does not exist!" % _data[2])
+            elif _data[0] == "ST":
+                if _data[1] == self.device.name
+                    # Örnek veri: #ST#TANKAR001#1#0
+                    try:
+                        relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                        relay.pressed = True if not int(_data[3]) else False
+                        relay.save()
+                    except ObjectDoesNotExist:
+                        raise Exception("%s numbered relay record does not exist!" % _data[2])
 
             elif _data[0] == "SENDIR":
                 # Örnek veri: #SENDIR#NEC#FFFFFF#24
+
                 if cache.get(self.device.name, None) is None:
                     raise Exception("The cached DEVICE data for device %s is unavailable" % self.device.name)
                 elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button',
                                                                                           None) is None:
                     raise Exception("The cached IR BUTTON data for device %s is unavailable" % self.device.name)
                 else:
+                    print "Hata Burada mi?"
                     for key, value in cache.get(self.device.name)['set_ir_button']:
 
                         try:
