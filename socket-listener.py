@@ -9,22 +9,25 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 if "DJANGO_SETTINGS_MODULE" not in os.environ:
     os.environ["DJANGO_SETTINGS_MODULE"] = "base.settings"
 
-import django
 import psutil
 import socket
 from thread import start_new_thread
 from time import sleep
 
+import django
 django.setup()
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
-from modules.customers.models import RelayCurrentValues, Relays, Devices
+from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton, IrRemote
 
 port = 12121
 
 
 class DataHandler(object):
+    """
+    Socket data handler class
+    """
     def __init__(self):
         self.client_conn = None
         self.client_addr = None
@@ -35,6 +38,10 @@ class DataHandler(object):
         self.device = None
 
     def parse_data(self):
+        """
+        String Data parser
+        :return:
+        """
         self.splitted_data = self.client_data.split('\r\n')
         self.parsed_data = []
         for item in self.splitted_data:
@@ -43,6 +50,10 @@ class DataHandler(object):
         print self.parsed_data
 
     def process_data(self):
+        """
+        Data is processed and recorded in here
+        :return:
+        """
         for _data in self.parsed_data:
             if _data is None or not _data:
                 continue
@@ -82,10 +93,41 @@ class DataHandler(object):
                 except ObjectDoesNotExist:
                     raise Exception("%s numbered relay record does not exist!" % _data[2])
 
+            elif _data[0] == "SENDIR":
+                # Örnek veri: #SENDIR#NEC#FFFFFF#24
+                if cache.get(self.device.name, None) is None:
+                    raise Exception("The cached DEVICE data for device %s is unavailable" % self.device.name)
+                elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button', None) is None:
+                    raise Exception("The cached IR BUTTON data for device %s is unavailable" % self.device.name)
+                else:
+                    for key, value in cache.get(self.device.name)['set_ir_button']:
+
+                        try:
+                            remote = IrRemote.objects.get(pk=key)
+                        except ObjectDoesNotExist:
+                            cache.set(self.device.name, {'set_ir_button': None})
+                            raise Exception("%s numbered IR REMOTE record does not exist!" % value)
+
+                        try:
+                            button = IrButton.objects.get(ir_remote=remote, id=value)
+                            button.ir_type = _data[1]
+                            button.ir_code = _data[3]
+                            button.ir_bits = _data[5]
+                            button.save()
+                        except ObjectDoesNotExist:
+                            cache.set(self.device.name, {'set_ir_button': None})
+                            raise Exception("%s numbered button record does not exist!" % value)
+
+                    cache.set(self.device.name, {'set_ir_button': None})
+
             else:
                 print "Unexpected data: %s" % _data
 
     def send_command(self):
+        """
+        Send command to device
+        :return:
+        """
         if self.device:
             # checks locks and processes.
             in_process = cache.get("in_process", {})
@@ -94,17 +136,18 @@ class DataHandler(object):
             if not in_process.get(self.device.name, False):
 
                 commands = cache.get(self.device.name, [])
-                # commands = {}
-                # for _cmd in cache_commands:  # to get only final values for each relays.
-                #     commands.update({_cmd['RN']: _cmd})
                 unsend_commands = []
-                if len(commands) > 0:
+
+                if len(commands):
+
                     if not socket_lock:
                         print "locked."
                         return
+
                     for cmd in commands:
                         parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
                         print parsed_command
+
                         try:
                             self.client_conn.send(parsed_command)
                             cmd.update({'send': True})
@@ -112,13 +155,14 @@ class DataHandler(object):
                         except Exception as uee:
                             cmd.update({'send': False})
                             print uee
-                            #self.client_conn.close()
+                            # self.client_conn.close()
                             print('Unable to send command %s to Client' % parsed_command)
                             break
 
                     for cmd in commands:
                         if cmd.pop('send', False) is False:
                             unsend_commands.append(cmd)
+
                     if len(unsend_commands) > 0:
                         cache.set(self.device.name, unsend_commands)
                         raise Exception("There are unsend commands in stack!")
@@ -126,6 +170,12 @@ class DataHandler(object):
                         cache.delete(self.device.name)
 
     def read(self, client_conn, client_addr):
+        """
+        Read data from Socket
+        :param client_conn:
+        :param client_addr:
+        :return:
+        """
         self.client_conn = client_conn
         self.client_addr = client_addr
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
@@ -163,6 +213,12 @@ class DataHandler(object):
                 break
 
     def write(self, client_conn, client_addr):
+        """
+        Write data to socket
+        :param client_conn:
+        :param client_addr:
+        :return:
+        """
         self.client_conn = client_conn
         self.client_addr = client_addr
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
@@ -178,7 +234,7 @@ class DataHandler(object):
 
 class SocketServer(object):
     """
-    Socket server Sınıfı
+    Socket server Class
     """
 
     def __init__(self, _port):
@@ -193,6 +249,10 @@ class SocketServer(object):
         self.setup()
 
     def setup(self):
+        """
+        Socket setup
+        :return:
+        """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
@@ -211,6 +271,10 @@ class SocketServer(object):
             sys.exit()
 
     def runserver(self):
+        """
+        Run seocket server
+        :return:
+        """
         while True:
             try:
                 self.client_conn, self.client_addr = self.socket.accept()
