@@ -63,12 +63,12 @@ class DataHandler(object):
                 )
 
             if _data[0] == "DN":
-                # Örnek veri: #CV#TANKAR001#0.0.0.0
+                # Örnek veri: #DN#TANKAR001#0.0.0.0
                 try:
                     self.device = Devices.objects.get(name=_data[1])
-                    self.device.ip = str(_data[2])
+                    self.device.ip = str(_data[2]) if len(_data) > 2 else '0.0.0.0'
                     self.device.wan_ip = self.client_addr[0]
-                    # self.device.port = self.client_addr[1]
+                    self.device.port = self.client_addr[1]
                     self.device.save()
                     if not self.device.status:
                         raise PermissionDenied("Device is disabled via admin!")
