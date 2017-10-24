@@ -65,31 +65,25 @@ class DataHandler(object):
                 )
 
             if _data[0] == "DN":
-                print "Hata Burada DN"
-                print self.client_addr
-                print self.client_addr[0]
-                print self.client_addr[1]
                 # Örnek veri: #DN#TANKAR001#0.0.0.0
-                if True:
-                # try:
+                try:
                     self.device = Devices.objects.get(name=_data[1])
                     if len(_data) > 2:
                         self.device.ip = str(_data[2])
                     else:
                         self.device.ip = '0.0.0.0'
+                    print self.client_addr
+                    print self.client_addr[0]
+                    print self.client_addr[1]
                     self.device.wan_ip = self.client_addr[0]
-                    self.device.port = self.client_addr[1]
+                    self.device.port = str(self.client_addr[1])
                     self.device.save()
                     if not self.device.status:
                         raise PermissionDenied("Device is disabled via admin!")
-                # except ObjectDoesNotExist:
-                #     raise Exception("%s device is not found in DB" % (_data[1]))
-
-                print "Hata Burada DN"
+                except ObjectDoesNotExist:
+                    raise Exception("%s device is not found in DB" % (_data[1]))
 
             elif _data[0] == "CV":
-                print "Hata Burada CV"
-
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
                 try:
                     relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
@@ -97,10 +91,8 @@ class DataHandler(object):
                     raise Exception("%s numbered relay record does not exist!" % _data[2])
 
                 RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
-                print "Hata Burada CV"
 
             elif _data[0] == "ST":
-                print "Hata Burada ST"
                 if _data[1] == self.device.name:
                     # Örnek veri: #ST#TANKAR001#1#0
                     try:
@@ -109,11 +101,9 @@ class DataHandler(object):
                         relay.save()
                     except ObjectDoesNotExist:
                         raise Exception("%s numbered relay record does not exist!" % _data[2])
-                print "Hata Burada ST"
 
             elif _data[0] == "SENDIR":
                 # Örnek veri: #SENDIR#NEC#FFFFFF#24
-                print "Hata Burada SENDIR"
 
                 if cache.get(self.device.name, None) is None:
                     raise Exception("The cached DEVICE data for device %s is unavailable" % self.device.name)
@@ -140,8 +130,6 @@ class DataHandler(object):
                             raise Exception("%s numbered button record does not exist!" % value)
 
                     cache.set(self.device.name, {'set_ir_button': None})
-
-                print "Hata Burada SENDIR"
 
             else:
                 print "Unexpected data: %s" % _data
