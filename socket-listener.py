@@ -145,7 +145,10 @@ class DataHandler(object):
                         return
 
                     for cmd in commands:
-                        parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
+                        if len(cmd) <= 2:
+                            parsed_command = "#{cmd}#".format(cmd=cmd['CMD'])
+                        else:
+                            parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
                         print parsed_command
 
                         try:
