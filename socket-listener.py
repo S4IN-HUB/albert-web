@@ -66,9 +66,10 @@ class DataHandler(object):
 
             if _data[0] == "DN":
                 print "Hata Burada DN"
-
+                print _data
                 # Örnek veri: #DN#TANKAR001#0.0.0.0
-                try:
+                if True:
+                # try:
                     self.device = Devices.objects.get(name=_data[1])
                     if len(_data) > 2:
                         self.device.ip = str(_data[2])
@@ -79,8 +80,9 @@ class DataHandler(object):
                     self.device.save()
                     if not self.device.status:
                         raise PermissionDenied("Device is disabled via admin!")
-                except ObjectDoesNotExist:
-                    raise Exception("%s device is not found in DB" % (_data[1]))
+                # except ObjectDoesNotExist:
+                #     raise Exception("%s device is not found in DB" % (_data[1]))
+
                 print "Hata Burada DN"
 
             elif _data[0] == "CV":
