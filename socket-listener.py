@@ -57,77 +57,77 @@ class DataHandler(object):
         :return:
         """
         print "process basi..."
-        try:
-            for _data in self.parsed_data:
-                if _data is None or not _data:
-                    continue
-                elif self.device and _data[1] != self.device.name:
-                    raise Exception(
-                        "Data arrived from %s but working with %s device. Disconnecting." % (_data[1], self.device.name)
-                    )
+        for _data in self.parsed_data:
+            if _data is None or not _data:
+                continue
+            elif self.device and _data[1] != self.device.name:
+                raise Exception(
+                    "Data arrived from %s but working with %s device. Disconnecting." % (_data[1], self.device.name)
+                )
 
-                if _data[0] == "DN":
-                    # Örnek veri: #DN#TANKAR001#0.0.0.0
-                    try:
-                        self.device = Devices.objects.get(name=_data[1])
-                        self.device.ip = str(_data[2]) if len(_data) > 2 else '0.0.0.0'
-                        self.device.wan_ip = self.client_addr[0]
-                        self.device.port = self.client_addr[1]
-                        self.device.save()
-                        if not self.device.status:
-                            raise PermissionDenied("Device is disabled via admin!")
-                    except ObjectDoesNotExist:
-                        raise Exception("%s device is not found in DB" % (_data[1]))
-
-                elif _data[0] == "CV":
-                    # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
-                    try:
-                        relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
-                    except ObjectDoesNotExist:
-                        raise Exception("%s numbered relay record does not exist!" % _data[2])
-
-                    RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
-
-                elif _data[0] == "ST" and _data[1] == self.device.name:
-                    # Örnek veri: #ST#TANKAR001#1#0
-                    try:
-                        relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
-                        relay.pressed = True if not int(_data[3]) else False
-                        relay.save()
-                    except ObjectDoesNotExist:
-                        raise Exception("%s numbered relay record does not exist!" % _data[2])
-
-                elif _data[0] == "SENDIR":
-                    # Örnek veri: #SENDIR#NEC#FFFFFF#24
-                    if cache.get(self.device.name, None) is None:
-                        raise Exception("The cached DEVICE data for device %s is unavailable" % self.device.name)
-                    elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button',
-                                                                                              None) is None:
-                        raise Exception("The cached IR BUTTON data for device %s is unavailable" % self.device.name)
+            if _data[0] == "DN":
+                # Örnek veri: #DN#TANKAR001#0.0.0.0
+                try:
+                    self.device = Devices.objects.get(name=_data[1])
+                    if len(_data) > 2:
+                        self.device.ip = str(_data[2])
                     else:
-                        for key, value in cache.get(self.device.name)['set_ir_button']:
+                        self.device.ip = '0.0.0.0'
+                    self.device.wan_ip = self.client_addr[0]
+                    self.device.port = self.client_addr[1]
+                    self.device.save()
+                    if not self.device.status:
+                        raise PermissionDenied("Device is disabled via admin!")
+                except ObjectDoesNotExist:
+                    raise Exception("%s device is not found in DB" % (_data[1]))
 
-                            try:
-                                remote = IrRemote.objects.get(pk=key)
-                            except ObjectDoesNotExist:
-                                cache.set(self.device.name, {'set_ir_button': None})
-                                raise Exception("%s numbered IR REMOTE record does not exist!" % value)
+            elif _data[0] == "CV":
+                # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
+                try:
+                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                except ObjectDoesNotExist:
+                    raise Exception("%s numbered relay record does not exist!" % _data[2])
 
-                            try:
-                                button = IrButton.objects.get(ir_remote=remote, id=value)
-                                button.ir_type = _data[1]
-                                button.ir_code = _data[3]
-                                button.ir_bits = _data[5]
-                                button.save()
-                            except ObjectDoesNotExist:
-                                cache.set(self.device.name, {'set_ir_button': None})
-                                raise Exception("%s numbered button record does not exist!" % value)
+                RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
 
-                        cache.set(self.device.name, {'set_ir_button': None})
+            elif _data[0] == "ST" and _data[1] == self.device.name:
+                # Örnek veri: #ST#TANKAR001#1#0
+                try:
+                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                    relay.pressed = True if not int(_data[3]) else False
+                    relay.save()
+                except ObjectDoesNotExist:
+                    raise Exception("%s numbered relay record does not exist!" % _data[2])
+
+            elif _data[0] == "SENDIR":
+                # Örnek veri: #SENDIR#NEC#FFFFFF#24
+                if cache.get(self.device.name, None) is None:
+                    raise Exception("The cached DEVICE data for device %s is unavailable" % self.device.name)
+                elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button',
+                                                                                          None) is None:
+                    raise Exception("The cached IR BUTTON data for device %s is unavailable" % self.device.name)
                 else:
-                    print "Unexpected data: %s" % _data
-        except:
-            print "STRING INDICES MUST BE INTEGERS"
+                    for key, value in cache.get(self.device.name)['set_ir_button']:
+
+                        try:
+                            remote = IrRemote.objects.get(pk=key)
+                        except ObjectDoesNotExist:
+                            cache.set(self.device.name, {'set_ir_button': None})
+                            raise Exception("%s numbered IR REMOTE record does not exist!" % value)
+
+                        try:
+                            button = IrButton.objects.get(ir_remote=remote, id=value)
+                            button.ir_type = _data[1]
+                            button.ir_code = _data[3]
+                            button.ir_bits = _data[5]
+                            button.save()
+                        except ObjectDoesNotExist:
+                            cache.set(self.device.name, {'set_ir_button': None})
+                            raise Exception("%s numbered button record does not exist!" % value)
+
+                    cache.set(self.device.name, {'set_ir_button': None})
+            else:
+                print "Unexpected data: %s" % _data
         print "process sonu."
 
     def send_command(self):
