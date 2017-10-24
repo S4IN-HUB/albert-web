@@ -54,53 +54,53 @@ class DataHandler(object):
         Data is processed and recorded in here
         :return:
         """
-        for _data in self.parsed_data:
-            if _data is None or not _data:
-                continue
-            elif self.device and _data[1] != self.device.name:
-                raise Exception(
-                    "Data arrived from %s but working with %s device. Disconnecting." % (_data[1], self.device.name)
-                )
+        try:
+            for _data in self.parsed_data:
+                if _data is None or not _data:
+                    continue
+                elif self.device and _data[1] != self.device.name:
+                    raise Exception(
+                        "Data arrived from %s but working with %s device. Disconnecting." % (_data[1], self.device.name)
+                    )
 
-            if _data[0] == "DN":
-                # Örnek veri: #DN#TANKAR001#0.0.0.0
-                try:
-                    self.device = Devices.objects.get(name=_data[1])
-                    self.device.ip = str(_data[2]) if len(_data) > 2 else '0.0.0.0'
-                    self.device.wan_ip = self.client_addr[0]
-                    self.device.port = self.client_addr[1]
-                    self.device.save()
-                    if not self.device.status:
-                        raise PermissionDenied("Device is disabled via admin!")
-                except ObjectDoesNotExist:
-                    raise Exception("%s device is not found in DB" % (_data[1]))
-
-            elif _data[0] == "CV":
-                # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
-                try:
-                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
-                except ObjectDoesNotExist:
-                    raise Exception("%s numbered relay record does not exist!" % _data[2])
-
-                RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
-
-            elif _data[0] == "ST" and _data[1] == self.device.name:
-                # Örnek veri: #ST#TANKAR001#1#0
-                try:
-                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
-                    relay.pressed = True if not int(_data[3]) else False
-                    relay.save()
-                except ObjectDoesNotExist:
-                    raise Exception("%s numbered relay record does not exist!" % _data[2])
-
-            elif _data[0] == "SENDIR":
-                # Örnek veri: #SENDIR#NEC#FFFFFF#24
-                if cache.get(self.device.name, None) is None:
-                    raise Exception("The cached DEVICE data for device %s is unavailable" % self.device.name)
-                elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button', None) is None:
-                    raise Exception("The cached IR BUTTON data for device %s is unavailable" % self.device.name)
-                else:
+                if _data[0] == "DN":
+                    # Örnek veri: #DN#TANKAR001#0.0.0.0
                     try:
+                        self.device = Devices.objects.get(name=_data[1])
+                        self.device.ip = str(_data[2]) if len(_data) > 2 else '0.0.0.0'
+                        self.device.wan_ip = self.client_addr[0]
+                        self.device.port = self.client_addr[1]
+                        self.device.save()
+                        if not self.device.status:
+                            raise PermissionDenied("Device is disabled via admin!")
+                    except ObjectDoesNotExist:
+                        raise Exception("%s device is not found in DB" % (_data[1]))
+
+                elif _data[0] == "CV":
+                    # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
+                    try:
+                        relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                    except ObjectDoesNotExist:
+                        raise Exception("%s numbered relay record does not exist!" % _data[2])
+
+                    RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
+
+                elif _data[0] == "ST" and _data[1] == self.device.name:
+                    # Örnek veri: #ST#TANKAR001#1#0
+                    try:
+                        relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                        relay.pressed = True if not int(_data[3]) else False
+                        relay.save()
+                    except ObjectDoesNotExist:
+                        raise Exception("%s numbered relay record does not exist!" % _data[2])
+
+                elif _data[0] == "SENDIR":
+                    # Örnek veri: #SENDIR#NEC#FFFFFF#24
+                    if cache.get(self.device.name, None) is None:
+                        raise Exception("The cached DEVICE data for device %s is unavailable" % self.device.name)
+                    elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button', None) is None:
+                        raise Exception("The cached IR BUTTON data for device %s is unavailable" % self.device.name)
+                    else:
                         for key, value in cache.get(self.device.name)['set_ir_button']:
 
                             try:
@@ -120,13 +120,13 @@ class DataHandler(object):
                                 raise Exception("%s numbered button record does not exist!" % value)
 
                         cache.set(self.device.name, {'set_ir_button': None})
-                    except:
-                        print "STRING INDICES MUST BE INTEGERS"
+                else:
+                    print "Unexpected data: %s" % _data
+        except:
+            print "STRING INDICES MUST BE INTEGERS"
 
-            else:
-                print "Unexpected data: %s" % _data
 
-    def send_command(self):
+def send_command(self):
         """
         Send command to device
         :return:
