@@ -90,7 +90,7 @@ class DataHandler(object):
                 RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
 
             elif _data[0] == "ST":
-                if _data[1] == self.device.name
+                if _data[1] == self.device.name:
                     # Örnek veri: #ST#TANKAR001#1#0
                     try:
                         relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
