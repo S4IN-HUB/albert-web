@@ -56,7 +56,6 @@ class DataHandler(object):
         Data is processed and recorded in here
         :return:
         """
-        print "process basi..."
         for _data in self.parsed_data:
             if _data is None or not _data:
                 continue
@@ -64,6 +63,8 @@ class DataHandler(object):
                 raise Exception(
                     "Data arrived from %s but working with %s device. Disconnecting." % (_data[1], self.device.name)
                 )
+
+            print len(_data), _data
 
             if _data[0] == "DN":
                 # Örnek veri: #DN#TANKAR001#0.0.0.0
@@ -128,7 +129,6 @@ class DataHandler(object):
                     cache.set(self.device.name, {'set_ir_button': None})
             else:
                 print "Unexpected data: %s" % _data
-        print "process sonu."
 
     def send_command(self):
         """
