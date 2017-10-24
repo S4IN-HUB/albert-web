@@ -56,6 +56,7 @@ class DataHandler(object):
         Data is processed and recorded in here
         :return:
         """
+        print "process basi..."
         try:
             for _data in self.parsed_data:
                 if _data is None or not _data:
@@ -127,7 +128,7 @@ class DataHandler(object):
                     print "Unexpected data: %s" % _data
         except:
             print "STRING INDICES MUST BE INTEGERS"
-        print "process değil."
+        print "process sonu."
 
     def send_command(self):
         """
