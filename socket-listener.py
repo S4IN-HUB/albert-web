@@ -49,7 +49,7 @@ class DataHandler(object):
         for item in self.splitted_data:
             if len(item) > 1:
                 self.parsed_data.append(item.strip('#').split('#'))
-        print self.parsed_data
+        print "Parsed DATA: ", self.parsed_data
 
     def process_data(self):
         """
