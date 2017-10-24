@@ -475,14 +475,14 @@ def get_relays(request):
 
 
 @csrf_exempt
-def send_command(request):
+def send_command(request, device=None, command=None):
     """BURAYA AÇIKLAMA GELECEK"""
-    AllParams = get_params(request)
-    Token = AllParams.get("token")
-    relay_id = AllParams.get("relay_id")
-    _command = AllParams.get("command")
-    _device_id = AllParams.get("device_id")
-    _authuser = check_user_session(Token)
+    AllParams = get_params(request) if request is not None else None
+    Token = AllParams.get("token") if AllParams is not None else None
+    relay_id = AllParams.get("relay_id") if AllParams is not None else None
+    _command = AllParams.get("command") if AllParams is not None else command
+    _device_id = AllParams.get("device_id") if AllParams is not None else None
+    _authuser = check_user_session(Token) if Token is not None else None
 
     if _command == 'LST':
         _relays = Relays.objects.filter(device__id=_device_id, room__account__user=_authuser)
@@ -501,9 +501,12 @@ def send_command(request):
 
         return json_responser(status=True, data=stats)
 
-    _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
+    try:
+        _relay = Relays.objects.get(pk=relay_id, room__account__user=_authuser)
+    except ObjectDoesNotExist:
+        _relay = None
 
-    if _relay.type == 'switch' or _relay.type == 'push':
+    if _relay is not None and (_relay.type == 'switch' or _relay.type == 'push'):
 
         if _command == '1':
             _cmd = cache.get(_relay.device.name, [])
@@ -521,6 +524,12 @@ def send_command(request):
             _relay.pressed = False
             _relay.save()
             return HttpResponse('OK-' + str(_relay.relay_no) + '-0')
+
+    else:
+        # IR Modüle komut gönderimi bu ELSE içinde yapılır.
+        if _command == 'READIR':
+            _cmd = cache.get(device.name, [])
+            _cmd.append({"CMD": _command})
 
 
 def relay_control(request):
@@ -633,6 +642,7 @@ def set_ir_command(request):
                 cache.set(button.ir_remote.device.name, {'set_ir_button': None})
 
             # Cihazdan gelen veri ile set etmek için {ilgili kumanda: butonun ID} şeklinde cache nesnesi oluşturuluyor
+            send_command(None, button.ir_remote.device, "READIR")
             cache.set(button.ir_remote.device.name, {'set_ir_button': {button.ir_remote_id: button.id}})
             messages.error(request, "%s Butonu ayarlama işlemi başladı." % button.name)
 
