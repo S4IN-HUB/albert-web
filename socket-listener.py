@@ -15,6 +15,7 @@ from thread import start_new_thread
 from time import sleep
 
 import django
+
 django.setup()
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
@@ -28,6 +29,7 @@ class DataHandler(object):
     """
     Socket data handler class
     """
+
     def __init__(self):
         self.client_conn = None
         self.client_addr = None
@@ -98,7 +100,8 @@ class DataHandler(object):
                     # Örnek veri: #SENDIR#NEC#FFFFFF#24
                     if cache.get(self.device.name, None) is None:
                         raise Exception("The cached DEVICE data for device %s is unavailable" % self.device.name)
-                    elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button', None) is None:
+                    elif cache.get(self.device.name) == {} or cache.get(self.device.name).get('set_ir_button',
+                                                                                              None) is None:
                         raise Exception("The cached IR BUTTON data for device %s is unavailable" % self.device.name)
                     else:
                         for key, value in cache.get(self.device.name)['set_ir_button']:
@@ -125,8 +128,7 @@ class DataHandler(object):
         except:
             print "STRING INDICES MUST BE INTEGERS"
 
-
-def send_command(self):
+    def send_command(self):
         """
         Send command to device
         :return:
@@ -151,7 +153,8 @@ def send_command(self):
                         if len(cmd) <= 2:
                             parsed_command = "#{cmd}#".format(cmd=cmd['CMD'])
                         else:
-                            parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'], st=cmd['ST'])
+                            parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'],
+                                                                           st=cmd['ST'])
                         print parsed_command
 
                         try:
