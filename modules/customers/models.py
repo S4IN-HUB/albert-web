@@ -85,6 +85,7 @@ class Devices(models.Model):
     name = models.CharField(max_length=50, verbose_name="Cihaz Adı", default='')
     description = models.CharField(max_length=50, verbose_name="Cihaz Tanımı", default='')
     wan_ip = models.CharField(max_length=50, verbose_name="WAN IP adresi", default='0.0.0.0')
+    ip = models.CharField(max_length=50,blank=True, null=True, verbose_name="IP adresi", default='0.0.0.0')
     status = models.BooleanField(default=True, verbose_name="Durum")
 
     @property
