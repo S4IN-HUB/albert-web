@@ -44,12 +44,17 @@ class DataHandler(object):
         String Data parser
         :return:
         """
-        self.splitted_data = self.client_data.split('\r\n')
-        self.parsed_data = []
-        for item in self.splitted_data:
-            if len(item) > 1:
-                self.parsed_data.append(item.strip('#').split('#'))
-        print "Parsed DATA: ", self.parsed_data
+
+        if '#' in self.client_data:
+
+            self.splitted_data = self.client_data.split('\r\n')
+            self.parsed_data = []
+            for item in self.splitted_data:
+                if len(item) > 1:
+                    self.parsed_data.append(item.strip('#').split('#'))
+            print "Parsed DATA: ", self.parsed_data
+        else:
+            self.parsed_data = self.client_data
 
     def process_data(self):
         """
@@ -60,6 +65,7 @@ class DataHandler(object):
 
             if _data is None or not _data:
                 continue
+
             elif self.device and _data[1] != self.device.name:
                 raise Exception(
                     "Data arrived from %s but working with %s device. Disconnecting." % (_data[1], self.device.name)
@@ -209,8 +215,10 @@ class DataHandler(object):
                         socket_lock.update({self.device.name: True})
                         cache.set("socket_locks", socket_lock)
                         print "%s locked" % self.device.name
+
                     self.parse_data()
                     self.process_data()
+
                     if socket_locked:
                         socket_lock = cache.get("in_process_socket", {})
                         socket_lock.update({self.device.name: False})
