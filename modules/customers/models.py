@@ -79,7 +79,7 @@ class Devices(models.Model):
         ('relay', '16 Röle Kartı'),
         ('ir', 'IR Modüle')
     )
-    account = models.ForeignKey(Accounts, related_name="Devices", verbose_name="Hesap")
+    account = models.ForeignKey(Accounts, null=True, blank=True, related_name="Devices", verbose_name="Hesap")
     room = models.ForeignKey(Rooms, blank=True, null=True, related_name="Devices", verbose_name='Oda')
     type = models.CharField(max_length=15, choices=device_types, verbose_name="Cihaz Tipi")
     name = models.CharField(max_length=50, verbose_name="Cihaz Adı", default='')
