@@ -69,7 +69,6 @@ class DataHandler(object):
                 # Örnek veri: #DN#TANKAR001
                 try:
                     self.device = Devices.objects.get(name=_data[1])
-
                     self.device.wan_ip = self.client_addr[0]
                     self.device.save()
 
@@ -77,7 +76,9 @@ class DataHandler(object):
                         raise PermissionDenied("Device is disabled via admin!")
 
                 except ObjectDoesNotExist:
-                    raise Exception("%s device is not found in DB" % (_data[1]))
+                    self.device = Devices(name=_data[1])
+                    self.device.wan_ip = self.client_addr[0]
+                    self.device.save()
 
             elif _data[0] == "CV":
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
