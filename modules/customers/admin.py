@@ -225,7 +225,7 @@ class IrRemoteAdmin(admin.ModelAdmin):
 
     def read_ir_button(self,obj):
 
-        if obj.type == 'IR':
+        if obj.device.type == 'IR':
             return '<a class="btn btn-info" href="/read-ir/?rc_id='+str(obj.id)+'&device_id=' + str(obj.device.id) + '"  target="process"><i class="fa fa-power-off" aria-hidden="true"></i> IR Oku</a>'
         else:
             return '-'
