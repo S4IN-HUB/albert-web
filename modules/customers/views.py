@@ -614,7 +614,7 @@ def cron_control(request):
             str(open_count), str(close_count), now_date.strftime('%H:%M')))
 
 
-def set_ir_command(request):
+def send_ir_command(request):
     """
     IR Modülünü Kumandalarına ait herhangi bir butonun IR Komutunu seçilen butona SET edebilmek için
     CACHE'e SET edilecek butona ait parametre ekler.
@@ -626,30 +626,18 @@ def set_ir_command(request):
     """
 
     if request.GET.get("button", None):
+
         try:
             button = IrButton.objects.get(pk=request.GET.get("button"))
         except ObjectDoesNotExist:
             messages.error(request, "Buton tanımına erişilemiyor.")
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-        try:
-            if cache.get(button.ir_remote.device.name) is None:
-                # Cihaz ile alakalı herhangi bir cache nesnesi yok. İlklendiriyoruz
-                cache.add(button.ir_remote.device.name, {'set_ir_button': None})
+        _cmd = cache.get(button.device.name, [])
 
-            if cache.get(button.ir_remote.device.name).get('set_ir_button') is not None:
-                # Cache'te set edilmesi beklenen bir buton varsa siliyoruz.
-                cache.set(button.ir_remote.device.name, {'set_ir_button': None})
-
-            # Cihazdan gelen veri ile set etmek için {ilgili kumanda: butonun ID} şeklinde cache nesnesi oluşturuluyor
-            send_command(None, button.ir_remote.device, "READIR")
-            cache.set(button.ir_remote.device.name, {'set_ir_button': {button.ir_remote_id: button.id}})
-            messages.error(request, "%s Butonu ayarlama işlemi başladı." % button.name)
-
-        except Exception as uee:
-            messages.error(request, "%s Butonu ayarlama işlemi başlatılamadı" % button.name)
-
-        print cache.get(button.ir_remote.device.name)
+        _command = "SENDIR#%s#%s#%s" % (button.ir_type, button.ir_code, button.ir_bits)
+        _cmd.append({'CMD': _command, })
+        cache.set(button.device.name, _cmd)
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 

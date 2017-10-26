@@ -236,10 +236,10 @@ class IrRemoteAdmin(admin.ModelAdmin):
 class IrButtonAdmin(admin.ModelAdmin):
     """IR Kumanda butonları yönetim paneli"""
 
-    list_display = ('icon', 'name', 'device', 'ir_type', 'ir_code', 'ir_bits', 'set_ir_command')
+    list_display = ('icon', 'name', 'device', 'ir_type', 'ir_code', 'ir_bits', 'send_ir_command')
     list_display_links = ('icon', 'name', 'device')
 
-    def set_ir_command(self, obj):
+    def send_ir_command(self, obj):
         """
         Seçilen butona IR komutunun set edilmesi için CACHE'e o butonun set edilebilir olduğuna dair ibare yazmaya yarar
         Bir butona set edilmek için tıklandığında cacheteki butonun bağlı olduğunu cihaza ait diğer butonların SET
@@ -247,8 +247,7 @@ class IrButtonAdmin(admin.ModelAdmin):
         :param obj:
         :return:
         """
-        return '<a class="btn btn-danger" href="/set_ir_command/?button=' + str(
-            obj.id) + '"  target="process"><i class="fa fa-gear" aria-hidden="true"></i></a>'
+        return '<a class="btn btn-danger" href="/send_ir_command/?button=' + str(obj.id) + '"  target="process"><i class="fa fa-gear" aria-hidden="true"></i></a>'
 
-    set_ir_command.allow_tags = True
-    set_ir_command.short_description = u'Ayarla'
+    send_ir_command.allow_tags = True
+    send_ir_command.short_description = u'Ayarla'
