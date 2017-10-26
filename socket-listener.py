@@ -114,13 +114,16 @@ class DataHandler(object):
                         raise Exception("%s numbered relay record does not exist!" % _data[2])
 
             elif _data[0] == "IRENCODE":
-                try:
-                    button = IrButton(device=self.device)
-                    button.ir_type = _data[1]
-                    button.ir_code = _data[3]
-                    button.ir_bits = _data[5]
-                    button.save()
-                except: pass
+
+
+                button = IrButton(device=self.device)
+
+                button.ir_type = _data[3]
+                button.ir_code = _data[4]
+                button.ir_bits = _data[5]
+
+                button.save()
+
             else:
                 print "Unexpected data: %s" % _data
 
