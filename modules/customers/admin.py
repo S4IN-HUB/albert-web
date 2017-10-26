@@ -127,7 +127,7 @@ class DevicesAdmin(admin.ModelAdmin):
     room_location.short_description = 'Konum'
     room_location.admin_order_field = 'room'
 
-    list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'ip', 'port', 'status',
+    list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'status',
                     'get_total_instant_current', 'get_total_instant_power')
 
 
