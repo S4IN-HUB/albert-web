@@ -16,7 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, IrRemote
+from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton
 
 
 def permit_response(response):
@@ -656,7 +656,7 @@ def set_ir_command(request):
 
 def read_ir(request):
 
-    _device = IrRemote.objects.get(pk=request.GET.get('rc_id'))
+    _device = Devices.objects.get(pk=request.GET.get('device_id'))
     _cmd = cache.get(_device.name, [])
     _cmd.append({'CMD':'READIR',})
     cache.set(_device.name, _cmd)
