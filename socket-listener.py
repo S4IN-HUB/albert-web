@@ -78,8 +78,11 @@ class DataHandler(object):
                 except ObjectDoesNotExist:
                     self.device = Devices(name=_data[1])
                     self.device.type = _data[2]
+                    self.device.description = _data[1]
                     self.device.wan_ip = self.client_addr[0]
                     self.device.save()
+
+                self.client_conn.send('HELLO')
 
             elif _data[0] == "CV":
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
