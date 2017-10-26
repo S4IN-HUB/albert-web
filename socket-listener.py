@@ -82,7 +82,7 @@ class DataHandler(object):
                     self.device.wan_ip = self.client_addr[0]
                     self.device.save()
 
-                #self.client_conn.send('HELLO')
+                self.client_conn.send('HELLO')
 
             elif _data[0] == "CV":
                 # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
