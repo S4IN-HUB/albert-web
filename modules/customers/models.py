@@ -229,7 +229,7 @@ class IrButton(models.Model):
     ir_bits = models.IntegerField(verbose_name="Bits", null=True, blank=True)
 
     def __unicode__(self):
-        return "%s %s" % (self.ir_remote, self.name)
+        return "%s %s" % (self.device, self.name)
 
     class Meta(object):
         verbose_name = "IR Buton"
