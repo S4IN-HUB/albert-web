@@ -656,9 +656,9 @@ def set_ir_command(request):
 
 def read_ir(request):
 
-    _device = Devices.obejects.get(pk=request.GET.get('device_id'))
+    _device = Devices.objects.get(pk=request.GET.get('device_id'))
     _cmd = cache.get(_device.name, [])
-    _cmd.append('READIR')
+    _cmd.append({'CMD':'READIR',})
     cache.set(_device.name, _cmd)
 
     return HttpResponse('OK')
