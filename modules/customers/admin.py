@@ -130,8 +130,19 @@ class DevicesAdmin(admin.ModelAdmin):
     room_location.short_description = 'Konum'
     room_location.admin_order_field = 'room'
 
+
+    def read_ir_button(self,obj):
+        if obj.type == 'IR':
+            return '<a class="btn btn-info" href="/read-ir/?device_id=' + str(obj.id) + '"  target="process"><i class="fa fa-power-off" aria-hidden="true"></i> IR Oku</a>'
+        else:
+            return '-'
+
+    read_ir_button.allow_tags = True
+    read_ir_button.short_description = 'IR Oku'
+
+
     list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'status',
-                    'get_total_instant_current', 'get_total_instant_power')
+                    'get_total_instant_current', 'get_total_instant_power','read_ir_button')
 
 
 class InlineCrons(admin.StackedInline):

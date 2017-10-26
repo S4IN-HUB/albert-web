@@ -157,18 +157,21 @@ class DataHandler(object):
                         return
 
                     for cmd in commands:
+
                         if len(cmd) <= 2:
                             parsed_command = "#{cmd}#".format(cmd=cmd['CMD'])
                         else:
-                            parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'],
-                                                                           st=cmd['ST'])
+                            parsed_command = "#{cmd}#{relay}#{st}#".format(cmd=cmd['CMD'], relay=cmd['RN'],st=cmd['ST'])
+
                         print parsed_command
 
                         try:
                             self.client_conn.send(parsed_command)
                             cmd.update({'send': True})
                             sleep(0.2)
+
                         except Exception as uee:
+
                             cmd.update({'send': False})
                             print uee
                             # self.client_conn.close()
