@@ -141,6 +141,7 @@ class DataHandler(object):
         :return:
         """
         if self.device:
+
             # checks locks and processes.
             in_process = cache.get("in_process", {})
             socket_lock = cache.get("socket_locks", {}).get(self.device.name, False)
@@ -158,6 +159,9 @@ class DataHandler(object):
 
                     for cmd in commands:
                         parsed_command = "#{cmd}#".format(cmd=cmd['CMD'])
+
+                        print parsed_command
+
                         try:
                             self.client_conn.send(parsed_command)
                             cmd.update({'send': True})
