@@ -66,7 +66,7 @@ class DataHandler(object):
                 )
 
             if _data[0] == "DN":
-                # Örnek veri: #DN#TANKAR001
+                # Örnek veri: #DN#TANKAR001#IR
                 try:
                     self.device = Devices.objects.get(name=_data[1])
                     self.device.wan_ip = self.client_addr[0]
@@ -77,6 +77,7 @@ class DataHandler(object):
 
                 except ObjectDoesNotExist:
                     self.device = Devices(name=_data[1])
+                    self.device.type = _data[2]
                     self.device.wan_ip = self.client_addr[0]
                     self.device.save()
 
