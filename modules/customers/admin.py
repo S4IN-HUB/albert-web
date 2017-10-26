@@ -122,7 +122,10 @@ class DevicesAdmin(admin.ModelAdmin):
     get_total_instant_power.short_description = u'Toplam Anlık Güç'
 
     def room_location(self, obj):
-        return obj.room.location
+        if obj.room:
+            return obj.room.location
+        else:
+            return '-'
 
     room_location.short_description = 'Konum'
     room_location.admin_order_field = 'room'
