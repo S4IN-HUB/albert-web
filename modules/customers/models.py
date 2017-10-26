@@ -221,11 +221,9 @@ class IrRemote(models.Model):
 
 
 class IrButton(models.Model):
-    ir_remote = models.ForeignKey(IrRemote, related_name="IrButtons", verbose_name="Kumanda")
+    device = models.ForeignKey(Devices, related_name="IrButtons", verbose_name="Cihaz")
     name = models.CharField(verbose_name="Buton Adı", max_length=50)
-
     icon = models.CharField(max_length=20, choices=Icons, verbose_name="Simge")
-
     ir_type = models.CharField(max_length=20, verbose_name="IR Tipi", null=True, blank=True)
     ir_code = models.CharField(max_length=16, verbose_name="IR Code", null=True, blank=True)
     ir_bits = models.IntegerField(verbose_name="Bits", null=True, blank=True)
