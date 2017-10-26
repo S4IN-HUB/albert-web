@@ -639,7 +639,7 @@ def send_ir_command(request):
         _cmd.append({'CMD': _command, })
         cache.set(button.device.name, _cmd)
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    return HttpResponse('OK')
 
 
 def read_ir(request):
