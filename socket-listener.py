@@ -57,6 +57,7 @@ class DataHandler(object):
         :return:
         """
         for _data in self.parsed_data:
+
             if _data is None or not _data:
                 continue
             elif self.device and _data[1] != self.device.name:
@@ -65,21 +66,16 @@ class DataHandler(object):
                 )
 
             if _data[0] == "DN":
-                # Örnek veri: #DN#TANKAR001#0.0.0.0
+                # Örnek veri: #DN#TANKAR001
                 try:
                     self.device = Devices.objects.get(name=_data[1])
-                    if len(_data) > 2:
-                        self.device.ip = str(_data[2])
-                    else:
-                        self.device.ip = '0.0.0.0'
-                    print self.client_addr
-                    print self.client_addr[0]
-                    print self.client_addr[1]
+
                     self.device.wan_ip = self.client_addr[0]
-                    self.device.port = str(self.client_addr[1])
                     self.device.save()
+
                     if not self.device.status:
                         raise PermissionDenied("Device is disabled via admin!")
+
                 except ObjectDoesNotExist:
                     raise Exception("%s device is not found in DB" % (_data[1]))
 
