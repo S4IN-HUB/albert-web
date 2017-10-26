@@ -208,8 +208,8 @@ class Crons(models.Model):
 
 
 class IrRemote(models.Model):
-    device = models.ForeignKey(Devices, related_name="IrButtons", verbose_name="Cihaz")
-    room = models.ForeignKey(Rooms, related_name="IrButtons", verbose_name="Oda")
+    device = models.ForeignKey(Devices, related_name="IrRemote", verbose_name="Cihaz")
+    room = models.ForeignKey(Rooms, related_name="IrRemote", verbose_name="Oda")
     name = models.CharField(max_length=50, verbose_name="Uzaktan Kumanda Adı")
 
     def __unicode__(self):
