@@ -236,8 +236,8 @@ class IrRemoteAdmin(admin.ModelAdmin):
 class IrButtonAdmin(admin.ModelAdmin):
     """IR Kumanda butonları yönetim paneli"""
 
-    list_display = ('icon', 'name', 'ir_remote', 'ir_type', 'ir_code', 'ir_bits', 'set_ir_command')
-    list_display_links = ('icon', 'name', 'ir_remote')
+    list_display = ('icon', 'name', 'device', 'ir_type', 'ir_code', 'ir_bits', 'set_ir_command')
+    list_display_links = ('icon', 'name', 'device')
 
     def set_ir_command(self, obj):
         """
