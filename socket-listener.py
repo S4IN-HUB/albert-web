@@ -54,13 +54,14 @@ class DataHandler(object):
                     self.parsed_data.append(item.strip('#').split('#'))
             print "Parsed DATA: ", self.parsed_data
         else:
-            self.parsed_data = self.client_data
+            self.parsed_data = [self.client_data,]
 
     def process_data(self):
         """
         Data is processed and recorded in here
         :return:
         """
+
         for _data in self.parsed_data:
 
             if _data is None or not _data:
