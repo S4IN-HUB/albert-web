@@ -247,7 +247,7 @@ class IrButtonAdmin(admin.ModelAdmin):
         :param obj:
         :return:
         """
-        return '<a class="btn btn-danger" href="/send_ir_command/?button=' + str(obj.id) + '"  target="process"><i class="fa fa-gear" aria-hidden="true"></i></a>'
+        return '<a class="btn btn-danger" href="/send_ir_command/?button=' + str(obj.id) + '"  target="process">**</a>'
 
     send_ir_command.allow_tags = True
     send_ir_command.short_description = u'Ayarla'
