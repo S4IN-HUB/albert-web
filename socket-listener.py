@@ -54,7 +54,7 @@ class DataHandler(object):
                     self.parsed_data.append(item.strip('#').split('#'))
             print "Parsed DATA: ", self.parsed_data
         else:
-            self.parsed_data = [self.client_data,]
+            self.parsed_data = [self.client_data,'']
 
     def process_data(self):
         """
