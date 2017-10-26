@@ -117,7 +117,7 @@ class DataHandler(object):
 
 
                 button = IrButton(device=self.device)
-
+                button.name = "%s %s" % ( _data[3] , _data[4] )
                 button.ir_type = _data[3]
                 button.ir_code = _data[4]
                 button.ir_bits = _data[5]
