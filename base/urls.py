@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from modules.customers.views import (api_login, api_logout, get_rooms, get_relays, send_command, get_locations,
-                                     relay_control, cron_control, set_ir_command)
+                                     relay_control, cron_control, set_ir_command, read_ir)
 from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^relay-control/$', relay_control, name='relay_control'),
     url(r'^cron-control/$', cron_control, name='cron_control'),
     url(r'^set_ir_command/$', set_ir_command, name='set_ir_command'),
+    url(r'^read-ir/$', read_ir, name='read-ir'),
     url(r'^send-message/$', send_message, name='SendMessage'),
     url(r'^admin/', admin.site.urls),
     url(r'^api/login/$', api_login),

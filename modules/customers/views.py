@@ -652,3 +652,13 @@ def set_ir_command(request):
         print cache.get(button.ir_remote.device.name)
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+
+def read_ir(request):
+
+    _device = Devices.obejects.get(pk=request.GET.get('device_id'))
+    _cmd = cache.get(_device.name, [])
+    _cmd.append('READIR')
+    cache.set(_device.name, _cmd)
+
+    return HttpResponse('OK')
