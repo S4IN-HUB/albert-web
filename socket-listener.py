@@ -124,6 +124,9 @@ class DataHandler(object):
 
                 button.save()
 
+            elif _data[0] == "OK":
+                pass
+
             else:
                 print "Unexpected data: %s" % _data
 
