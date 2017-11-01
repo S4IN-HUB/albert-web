@@ -540,13 +540,15 @@ def relay_control(request):
         if request.GET.get("action", "") == "open":
 
             _cmd = cache.get(relay.device.name, [])
-            _cmd.append({"CMD": "RC", "RN": relay.relay_no, "ST": 1})
+            _command = "RC#%s#%s" % (relay.relay_no, 1)
+            _cmd.append({"CMD": _command, })
             cache.set(relay.device.name, _cmd)
             relay.pressed = True
 
         elif request.GET.get("action", "") == "close":
             _cmd = cache.get(relay.device.name, [])
-            _cmd.append({"CMD": "RC", "RN": relay.relay_no, "ST": 0})
+            _command = "RC#%s#%s" % (relay.relay_no, 0)
+            _cmd.append({"CMD": _command, })
             cache.set(relay.device.name, _cmd)
             relay.pressed = False
 
@@ -554,7 +556,7 @@ def relay_control(request):
 
         print cache.get(relay.device.name, [])
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    return HttpResponse('OK')
 
 
 def cron_control(request):
