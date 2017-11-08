@@ -105,6 +105,7 @@ class DataHandler(object):
 
             elif _data[0] == "ST":
                 if _data[1] == self.device.name:
+                    pass
                     # # Örnek veri: #ST#TANKAR001#1#0
                     # try:
                     #     relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
