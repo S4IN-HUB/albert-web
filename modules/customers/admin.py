@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.core.exceptions import ObjectDoesNotExist
 from modules.customers.models import (Accounts, Locations, Plans, Rooms, Devices, Relays, Crons, RelayCurrentValues,
                                       IrRemote, IrButton)
 
@@ -149,19 +150,22 @@ class DevicesAdmin(admin.ModelAdmin):
         devices = queryset
         for device in devices:
 
-            for i in range(0,15):
+            for i in range(0,16):
 
-                new_relay = Relays(
-                    device = device,
-                    name = "yeni röle " + str(i+1),
-                    pressed = False,
-                    relay_no = i,
-                    type = 'switch',
-                    icon = 'light',
-                    total_instant_current = 0,
-                    total_instant_power = 0,
-                )
-                new_relay.save()
+                try:
+                    Relays.objects.get(device = device,relay_no = i)
+                except ObjectDoesNotExist:
+                    new_relay = Relays(
+                        device = device,
+                        name = "yeni röle " + str(i+1),
+                        pressed = False,
+                        relay_no = i,
+                        type = 'switch',
+                        icon = 'light',
+                        total_instant_current = 0,
+                        total_instant_power = 0,
+                    )
+                    new_relay.save()
 
         self.message_user(request, u"Seçili cihazlara, 16 röle kaydı açıldı")
 
