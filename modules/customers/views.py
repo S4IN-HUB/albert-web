@@ -517,16 +517,16 @@ def send_command(request, device=None, command=None):
             _cmd.append({"CMD": "RC", "RN": _relay.relay_no, "ST": 1})
             cache.set(_relay.device.name, _cmd)
 
-            _relay.pressed = True
-            _relay.save()
+            # _relay.pressed = True
+            # _relay.save()
             return HttpResponse('OK-' + str(_relay.relay_no) + '-1')
         else:
             _cmd = cache.get(_relay.device.name, [])
             _cmd.append({"CMD": "RC", "RN": _relay.relay_no, "ST": 0})
             cache.set(_relay.device.name, _cmd)
 
-            _relay.pressed = False
-            _relay.save()
+            # _relay.pressed = False
+            # _relay.save()
             return HttpResponse('OK-' + str(_relay.relay_no) + '-0')
 
     else:
