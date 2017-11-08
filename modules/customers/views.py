@@ -476,10 +476,13 @@ def get_relays(request):
 
 @csrf_exempt
 def send_command(request, device=None, command=None):
+
     """BURAYA AÇIKLAMA GELECEK"""
+
     AllParams = get_params(request) if request is not None else None
     Token = AllParams.get("token") if AllParams is not None else None
     relay_id = AllParams.get("relay_id") if AllParams is not None else None
+
     _command = AllParams.get("command") if AllParams is not None else command
     _device_id = AllParams.get("device_id") if AllParams is not None else None
     _authuser = check_user_session(Token) if Token is not None else None
@@ -506,6 +509,7 @@ def send_command(request, device=None, command=None):
     except ObjectDoesNotExist:
         _relay = None
 
+
     if _relay is not None and (_relay.type == 'switch' or _relay.type == 'push'):
 
         if _command == '1':
@@ -531,6 +535,8 @@ def send_command(request, device=None, command=None):
             _cmd = cache.get(device.name, [])
             _cmd.append({"CMD": _command})
 
+
+    return json_responser(status=True, data="required params token, command, device_id")
 
 def relay_control(request):
     """BURAYA AÇIKLAMA GELECEK"""
