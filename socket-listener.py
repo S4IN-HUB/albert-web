@@ -93,14 +93,6 @@ class DataHandler(object):
                     self.device.save()
 
 
-                if len(_data) > 3:
-                    relay_str = _data[3]
-                    for
-                    try:
-                        Relays.objects.get(device = device,relay_no = i)
-                    except ObjectDoesNotExist:
-                        new_relay = Relays(
-
 
                 self.client_conn.send('HELLO')
 
