@@ -73,7 +73,9 @@ class Rooms(models.Model):
 
 
 class Devices(models.Model):
+
     """Cihazların kayıt edildiği model"""
+
     device_types = (
         ('RC', 'Akım Sensörlü 16 Röle Kartı'),
         ('RL', '16 Röle Kartı'),
@@ -139,7 +141,7 @@ class Relays(models.Model):
         ('count', 'Geri Sayım'),
         ('scheduled', 'Zamanlanmış'),
     )
-    room = models.ForeignKey(Rooms, related_name="Relays", verbose_name="Oda")
+    room = models.ForeignKey(Rooms, null=True,blank=True, related_name="Relays", verbose_name="Oda")
     device = models.ForeignKey(Devices, related_name="Relays", verbose_name="Cihaz")
     name = models.CharField(max_length=50, verbose_name="Röle Tanımı")
 

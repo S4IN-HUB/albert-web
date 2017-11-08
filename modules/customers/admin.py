@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-
+from django.http import HttpResponseRedirect
 from modules.customers.models import (Accounts, Locations, Plans, Rooms, Devices, Relays, Crons, RelayCurrentValues,
                                       IrRemote, IrButton)
 
@@ -144,6 +144,32 @@ class DevicesAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'status',
                     'get_total_instant_current', 'get_total_instant_power','read_ir_button')
 
+    def GenerateRelays(self, request, queryset):
+
+        devices = queryset
+        for device in devices:
+
+            for i in range(0,15):
+
+                new_relay = Relays(
+                    device = device,
+                    name = "yeni röle " + str(i+1),
+                    pressed = False,
+                    relay_no = i,
+                    type = 'switch',
+                    icon = 'light',
+                    total_instant_current = 0,
+                    total_instant_power = 0,
+                )
+                new_relay.save()
+
+        self.message_user(request, u"Seçili cihazlara, 16 röle kaydı açıldı")
+
+        return HttpResponseRedirect(request.get_full_path())
+
+
+    actions = [GenerateRelays, ]
+
 
 class InlineCrons(admin.StackedInline):
     """BURAYA AÇIKLAMA GELECEK"""
@@ -199,6 +225,7 @@ class RelayAdmin(admin.ModelAdmin):
     list_display = ('name', 'relay_no', 'type', 'device', 'pressed', 'open_relay', 'close_relay',
                     'total_instant_current', 'total_instant_power')
     inlines = [InlineCrons, ]
+
 
 
 @admin.register(RelayCurrentValues)
