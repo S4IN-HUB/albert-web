@@ -105,13 +105,13 @@ class DataHandler(object):
 
             elif _data[0] == "ST":
                 if _data[1] == self.device.name:
-                    # Örnek veri: #ST#TANKAR001#1#0
-                    try:
-                        relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
-                        relay.pressed = True if not int(_data[3]) else False
-                        relay.save()
-                    except ObjectDoesNotExist:
-                        raise Exception("%s numbered relay record does not exist!" % _data[2])
+                    # # Örnek veri: #ST#TANKAR001#1#0
+                    # try:
+                    #     relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                    #     relay.pressed = True if not int(_data[3]) else False
+                    #     relay.save()
+                    # except ObjectDoesNotExist:
+                    #     raise Exception("%s numbered relay record does not exist!" % _data[2])
 
             elif _data[0] == "IRENCODE":
 
