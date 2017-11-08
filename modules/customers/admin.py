@@ -144,7 +144,7 @@ class DevicesAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'status',
                     'get_total_instant_current', 'get_total_instant_power','read_ir_button')
 
-    def GenerateRelays(self, request, queryset):
+    def generate_relays(self, request, queryset):
 
         devices = queryset
         for device in devices:
@@ -167,8 +167,9 @@ class DevicesAdmin(admin.ModelAdmin):
 
         return HttpResponseRedirect(request.get_full_path())
 
+        generate_relays.short_description = "Seçili cihaza 16 adet röle kaydı ekle"
 
-    actions = [GenerateRelays, ]
+    actions = [generate_relays, ]
 
 
 class InlineCrons(admin.StackedInline):
