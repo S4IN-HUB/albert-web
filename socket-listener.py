@@ -92,27 +92,37 @@ class DataHandler(object):
                     self.device.wan_ip = self.client_addr[0]
                     self.device.save()
 
+
+                if len(_data) > 3:
+                    relay_str = _data[3]
+                    for
+                    try:
+                        Relays.objects.get(device = device,relay_no = i)
+                    except ObjectDoesNotExist:
+                        new_relay = Relays(
+
+
                 self.client_conn.send('HELLO')
 
-            elif _data[0] == "CV":
-                # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
+            elif _data[0] == "RC":
+
                 try:
-                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                    relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[3]))
+                    relay.pressed = True if int(_data[4]) == 1 else False
+                    relay.save()
+
                 except ObjectDoesNotExist:
                     raise Exception("%s numbered relay record does not exist!" % _data[2])
 
-                RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
+            elif _data[0] == "CV":
+                    # Örnek veri: #CV#TANKAR001#A0#8.54#1878.68#
+                    try:
+                        relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
+                    except ObjectDoesNotExist:
+                        raise Exception("%s numbered relay record does not exist!" % _data[2])
 
-            elif _data[0] == "ST":
-                if _data[1] == self.device.name:
-                    pass
-                    # # Örnek veri: #ST#TANKAR001#1#0
-                    # try:
-                    #     relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[2]))
-                    #     relay.pressed = True if not int(_data[3]) else False
-                    #     relay.save()
-                    # except ObjectDoesNotExist:
-                    #     raise Exception("%s numbered relay record does not exist!" % _data[2])
+                    RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
+
 
             elif _data[0] == "IRENCODE":
 
