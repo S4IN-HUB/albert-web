@@ -22,7 +22,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
 from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton, IrRemote
 
-port = 12121
+port = 8080
 
 
 class DataHandler(object):
