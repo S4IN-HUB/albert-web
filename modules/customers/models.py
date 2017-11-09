@@ -90,6 +90,9 @@ class Devices(models.Model):
     ip = models.CharField(max_length=50,blank=True, null=True, verbose_name="IP adresi", default='0.0.0.0')
     status = models.BooleanField(default=True, verbose_name="Durum")
 
+    temperature = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Sıcaklık")
+    humidity = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Nem")
+
     @property
     def total_instant_current(self):
         total_current = 0
