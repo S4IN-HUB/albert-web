@@ -176,7 +176,7 @@ class TempValues(models.Model):
     create_date = models.DateTimeField(verbose_name='Eklenme Tarihi', auto_now_add=True)
 
     def __unicode__(self):
-        return "%s %s" % (self.device.name, self.temperature, self.humidity)
+        return "%s %s %s" % (self.device.name, self.temperature, self.humidity)
 
     class Meta(object):
         verbose_name = "Sıcaklı Nem Değeri"
