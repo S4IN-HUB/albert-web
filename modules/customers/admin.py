@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from modules.customers.models import (Accounts, Locations, Plans, Rooms, Devices, Relays, Crons, RelayCurrentValues,
-                                      IrRemote, IrButton)
+                                      IrRemote, IrButton, TempValues)
 
 
 @admin.register(Plans)
@@ -143,6 +143,7 @@ class DevicesAdmin(admin.ModelAdmin):
 
 
     list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'status',
+                    'temperature','humidity',
                     'get_total_instant_current', 'get_total_instant_power','read_ir_button')
 
     def generate_relays(self, request, queryset):
@@ -256,6 +257,18 @@ class RelayCurrentValuesAdmin(admin.ModelAdmin):
                 kwargs["queryset"] = Queryset
 
         return super(RelayCurrentValuesAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+@admin.register(TempValues)
+class TempValuesAdmin(admin.ModelAdmin):
+
+    list_display = ('device', 'current_value', 'power_cons', 'create_date')
+
+    def get_queryset(self, request):
+        qs = super(TempValuesAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(device__account__user=request.user)
 
 
 @admin.register(IrRemote)
