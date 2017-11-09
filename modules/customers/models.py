@@ -176,7 +176,7 @@ class TempValues(models.Model):
     create_date = models.DateTimeField(verbose_name='Eklenme Tarihi', auto_now_add=True)
 
     def __unicode__(self):
-        return "%s %s" % (self.relay.name, self.relay.device.room.name)
+        return "%s %s" % (self.device.name, self.temperature, self.humidity)
 
     class Meta(object):
         verbose_name = "Sıcaklı Nem Değeri"
@@ -184,6 +184,7 @@ class TempValues(models.Model):
 
     def save(self, *args, **kwargs):
         super(TempValues, self).save(*args, **kwargs)
+
         self.device.temperature = self.temperature
         self.device.humidity = self.humidity
         self.device.save()
