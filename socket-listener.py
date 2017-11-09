@@ -20,7 +20,7 @@ django.setup()
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
-from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton, IrRemote
+from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton, IrRemote, TempValues
 
 port = 8080
 
@@ -93,6 +93,20 @@ class DataHandler(object):
                     self.device.save()
 
 
+                if len(_data) > 2:
+
+                    if _data[2] == "IR":
+
+                        if _data[3] == "TEMP":
+                            try:
+                                new_temp_val = TempValues(
+                                    device=self.device,
+                                    temperature =_data[4],
+                                    humidity=_data[6],
+                                )
+                                new_temp_val.save()
+                            except:
+                                pass
 
                 self.client_conn.send('HELLO')
 

@@ -165,6 +165,27 @@ class Relays(models.Model):
 sensor_types = (('current', 'Akın Sensörü'),)
 
 
+class TempValues(models.Model):
+
+    device = models.ForeignKey(Devices, related_name="TempValues", verbose_name="Cihaz")
+    temperature = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Sıcaklık")
+    humidity = models.DecimalField(max_digits=5, decimal_places=2, default=0,verbose_name="Nem")
+    create_date = models.DateTimeField(verbose_name='Eklenme Tarihi', auto_now_add=True)
+
+    def __unicode__(self):
+        return "%s %s" % (self.relay.name, self.relay.device.room.name)
+
+    class Meta(object):
+        verbose_name = "Sıcaklı Nem Değeri"
+        verbose_name_plural = "Sıcaklı Nem Değerleri"
+
+    def save(self, *args, **kwargs):
+        super(TempValues, self).save(*args, **kwargs)
+        self.device.temperature = self.temperature
+        self.device.humidity = self.humidity
+        self.device.save()
+
+
 class RelayCurrentValues(models.Model):
     """Röle Akım değerlerinin kayıt edildiği model"""
     relay = models.ForeignKey(Relays, related_name="CurrentValues", verbose_name="Röle")
