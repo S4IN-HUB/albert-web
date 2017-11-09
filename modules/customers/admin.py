@@ -261,7 +261,7 @@ class RelayCurrentValuesAdmin(admin.ModelAdmin):
 @admin.register(TempValues)
 class TempValuesAdmin(admin.ModelAdmin):
 
-    list_display = ('device', 'current_value', 'power_cons', 'create_date')
+    list_display = ('device', 'temperature', 'humidity', 'create_date')
 
     def get_queryset(self, request):
         qs = super(TempValuesAdmin, self).get_queryset(request)
