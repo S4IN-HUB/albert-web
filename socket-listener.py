@@ -92,21 +92,23 @@ class DataHandler(object):
                     self.device.wan_ip = self.client_addr[0]
                     self.device.save()
 
+                try:
+                    if len(_data) > 2:
 
-                if len(_data) > 2:
+                        if _data[2] == "IR":
 
-                    if _data[2] == "IR":
-
-                        if _data[3] == "TEMP":
-                            try:
-                                new_temp_val = TempValues(
-                                    device=self.device,
-                                    temperature =_data[4],
-                                    humidity=_data[6],
-                                )
-                                new_temp_val.save()
-                            except:
-                                pass
+                            if _data[3] == "TEMP":
+                                try:
+                                    new_temp_val = TempValues(
+                                        device=self.device,
+                                        temperature =_data[4],
+                                        humidity=_data[6],
+                                    )
+                                    new_temp_val.save()
+                                except:
+                                    pass
+                except:
+                    pass
 
                 self.client_conn.send('HELLO')
 
