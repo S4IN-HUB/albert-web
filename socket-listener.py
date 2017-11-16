@@ -214,6 +214,10 @@ class DataHandler(object):
         self.client_addr = client_addr
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
+        try:
+            self.parse_data()
+        except: pass
+
         socket_lock = cache.get("in_process_socket", {})
         socket_lock.update({self.device.name: False})
         cache.set("in_process_socket", socket_lock)
