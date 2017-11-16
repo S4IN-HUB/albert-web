@@ -214,6 +214,12 @@ class DataHandler(object):
         self.client_addr = client_addr
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
+        socket_lock = cache.get("in_process_socket", {})
+        socket_lock.update({self.device.name: False})
+        cache.set("in_process_socket", socket_lock)
+        print "%s unlocked" % self.device.name
+
+
         while True:
             try:
                 # self.send_command()
@@ -237,6 +243,7 @@ class DataHandler(object):
                         socket_lock.update({self.device.name: False})
                         cache.set("in_process_socket", socket_lock)
                         print "%s unlocked" % self.device.name
+
                 if not self.client_data:
                     print "No incoming data, breaking connection."
                     self.client_conn.close()
