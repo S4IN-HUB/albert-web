@@ -38,6 +38,7 @@ class DataHandler(object):
         self.parsed_data = None
 
         self.device = None
+        self.is_new = True
 
     def parse_data(self):
         """
@@ -155,6 +156,7 @@ class DataHandler(object):
                 print "Unexpected data: %s" % _data
 
     def send_command(self):
+
         """
         Send command to device
         :return:
@@ -164,6 +166,12 @@ class DataHandler(object):
             # checks locks and processes.
             in_process = cache.get("in_process", {})
             socket_lock = cache.get("socket_locks", {}).get(self.device.name, False)
+
+            if self.is_new:
+                socket_lock = cache.get("socket_locks", {})
+                socket_lock.update({self.device.name: True})
+                socket_lock = True
+                self.is_new = False
 
             if not in_process.get(self.device.name, False):
 
@@ -214,17 +222,10 @@ class DataHandler(object):
         self.client_addr = client_addr
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
-        try:
-            self.parse_data()
-        except: pass
-
-        socket_lock = cache.get("in_process_socket", {})
-        socket_lock.update({self.device.name: False})
-        cache.set("in_process_socket", socket_lock)
-        print "%s unlocked" % self.device.name
 
 
         while True:
+
             try:
                 # self.send_command()
                 self.client_data = self.client_conn.recv(128)
@@ -275,6 +276,7 @@ class DataHandler(object):
         print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
         while True:
+
             try:
                 self.send_command()
             except Exception as uee:
