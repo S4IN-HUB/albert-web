@@ -44,6 +44,10 @@ def get_params(request):
     """BURAYA AÇIKLAMA GELECEK"""
     # print request.POST
     # print request.GET
+
+    print "request.POST", request.POST
+    print "request.GET", request.GET
+
     try:
         if request.POST:
             return request.POST
@@ -228,6 +232,7 @@ def base_login(request, **kwargs):
 
     if user_name and password:
         try:
+
             try:
                 remote_user = User.objects.get(username=user_name.lower())
             except:
@@ -236,15 +241,18 @@ def base_login(request, **kwargs):
             remote_user = authenticate(username=remote_user.username, password=password)
             if remote_user is None:
                 message = "Kullanıcı adı veya parolanız hatalı."
+
         except ObjectDoesNotExist:
             message = "'%s' Kullanıcısı Bulunamadı." % smart_str(user_name)
             status = False
+
         except Exception as uee:
             message = "Şifre yanlış."
             status = False
 
     if remote_user:
         return login_user(request, remote_user)
+
     return status, message, json_content
 
 
