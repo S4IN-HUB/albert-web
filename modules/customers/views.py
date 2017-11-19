@@ -44,10 +44,6 @@ def get_params(request):
     """BURAYA AÇIKLAMA GELECEK"""
     # print request.POST
     # print request.GET
-
-    print "request.POST", request.POST
-    print "request.GET", request.GET
-
     try:
         if request.POST:
             return request.POST
