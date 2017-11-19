@@ -42,12 +42,14 @@ def json_responser(status, message="", data=None):
 
 def get_params(request):
     """BURAYA AÇIKLAMA GELECEK"""
-    # print request.POST
+    print request.POST
     # print request.GET
     try:
         if request.POST:
             return request.POST
+
         return request.GET
+
     except Exception as uee:
         return {}
 
@@ -214,6 +216,9 @@ def base_login(request, **kwargs):
     """
 
     all_params = get_params(request)
+
+    print "all_params", all_params
+
     for key, val in kwargs.iteritems():
         all_params.update({key, val})
 
