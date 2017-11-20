@@ -332,7 +332,8 @@ def get_rooms(request):
         response_message = ""
 
         if all_params.get('location_id'):
-            _rooms = Rooms.objects.filter(location__id=all_params.get('location_id'), account=_authuser)
+            account = Accounts.objects.filter(user=_authuser)
+            _rooms = Rooms.objects.filter(location__id=all_params.get('location_id'), account=account)
         else:
             _rooms = Rooms.objects.filter(account=_authuser)
 
