@@ -16,7 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton
+from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms
 
 
 def permit_response(response):
@@ -332,9 +332,9 @@ def get_rooms(request):
         response_message = ""
 
         if all_params.get('location_id'):
-            _rooms = _authuser.Accounts.Locations.Rooms.filter(location__id=all_params.get('location_id'))
+            _rooms = Rooms.objects.filter(location__id=all_params.get('location_id'), account=_authuser)
         else:
-            _rooms = _authuser.Accounts.Locations.Rooms.all()
+            _rooms = Rooms.objects.filter(account=_authuser)
 
         for rooms in _rooms:
             response_data.append({
