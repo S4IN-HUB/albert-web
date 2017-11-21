@@ -418,7 +418,6 @@ def get_device_json(devices):
                     'name': device.name,
                     'lan_ip': device.ip,
                     'wan_ip': device.wan_ip,
-                    'port': device.port,
                 }
             })
             dev_nr += 1
