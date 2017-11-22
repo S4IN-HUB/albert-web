@@ -357,6 +357,39 @@ def get_rooms(request):
 
 
 @csrf_exempt
+def get_devices(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _authuser = check_user_session(token)
+    response_data = []
+
+    if _authuser:
+        response_status = True
+        response_data = []
+        response_message = ""
+
+        for device in _authuser.Accounts.Devices.all():
+            response_data.append({
+                'id': device.id,
+                'name': device.name,
+                'type': device.type,
+                'room': device.room,
+                'description': device.description,
+                'wan_ip': device.wan_ip,
+                'ip': device.ip,
+                'status': device.status,
+                'temperature': device.temperature,
+                'humidity': device.humidity
+            })
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def get_locations(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
