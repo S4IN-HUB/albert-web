@@ -374,7 +374,7 @@ def get_devices(request):
                 'id': device.id,
                 'name': device.name,
                 'type': device.type,
-                'room': get_room_json(device.Rooms.all()) if device.Rooms.all().count() > 0 else False,
+                'room': get_room_json(device.room) if device.room.count() > 0 else False,
                 'description': device.description,
                 'wan_ip': device.wan_ip,
                 'ip': device.ip,
