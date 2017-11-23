@@ -357,6 +357,47 @@ def get_rooms(request):
 
 
 @csrf_exempt
+def get_relay_rooms(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    room_id = all_params.get("room_id")
+    _authuser = check_user_session(token)
+    response_data = []
+
+    if _authuser:
+        response_status = True
+        response_data = []
+        response_message = ""
+
+        if all_params.get('room_id'):
+            account = Accounts.objects.filter(user=_authuser)
+            room = Rooms.objects.get(id=all_params.get('room_id'), account=account)
+            location_rooms = room.location.Rooms.all()
+
+        else:
+            location_rooms = Rooms.objects.filter(account=_authuser)
+
+        for rooms in location_rooms:
+            response_data.append({
+                'id': rooms.id,
+                'name': rooms.name,
+                'location': rooms.location.name if rooms.location else '',
+                'have_temp': True if rooms.Devices.all().filter(type='ir').count() > 0 else False,
+                'have_current': True if rooms.Devices.all().filter(type='relay_current').count() > 0 else False,
+                # 'device': GetDeviceJson(
+                #     rooms.Devices.all().filter(type='relay_current')[0]) if rooms.Devices.all().filter(
+                #     type='relay_current').count() > 0 else False,
+                'device': get_device_json(rooms.Devices.all()) if rooms.Devices.all().count() > 0 else False,
+            })
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def get_devices(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
