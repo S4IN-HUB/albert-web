@@ -517,6 +517,48 @@ def get_relays(request):
 
 
 @csrf_exempt
+def get_device_relays(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    device_id = all_params.get("device_id", None)
+    _authuser = check_user_session(token)
+    response_data = []
+
+    if _authuser:
+        response_status = True
+        response_data = []
+        response_message = ""
+
+        if device_id:
+            _relays = Relays.objects.filter(device__in=device_id, room__account__user=_authuser)
+        else:
+            _relays = Relays.objects.filter(room__account__user=_authuser)
+
+        _relays = _relays.order_by("device", "relay_no")
+
+        for relay in _relays:
+            response_data.append({
+                'id': relay.id,
+                'room_id': relay.room.id,
+                'room': get_room_json(relay.room),
+                'pressed': relay.pressed,
+                'name': relay.name,
+                'relay_no': relay.relay_no,
+                'type': relay.type,
+                'icon': relay.icon,
+                'total_instant_current': relay.total_instant_current,
+                'total_instant_power': relay.total_instant_power,
+            })
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def send_command(request, device=None, command=None):
 
     """BURAYA AÇIKLAMA GELECEK"""
