@@ -558,6 +558,49 @@ def get_relays(request):
 
 
 @csrf_exempt
+def get_relay_settings(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    response_status = False
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    room_id = all_params.get("room_id")
+    device_id = all_params.get("device_id")
+    relay_id = all_params.get("relay_id")
+    relay_name = all_params.get("relay_name")
+    relay_type = all_params.get("relay_type")
+    relay_icon = all_params.get("relay_icon")
+    _authuser = check_user_session(token)
+    response_data = []
+
+    if _authuser:
+        response_data = []
+        response_message = ""
+
+        if room_id and device_id:
+
+            response_status = True
+
+            new_relay_room = Rooms.objects.get(id=room_id)
+            new_relay_device = Devices.objects.get(id=device_id)
+            update_relay = Relays.objects.get(id=relay_id)
+
+            update_relay.room = new_relay_room
+            update_relay.device = new_relay_device
+            update_relay.name = relay_name
+            update_relay.type = relay_type
+            update_relay.icon = relay_icon
+            update_relay.save()
+
+    else:
+
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def get_device_relays(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
