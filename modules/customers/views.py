@@ -16,7 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms
+from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations
 
 
 def permit_response(response):
@@ -371,6 +371,50 @@ def check_auth(request):
                     }
 
     return json_responser(status, message, req_user)
+
+
+@csrf_exempt
+def add_location(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    location_name = all_params.get("location_name")
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if all_params.get('token'):
+
+            account = Accounts.objects.filter(user=_authuser)
+
+            new_location = Locations(
+
+                account=account,
+                name=location_name
+            )
+            new_location.save()
+
+            response_status = True
+
+            response_data.append({
+                'name': location_name,
+                'id': new_location.id
+            })
+
+            response_message = "Location is added."
+
+        else:
+
+            response_message = "Error."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status,response_message,response_data)
 
 
 @csrf_exempt
