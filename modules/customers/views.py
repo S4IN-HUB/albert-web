@@ -270,6 +270,7 @@ def check_user_session(token):
         return False
 
 
+@csrf_exempt
 def api_register(request):
 
     response_status = False
