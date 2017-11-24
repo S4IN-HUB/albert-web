@@ -389,7 +389,7 @@ def add_location(request):
 
         if all_params.get('token'):
 
-            account = Accounts.objects.filter(user=_authuser)
+            account = Accounts.objects.get(user=_authuser)
 
             new_location = Locations(
 
