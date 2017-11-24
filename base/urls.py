@@ -18,7 +18,7 @@ from django.contrib import admin
 
 from modules.customers.views import (api_login, api_logout, get_rooms, get_relays, send_command, get_locations,
                                      relay_control, cron_control, send_ir_command, read_ir, get_devices,
-                                     get_device_relays, get_relay_rooms, get_relay_settings)
+                                     get_device_relays, get_relay_rooms, get_relay_settings, api_register)
 from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^send-message/$', send_message, name='SendMessage'),
     url(r'^admin/', admin.site.urls),
     url(r'^api/login/$', api_login),
+    url(r'^api/register/$', api_register),
     url(r'^api/logout/$', api_logout),
     url(r'^api/list/locations/$', get_locations),
     url(r'^api/list/rooms/$', get_rooms),

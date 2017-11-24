@@ -15,6 +15,7 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
+from validate_email import validate_email
 
 from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms
 
@@ -268,6 +269,60 @@ def check_user_session(token):
         return session_user
     except:
         return False
+
+
+def api_register(request):
+
+    response_status = False
+    response_message = "Please fill all the fields."
+    response_data = []
+
+    all_params = get_params(request)
+    name = all_params.get("name")
+    surname = all_params.get("surname")
+    email = all_params.get("email")
+    username = all_params.get("email")
+    password = all_params.get("password")
+    phone = all_params.get("phone")
+
+    if name and surname and email and password:
+
+        if not validate_email(email, verify=False):
+            response_message = "Please enter a valid email address."
+
+        else:
+            userCheck = User.objects.filter(Q(username=username) | Q(email=email))[:1]
+
+            if userCheck.count() == 0:
+
+                user = User.objects.create_user(username, email, password)
+                user.first_name = name
+                user.last_name = surname
+
+                response_data.append({
+                    'user_id': user.id,
+                    'name': name,
+                    'surname': surname,
+                    'username': user.username,
+                    'email': user.email,
+                    'password': user.password,
+                })
+
+                user.save()
+
+                user_account = Accounts(
+                    user=user,
+                )
+                user_account.save()
+                response_status = True
+
+            else:
+                response_message = "Email already exists."
+
+    else:
+        response_message = "Please fill all the fields."
+
+    return json_responser(response_status, response_message, response_data)
 
 
 @csrf_exempt
