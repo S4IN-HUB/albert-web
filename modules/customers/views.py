@@ -285,6 +285,8 @@ def api_register(request):
     password = all_params.get("password")
     phone = all_params.get("phone")
 
+    remote_user = None
+
     if name and surname and email and password:
 
         # if not validate_email(email, verify=False):
@@ -298,23 +300,48 @@ def api_register(request):
             user = User.objects.create_user(username, email, password)
             user.first_name = name
             user.last_name = surname
-
-            response_data.append({
-                'user_id': user.id,
-                'name': name,
-                'surname': surname,
-                'username': user.username,
-                'email': user.email,
-                'password': user.password,
-            })
-
             user.save()
 
             user_account = Accounts(
                 user=user,
             )
             user_account.save()
-            response_status = True
+
+            try:
+
+                try:
+                    remote_user = User.objects.get(username=username.lower())
+                except:
+                    remote_user = User.objects.get(email=username.lower())
+
+                remote_user = authenticate(username=remote_user.username, password=password)
+                if remote_user is None:
+                    response_message = "Kullanıcı adı veya parolanız hatalı."
+
+            except ObjectDoesNotExist:
+                response_message = "'%s' Kullanıcısı Bulunamadı." % smart_str(username)
+                response_status = False
+
+            except Exception as uee:
+                response_message = "Şifre yanlış."
+                response_status = False
+
+            if remote_user and remote_user.is_active:
+
+                remote_user.backend = 'django.contrib.auth.backends.ModelBackend'
+                do_login(request, remote_user)
+
+                response_data.append({
+                    'user_id': user.id,
+                    'name': name,
+                    'surname': surname,
+                    'username': user.username,
+                    'email': user.email,
+                    'password': user.password,
+                    'token': str(request.session.session_key)
+                })
+
+                response_status = True
 
         else:
             response_message = "Email already exists."
