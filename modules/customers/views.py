@@ -489,7 +489,7 @@ def add_room(request):
     else:
         response_message = "Please login first."
 
-    return json_responser(response_status, response_message, response_data)
+    return json_responser(response_status, response_message, response_data[0])
 
 
 
