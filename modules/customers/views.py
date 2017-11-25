@@ -463,7 +463,7 @@ def add_room(request):
         if all_params.get('token'):
 
             account = Accounts.objects.get(user=_authuser)
-            location = Locations.objects.get(location_id=location_id, account=account)
+            location = Locations.objects.get(id=location_id, account=account)
 
             new_room = Rooms(
 
