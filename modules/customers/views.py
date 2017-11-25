@@ -274,7 +274,7 @@ def check_user_session(token):
 def api_register(request):
 
     response_status = False
-    response_message = "Please fill all the fields."
+    response_message = ""
     response_data = []
 
     all_params = get_params(request)
@@ -342,6 +342,7 @@ def api_register(request):
                 })
 
                 response_status = True
+                response_message = "Login succeed."
 
         else:
             response_message = "Email already exists."
