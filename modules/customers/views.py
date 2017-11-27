@@ -492,6 +492,56 @@ def add_room(request):
     return json_responser(response_status, response_message, response_data[0])
 
 
+@csrf_exempt
+def add_device(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+
+    token = all_params.get("token")
+    location_id = all_params.get("location_id")
+    room_id = all_params.get("room_id")
+    device_type = all_params.get("device_type")
+    device_name = all_params.get("device_name")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+        response_data = []
+
+        if all_params.get('token'):
+
+            account = Accounts.objects.get(user=_authuser)
+            location = Locations.objects.get(id=location_id, account=account)
+
+            new_device = Devices (
+
+                account= account,
+                location= location,
+                type=device_type,
+                name=device_name,
+            ).save()
+
+            if device_type == "IR":
+                room = Rooms.objects.get(id=room_id, account=account)
+
+                new_device.room = room
+                new_device.save()
+
+                response_status = True
+                response_message = "Device is added."
+        else:
+
+            response_message = "Error."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data[0])
+
 
 @csrf_exempt
 def get_rooms(request):
