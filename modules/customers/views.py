@@ -517,12 +517,13 @@ def add_device(request):
             account = Accounts.objects.get(user=_authuser)
             location = Locations.objects.get(id=location_id, account=account)
 
-            new_device = Devices (
+            new_device = Devices(
 
-                account= account,
-                location= location,
+                account=account,
+                location=location,
                 type=device_type,
                 name=device_name,
+                room=None,
             ).save()
 
             if device_type == "IR":
