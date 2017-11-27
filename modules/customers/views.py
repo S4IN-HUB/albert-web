@@ -516,24 +516,32 @@ def add_device(request):
 
             account = Accounts.objects.get(user=_authuser)
             location = Locations.objects.get(id=location_id, account=account)
-
-            new_device = Devices(
-
-                account=account,
-                location=location,
-                type=device_type,
-                name=device_name,
-                room=None,
-            ).save()
+            room = Rooms.objects.get(id=room_id, account=account)
 
             if device_type == "IR":
-                room = Rooms.objects.get(id=room_id, account=account)
 
-                new_device.room = room
+                new_ir_device = Devices(
+
+                    account=account,
+                    location=location,
+                    type=device_type,
+                    name=device_name,
+                    room=room,
+                )
+                new_ir_device.save()
+
+            else:
+                new_device = Devices(
+
+                    account=account,
+                    location=location,
+                    type=device_type,
+                    name=device_name,
+                )
                 new_device.save()
 
-                response_status = True
-                response_message = "Device is added."
+            response_status = True
+            response_message = "Device is added."
         else:
 
             response_message = "Error."
