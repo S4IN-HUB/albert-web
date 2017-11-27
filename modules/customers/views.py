@@ -549,7 +549,7 @@ def add_device(request):
     else:
         response_message = "Please login first."
 
-    return json_responser(response_status, response_message, response_data[0])
+    return json_responser(response_status, response_message, response_data)
 
 
 @csrf_exempt
