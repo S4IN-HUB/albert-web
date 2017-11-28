@@ -16,7 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations
+from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations, IrRemote
 
 
 def permit_response(response):
@@ -868,6 +868,48 @@ def get_device_relays(request):
                 'total_instant_current': relay.total_instant_current,
                 'total_instant_power': relay.total_instant_power,
             })
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def add_remote(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    device_id = all_params.get("device_id", None)
+    room_id = all_params.get("room_id", None)
+    remote_name = all_params.get("remote_name")
+    _authuser = check_user_session(token)
+
+    response_data = []
+
+    if _authuser:
+        response_data = []
+
+        if device_id and room_id:
+
+            device = Devices.objects.get(id=device_id)
+            room = Rooms.objects.get(id=room_id)
+
+            new_remote = IrRemote(
+                device=device,
+                room=room,
+                name=remote_name
+            )
+            new_remote.save()
+
+            response_status = True
+            response_message = "Remote controller is added."
+
+        else:
+            response_status = False
+            response_message = "No value for device_id or room_id or both."
 
     else:
         response_status = False
