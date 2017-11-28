@@ -19,7 +19,7 @@ from django.contrib import admin
 from modules.customers.views import (api_login, api_logout, get_rooms, get_relays, send_command, get_locations,
                                      relay_control, cron_control, send_ir_command, read_ir, get_devices,
                                      get_device_relays, get_relay_rooms, get_relay_settings, api_register,
-                                     add_location, add_room, add_device, add_remote)
+                                     add_location, add_room, add_device, add_remote, get_remotes)
 from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
@@ -43,6 +43,7 @@ urlpatterns = [
     url(r'^api/list/rooms/$', get_rooms),
     url(r'^api/list/devices/$', get_devices),
     url(r'^api/list/relays/$', get_relays),
+    url(r'^api/list/remotes/$', get_remotes),
     url(r'^api/list/relay_rooms/$', get_relay_rooms),
     url(r'^api/list/relay_settings/$', get_relay_settings),
     url(r'^api/list/device_relays/$', get_device_relays),

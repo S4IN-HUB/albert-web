@@ -919,6 +919,38 @@ def add_remote(request):
 
 
 @csrf_exempt
+def get_remotes(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    device_id = all_params.get("device_id", None)
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+        response_message = ""
+
+        if device_id:
+            _remotes = IrRemote.objects.filter(device__id=device_id)
+
+            for remote in _remotes:
+                response_data.append({
+                    'id': remote.id,
+                    'name': remote.name,
+                })
+
+            response_status = True
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def send_command(request, device=None, command=None):
 
     """BURAYA AÇIKLAMA GELECEK"""
