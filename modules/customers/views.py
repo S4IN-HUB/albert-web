@@ -652,7 +652,7 @@ def get_devices(request):
                 'id': device.id,
                 'name': device.name,
                 'type': device.type,
-                'location': device.location,
+                'location': device.location.id,
                 'room': get_room_json(device.room),
                 'description': device.description,
                 'wan_ip': device.wan_ip,
