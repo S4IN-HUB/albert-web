@@ -503,7 +503,6 @@ def add_device(request):
 
     token = all_params.get("token")
     location_id = all_params.get("location_id")
-    room_id = all_params.get("room_id")
     device_type = all_params.get("device_type")
     device_name = all_params.get("device_name")
 
@@ -519,9 +518,11 @@ def add_device(request):
 
             account = Accounts.objects.get(user=_authuser)
             location = Locations.objects.get(id=location_id, account=account)
-            room = Rooms.objects.get(id=room_id, account=account)
 
             if device_type == "IR":
+
+                room_id = all_params.get("room_id")
+                room = Rooms.objects.get(id=room_id, account=account)
 
                 new_ir_device = Devices(
 
