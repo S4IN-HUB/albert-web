@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations, IrRemote
 
 
+@csrf_exempt
 def permit_response(response):
     """BURAYA AÇIKLAMA GELECEK"""
     response['Access-Control-Allow-Origin'] = '*'
@@ -28,6 +29,7 @@ def permit_response(response):
     return response
 
 
+@csrf_exempt
 def json_responser(status, message="", data=None):
     """BURAYA AÇIKLAMA GELECEK"""
     json_data = {'response_message': message,
@@ -40,6 +42,7 @@ def json_responser(status, message="", data=None):
     return permit_response(response)
 
 
+@csrf_exempt
 def get_params(request):
     """BURAYA AÇIKLAMA GELECEK"""
     print request.POST
