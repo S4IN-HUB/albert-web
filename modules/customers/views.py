@@ -544,23 +544,80 @@ def add_device(request):
                 )
                 new_device.save()
 
-                for item in range(0, 15):
-                    new_relay = Relays(
-
-                        device=new_device,
-                        name=item,
-                        relay_no=item,
-                        type="switch",
-                        icon="light",
-                        total_instant_current=0,
-                        total_instant_power=0
-                    )
-                    new_relay.save()
+                # for item in range(0, 15):
+                #     new_relay = Relays(
+                #
+                #         device=new_device,
+                #         name=item,
+                #         relay_no=item,
+                #         type="switch",
+                #         icon="light",
+                #         total_instant_current=0,
+                #         total_instant_power=0
+                #     )
+                #     new_relay.save()
 
             response_status = True
             response_message = "Device is added."
         else:
 
+            response_message = "Error."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def add_relay(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    room_id = all_params.get("room_id")
+    device_id = all_params.get("device_id")
+    relay_name = all_params.get("relay_name")
+    relay_no = all_params.get("relay_no")
+    relay_type = all_params.get("relay_type")
+    relay_icon = all_params.get("relay_icon")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+        response_data = []
+
+        if all_params.get('token'):
+
+            account = Accounts.objects.get(user=_authuser)
+            device = Devices.objects.get(id=device_id, account=account)
+            room = Rooms.objects.get(id=room_id, account=account)
+
+            new_relay = Relays(
+                room=room,
+                device=device,
+                name=relay_name,
+                relay_no=relay_no,
+                type=relay_type,
+                icon=relay_icon,
+            )
+            new_relay.save()
+
+            response_status = True
+            response_message = "New relay is added."
+
+            response_data.append({
+                "room": new_relay.room,
+                "device": new_relay.device,
+                "name": new_relay.name,
+                "relay_no": new_relay.relay_no,
+                "typ": new_relay.type,
+                "icon": new_relay.icon,
+            })
+        else:
             response_message = "Error."
 
     else:

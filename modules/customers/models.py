@@ -157,8 +157,8 @@ class Relays(models.Model):
     type = models.CharField(max_length=20, choices=RelayTypes, verbose_name="Anahtar Tipi")
     icon = models.CharField(max_length=20, choices=Icons, verbose_name="Simge")
 
-    total_instant_current = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Akım")
-    total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt")
+    total_instant_current = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Akım", default=0)
+    total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt", default=0)
 
     def __unicode__(self):
         return "%s %s" % (self.name, self.device.room.name)
