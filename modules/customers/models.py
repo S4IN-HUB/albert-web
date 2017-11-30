@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 account_types = (
     (0, 'Ev'),
@@ -262,3 +264,21 @@ class IrButton(models.Model):
     class Meta(object):
         verbose_name = "IR Buton"
         verbose_name_plural = "IR Butonları"
+
+
+@receiver(post_save, sender=Devices)
+def create_relays(sender, instance, created, **kwargs):
+
+    if created:
+        for item in range(0, 15):
+            new_relay = Relays(
+
+                device=instance,
+                name=item,
+                relay_no=item,
+                type="switch",
+                icon="light",
+                total_instant_current=0,
+                total_instant_power=0
+            )
+            new_relay.save()

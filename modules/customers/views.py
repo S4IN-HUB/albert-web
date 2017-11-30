@@ -544,17 +544,6 @@ def add_device(request):
                 )
                 new_device.save()
 
-                for item in range(0, 15):
-
-                    new_relay = Relays(
-
-                        device=new_device,
-                        name=item,
-                        relay_no=item,
-                        type="switch",
-                        icon="light",
-                    ).save()
-
             response_status = True
             response_message = "Device is added."
         else:
