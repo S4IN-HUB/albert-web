@@ -274,7 +274,7 @@ class TempValuesAdmin(admin.ModelAdmin):
 @admin.register(IrRemote)
 class IrRemoteAdmin(admin.ModelAdmin):
     """IR Kumanda listesi"""
-    list_display = ('name', 'ir_remote', 'room')
+    list_display = ('name', 'device', 'room')
 
 
 @admin.register(IrButton)
