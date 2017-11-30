@@ -238,7 +238,7 @@ class Crons(models.Model):
 
 
 class IrButton(models.Model):
-    device = models.ForeignKey(Devices, related_name="IrButtons", verbose_name="Cihaz")
+    device = models.ForeignKey(Devices, related_name="IrButtons", verbose_name="Cihaz", null=True, blank=True)
     name = models.CharField(verbose_name="Buton Adı", max_length=50)
     icon = models.CharField(max_length=20, choices=Icons, verbose_name="Simge")
     ir_type = models.CharField(max_length=20, verbose_name="IR Tipi", null=True, blank=True)
