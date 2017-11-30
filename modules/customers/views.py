@@ -610,7 +610,7 @@ def add_relay(request):
             response_message = "New relay is added."
 
             response_data.append({
-                "room": new_relay.room,
+                "room": new_relay.room.name,
                 "device": new_relay.device,
                 "name": new_relay.name,
                 "relay_no": new_relay.relay_no,
