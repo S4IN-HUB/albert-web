@@ -867,7 +867,7 @@ def get_device_relays(request):
         response_message = ""
 
         if device_id:
-            _relays = Relays.objects.filter(device__in=device_id, room__account__user=_authuser)
+            _relays = Relays.objects.filter(device__id=device_id, room__account__user=_authuser)
         else:
             _relays = Relays.objects.filter(room__account__user=_authuser)
 
