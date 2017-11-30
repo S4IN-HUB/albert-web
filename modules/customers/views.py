@@ -1026,6 +1026,42 @@ def get_remotes(request):
 
 
 @csrf_exempt
+def get_ir_buttons(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    remote_id = all_params.get("remote_id", None)
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+        response_message = ""
+
+        if remote_id:
+            _buttons = IrButton.objects.filter(remote__id=remote_id)
+
+            for button in _buttons:
+                response_data.append({
+                    'id': button.id,
+                    'name': button.name,
+                    'icon': button.icon,
+                    'ir_type': button.ir_type,
+                    'ir_code': button.ir_code,
+                    'ir_bits': button.ir_bits
+                })
+
+            response_status = True
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def send_command(request, device=None, command=None):
 
     """BURAYA AÇIKLAMA GELECEK"""
