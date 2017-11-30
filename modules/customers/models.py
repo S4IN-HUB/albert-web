@@ -112,6 +112,20 @@ class Devices(models.Model):
                 total_power = last_val[0].power_cons
         return total_power
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+
+        for item in range(0,15):
+
+            new_relay = Relays(
+
+                device=self,
+                name=item,
+                relay_no=item,
+                type="switch",
+                icon="light",
+            ).save()
+
     def __unicode__(self):
         return "%s" % self.name
 
