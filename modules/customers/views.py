@@ -16,7 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations, IrRemote
+from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations
 
 
 @csrf_exempt
