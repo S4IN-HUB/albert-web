@@ -91,8 +91,6 @@ class DataHandler(object):
                     self.device.type = _data[2]
                     self.device.description = _data[1]
                     self.device.wan_ip = self.client_addr[0]
-
-
                     self.device.save()
 
                 try:
@@ -152,6 +150,8 @@ class DataHandler(object):
             elif _data[0] == "OK":
                 pass
 
+            elif _data[0] == "HELLO":
+                pass
             else:
                 print "Unexpected data: %s" % _data
 
