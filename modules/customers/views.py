@@ -660,6 +660,37 @@ def favourite_relay(request):
 
 
 @csrf_exempt
+def delete_room(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+    all_params = get_params(request)
+    token = all_params.get("token")
+    room_id = all_params.get("room_id")
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if room_id:
+            account = Accounts.objects.filter(user=_authuser)
+            room = Rooms.objects.filter(pk=room_id, account=account)
+            room.delete()
+
+            response_status = True
+            response_message = "Room is deleted."
+
+        else:
+
+            response_message = "Please select a room to delete."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def get_rooms(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
