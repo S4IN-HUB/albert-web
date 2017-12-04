@@ -837,18 +837,16 @@ def get_favourite_rooms(request):
 
             for room in _rooms:
 
-                if room.Devices.all().filter(type='ir').count() > 0:
+                ir_device = room.Devices.all().get(type='ir')
 
-                    ir_device = room.Devices.all().get(type='ir')
-
-                    response_data.append({
-                        'id': room.id,
-                        'name': room.name,
-                        'location': room.location.name if room.location else '',
-                        'temperature': ir_device.temperature,
-                        'humidity': ir_device.humidity,
-                        'device': get_device_json(room.Devices.all()) if room.Devices.all().count() > 0 else False,
-                    })
+                response_data.append({
+                    'id': room.id,
+                    'name': room.name,
+                    'location': room.location.name if room.location else '',
+                    'temperature': ir_device.temperature,
+                    'humidity': ir_device.humidity,
+                    'device': get_device_json(room.Devices.all()) if room.Devices.all().count() > 0 else False,
+                })
 
         response_status = True
 
