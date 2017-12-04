@@ -815,7 +815,8 @@ def get_room_json(room):
     if room:
         data = {
             'id': room.id,
-            'name': room.name
+            'name': room.name,
+            'location': room.location.name if room.location else "Tanımsız"
         }
     else:
         data = None
