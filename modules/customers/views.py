@@ -1573,3 +1573,38 @@ def read_ir_button(request):
         response_message = "Please login first."
 
     return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def ir_command(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    button_id = all_params.get("button_id")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+
+        response_status = True
+
+        try:
+            button = IrButton.objects.get(pk=button_id,device__account__user=_authuser)
+        except ObjectDoesNotExist:
+            messages.error(request, "Buton tanımına erişilemiyor.")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+        _cmd = cache.get(button.device.name, [])
+
+        _command = "SENDIR#%s#%s#%s" % (button.ir_type, button.ir_code, button.ir_bits)
+        _cmd.append({'CMD': _command, })
+        cache.set(button.device.name, _cmd)
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)

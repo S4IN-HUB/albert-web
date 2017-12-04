@@ -58,6 +58,7 @@ urlpatterns = [
     url(r'^api/list/favourite_relays/$', get_favourite_relays),
     url(r'^api/list/favourite_rooms/$', get_favourite_rooms),
     url(r'^api/relay_command/$', relay_command),
+    url(r'^api/ir_command/$', ir_command),
     url(r'^api/set/ir_shortcut/$', set_ir_shortcut)
 
 ]
