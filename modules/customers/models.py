@@ -136,7 +136,12 @@ Icons = (
     ('flaticon-gas-pipe', 'Doğalgaz Vanası'),
     ('flaticon-valve', 'Su Vanası'),
     ('flaticon-lock-1', 'Kapı Kilidi Aç'),
-    ('flaticon-lock', 'Kapı Kilitle')
+    ('flaticon-lock', 'Kapı Kilitle'),
+    ('flaticon-air-conditioner', 'Klima Kış Modu Aç'),
+    ('flaticon-air-conditioner-1', 'Klima Yaz Modu Aç'),
+    ('flaticon-technology-18', 'Müzik Seti'),
+    ('flaticon-bathroom', 'Duş'),
+    ('flaticon-fashion-3', 'Çamaşır Makinesi')
 )
 
 
