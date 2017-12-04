@@ -687,7 +687,8 @@ def favourite_relay(request):
             relay = Relays.objects.get(pk=_relay)
             account.favourite_relays.add(relay)
 
-            return HttpResponse("OK")
+            response_status = True
+            response_message = "Relay is added into favourites."
 
         else:
 
@@ -720,7 +721,8 @@ def delete_favourite_relay(request):
             relay = Relays.objects.get(pk=_relay)
             account.favourite_relays.remove(relay)
 
-            return HttpResponse("OK, relay is deleted.")
+            response_status = True
+            response_message = "Relay is deleted from favourites."
 
         else:
 
@@ -799,7 +801,8 @@ def favourite_room(request):
             room = Rooms.objects.get(pk=_room)
             account.favourite_rooms.add(room)
 
-            return HttpResponse("OK")
+            response_status = True
+            response_message = "Room is added into favourites."
 
         else:
 
