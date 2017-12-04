@@ -264,10 +264,11 @@ class IrButton(models.Model):
 
         super(IrButton, self).save(*args, **kwargs)
 
-        _all = IrButton.objects.filter(device=self.device,spec=self.spec).exclude(pk=self.id)
-        for item in _all:
-            item.spec = 0
-            item.save()
+        if self.spec != 0:
+            _all = IrButton.objects.filter(device=self.device,spec=self.spec).exclude(pk=self.id)
+            for item in _all:
+                item.spec = 0
+                item.save()
 
 
     class Meta(object):
