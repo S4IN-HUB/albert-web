@@ -21,7 +21,7 @@ from modules.customers.views import (api_login, api_logout, get_rooms, get_relay
                                      get_device_relays, get_relay_rooms, get_relay_settings, api_register,
                                      add_location, add_room, add_device, add_relay,
                                      get_ir_buttons, relay_command, favourite_relay, delete_room, delete_location,
-                                     favourite_room,set_ir_shortcut, get_favourite_relays, get_favourite_rooms, delete_favourite_relay)
+                                     favourite_room,ir_command,set_ir_shortcut, get_favourite_relays, get_favourite_rooms, delete_favourite_relay)
 from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
