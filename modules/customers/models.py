@@ -254,7 +254,6 @@ class IrButton(models.Model):
     ir_type = models.CharField(max_length=20, verbose_name="IR Tipi", null=True, blank=True)
     ir_code = models.CharField(max_length=16, verbose_name="IR Code", null=True, blank=True)
     ir_bits = models.IntegerField(verbose_name="Bits", null=True, blank=True)
-
     spec = models.PositiveSmallIntegerField(default=0, choices=((0,'Tanımsız'),(1,'Klima Yaz Modu'),(2,'Klima Kış Modu'),(3,'Klima Kapat')) ,verbose_name="Özel Tanım")
 
 
