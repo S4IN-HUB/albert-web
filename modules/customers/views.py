@@ -1250,6 +1250,7 @@ def get_ir_buttons(request):
                     'id': button.id,
                     'name': button.name,
                     'icon': button.icon,
+                    'room': get_room_json(button.device.room),
                     'ir_type': button.ir_type,
                     'ir_code': button.ir_code,
                     'ir_bits': button.ir_bits
