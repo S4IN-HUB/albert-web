@@ -161,7 +161,10 @@ class Relays(models.Model):
     total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt", default=0)
 
     def __unicode__(self):
-        return "%s %s" % (self.name, self.device.room.name)
+        if self.device.room:
+            return "%s %s" % (self.name, self.device.room.name)
+        else:
+            return "%s %s" % (self.name, '')
 
     class Meta(object):
         verbose_name = "Röle"
