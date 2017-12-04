@@ -798,7 +798,7 @@ def get_favourite_rooms(request):
 
         _rooms = account.favourite_rooms
 
-        if len(_rooms) > 0:
+        if _rooms:
 
             for room in _rooms:
                 response_data.append({
