@@ -20,7 +20,7 @@ django.setup()
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
-from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton, IrRemote, TempValues
+from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton,TempValues
 
 port = 8080
 
