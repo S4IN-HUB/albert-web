@@ -845,8 +845,8 @@ def get_favourite_rooms(request):
                         'id': room.id,
                         'name': room.name,
                         'location': room.location.name if room.location else '',
-                        'temperature': ir_device.temperature,
-                        'humidity': ir_device.humidity,
+                        'temperature': int(ir_device.temperature),
+                        'humidity': int(ir_device.humidity),
                         'device': get_device_json(room.Devices.all()) if room.Devices.all().count() > 0 else False,
                     })
 
