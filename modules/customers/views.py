@@ -449,6 +449,46 @@ def add_location(request):
 
 
 @csrf_exempt
+def delete_location(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    location_id = all_params.get("location_id")
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if location_id:
+
+            account = Accounts.objects.get(user=_authuser)
+            location = Locations.objects.get(pk=location_id, account=account)
+
+            _rooms = Rooms.objects.filter(location__id=location_id, account=account)
+
+            for room in _rooms:
+                room.delete()
+
+            location.delete()
+
+            response_status = True
+            response_message = "Location is deleted."
+
+        else:
+
+            response_message = "Please send location to delete."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data[0])
+
+
+
+@csrf_exempt
 def add_room(request):
     """BURAYA AÇIKLAMA GELECEK"""
 
