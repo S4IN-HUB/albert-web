@@ -627,6 +627,39 @@ def add_relay(request):
 
 
 @csrf_exempt
+def favourite_relay(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _relay = all_params.get("relay")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if _relay:
+
+            account = Accounts.objects.filter(user=_authuser)
+            relay = Relays.objects.get(pk=_relay)
+            account.favourite_relays.add(relay)
+
+            return HttpResponse("OK")
+
+        else:
+
+            response_message = "Please select a relay to add into favourites."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def get_rooms(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
