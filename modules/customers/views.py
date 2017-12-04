@@ -700,6 +700,50 @@ def favourite_relay(request):
 
 
 @csrf_exempt
+def get_favourite_relays(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+
+    _authuser = check_user_session(token)
+
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+        response_data = []
+
+        account = Accounts.objects.get(user=_authuser)
+
+        _relays = account.favourite_relays
+
+        _relays = _relays.order_by("device", "relay_no")
+
+        for relay in _relays:
+            response_data.append({
+                'id': relay.id,
+                'device': get_device_json([relay.device]),
+                'room_id': relay.room.id,
+                'room': get_room_json(relay.room),
+                'pressed': relay.pressed,
+                'name': relay.name,
+                'relay_no': relay.relay_no,
+                'type': relay.type,
+                'icon': relay.icon,
+                'total_instant_current': relay.total_instant_current,
+                'total_instant_power': relay.total_instant_power,
+            })
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def favourite_room(request):
     """BURAYA AÇIKLAMA GELECEK"""
 
