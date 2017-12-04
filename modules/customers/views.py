@@ -700,6 +700,39 @@ def favourite_relay(request):
 
 
 @csrf_exempt
+def delete_favourite_relay(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _relay = all_params.get("relay")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if _relay:
+
+            account = Accounts.objects.get(user=_authuser)
+            relay = Relays.objects.get(pk=_relay)
+            account.favourite_relays.remove(relay)
+
+            return HttpResponse("OK, relay is deleted.")
+
+        else:
+
+            response_message = "Please select a relay to delete from favourites."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def get_favourite_relays(request):
     """BURAYA AÇIKLAMA GELECEK"""
 
@@ -1176,80 +1209,6 @@ def get_device_relays(request):
 
 
 @csrf_exempt
-def add_remote(request):
-    """BURAYA AÇIKLAMA GELECEK"""
-
-    all_params = get_params(request)
-    token = all_params.get("token")
-    device_id = all_params.get("device_id", None)
-    room_id = all_params.get("room_id", None)
-    remote_name = all_params.get("remote_name")
-    _authuser = check_user_session(token)
-
-    response_data = []
-
-    if _authuser:
-        response_data = []
-
-        if device_id and room_id:
-
-            device = Devices.objects.get(id=device_id)
-            room = Rooms.objects.get(id=room_id)
-
-            new_remote = IrRemote(
-                device=device,
-                room=room,
-                name=remote_name
-            )
-            new_remote.save()
-
-            response_status = True
-            response_message = "Remote controller is added."
-
-        else:
-            response_status = False
-            response_message = "No value for device_id or room_id or both."
-
-    else:
-        response_status = False
-        response_message = "Oturum kapalı"
-
-    return json_responser(response_status, response_message, response_data)
-
-
-@csrf_exempt
-def get_remotes(request):
-    """BURAYA AÇIKLAMA GELECEK"""
-    all_params = get_params(request)
-    token = all_params.get("token")
-    device_id = all_params.get("device_id", None)
-    _authuser = check_user_session(token)
-    response_data = []
-    response_status = False
-
-    if _authuser:
-        response_data = []
-        response_message = ""
-
-        if device_id:
-            _remotes = IrRemote.objects.filter(device__id=device_id)
-
-            for remote in _remotes:
-                response_data.append({
-                    'id': remote.id,
-                    'name': remote.name,
-                })
-
-            response_status = True
-
-    else:
-        response_status = False
-        response_message = "Oturum kapalı"
-
-    return json_responser(response_status, response_message, response_data)
-
-
-@csrf_exempt
 def get_ir_buttons(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
@@ -1516,3 +1475,40 @@ def read_ir(request):
     cache.set(_device.name, _cmd)
 
     return HttpResponse('OK')
+
+
+@csrf_exempt
+def read_ir_button(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    device_id = all_params.get("device_id")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+
+        response_status = True
+
+        if device_id:
+
+            _device = Devices.objects.get(pk=device_id)
+
+            _cmd = cache.get(_device.name, [])
+            _cmd.append({'CMD': 'READIR', })
+            cache.set(_device.name, _cmd)
+
+            return HttpResponse('OK')
+
+        else:
+            response_status = False
+            response_message = "Please send device id."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)
