@@ -717,7 +717,7 @@ def get_favourite_relays(request):
 
         account = Accounts.objects.get(user=_authuser)
 
-        _relays = account.favourite_relays
+        _relays = account.favourite_relays.all()
 
         _relays = _relays.order_by("device", "relay_no")
 
@@ -796,8 +796,7 @@ def get_favourite_rooms(request):
 
         account = Accounts.objects.get(user=_authuser)
 
-        _rooms = account.favourite_rooms
-
+        _rooms = account.favourite_rooms.all()
         if _rooms:
 
             for room in _rooms:
