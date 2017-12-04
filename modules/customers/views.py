@@ -893,9 +893,9 @@ def get_favourite_rooms(request):
                             'ir_cold': ir_device.IrButtons.all().filter(spec=1)[0] if ir_device.IrButtons.all().filter(
                                 spec=1).count() > 0 else False,
                             'ir_hot': ir_device.IrButtons.all().filter(spec=2)[0] if ir_device.IrButtons.all().filter(
-                                spec=1).count() > 0 else False,
+                                spec=2).count() > 0 else False,
                             'ir_off': ir_device.IrButtons.all().filter(spec=3)[0] if ir_device.IrButtons.all().filter(
-                                spec=1).count() > 0 else False,
+                                spec=3).count() > 0 else False,
 
                         })
 
