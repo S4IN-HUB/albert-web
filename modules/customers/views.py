@@ -839,7 +839,10 @@ def get_favourite_rooms(request):
 
                 if room.Devices.all().filter(type='ir').count() > 0:
 
-                    ir_device = room.Devices.all().get(type='ir')
+                    try:
+                        ir_device = room.Devices.all().get(type='ir')
+                    except:
+                        ir_device = None
 
                     response_data.append({
                         'id': room.id,
@@ -848,6 +851,14 @@ def get_favourite_rooms(request):
                         'temperature': int(ir_device.temperature),
                         'humidity': int(ir_device.humidity),
                         'device': get_device_json(room.Devices.all()) if room.Devices.all().count() > 0 else False,
+                        'have_ir': True if ir_device else False,
+                        'ir_cold': ir_device.IrButtons.all().filter(spec=1)[0] if ir_device.IrButtons.all().filter(
+                            spec=1).count() > 0 else False,
+                        'ir_hot': ir_device.IrButtons.all().filter(spec=2)[0] if ir_device.IrButtons.all().filter(
+                            spec=1).count() > 0 else False,
+                        'ir_off': ir_device.IrButtons.all().filter(spec=3)[0] if ir_device.IrButtons.all().filter(
+                            spec=1).count() > 0 else False,
+
                     })
 
         response_status = True
