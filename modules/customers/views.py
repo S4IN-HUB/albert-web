@@ -1221,7 +1221,7 @@ def get_ir_buttons(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
     token = all_params.get("token")
-    remote_id = all_params.get("remote_id", None)
+    device_id = all_params.get("device_id", None)
     _authuser = check_user_session(token)
     response_data = []
     response_status = False
@@ -1230,8 +1230,8 @@ def get_ir_buttons(request):
         response_data = []
         response_message = ""
 
-        if remote_id:
-            _buttons = IrButton.objects.filter(remote__id=remote_id)
+        if device_id:
+            _buttons = IrButton.objects.filter(device__id=device_id)
 
             for button in _buttons:
                 response_data.append({
