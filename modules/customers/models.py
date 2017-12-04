@@ -258,7 +258,7 @@ class IrButton(models.Model):
 
 
     def __unicode__(self):
-        return "%s %s" % ( self.device if self.device else '' ,  self.name)
+        return "%s" %  self.name
 
     def save(self, *args, **kwargs):
 
