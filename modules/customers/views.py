@@ -777,6 +777,46 @@ def favourite_room(request):
 
 
 @csrf_exempt
+def get_favourite_rooms(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+
+    _authuser = check_user_session(token)
+
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+        response_data = []
+
+        account = Accounts.objects.get(user=_authuser)
+
+        _rooms = account.favourite_rooms
+
+        for rooms in _rooms:
+            response_data.append({
+                'id': rooms.id,
+                'name': rooms.name,
+                'location': rooms.location.name if rooms.location else '',
+                'have_temp': True if rooms.Devices.all().filter(type='ir').count() > 0 else False,
+                'have_current': True if rooms.Devices.all().filter(type='relay_current').count() > 0 else False,
+                # 'device': GetDeviceJson(
+                #     rooms.Devices.all().filter(type='relay_current')[0]) if rooms.Devices.all().filter(
+                #     type='relay_current').count() > 0 else False,
+                'device': get_device_json(rooms.Devices.all()) if rooms.Devices.all().count() > 0 else False,
+            })
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def delete_room(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
