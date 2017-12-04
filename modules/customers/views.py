@@ -834,7 +834,7 @@ def set_ir_shortcut(request):
         if button_id:
 
             _button = IrButton.objects.get(pk=button_id,device__account__user=_authuser)
-            _button.spec = spec
+            _button.spec = int(spec)
             _button.save()
 
             response_status = True
