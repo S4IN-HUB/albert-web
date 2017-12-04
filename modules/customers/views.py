@@ -1169,7 +1169,7 @@ def relay_command(request):
         response_message = ""
 
         if _relay:
-            relay = Relays.objects.get(pk=request.GET.get("relay"))
+            relay = Relays.objects.get(pk=_relay)
 
             if _action == "open":
 
