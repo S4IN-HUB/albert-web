@@ -795,7 +795,7 @@ def favourite_room(request):
 
         if _room:
 
-            account = Accounts.objects.filter(user=_authuser)
+            account = Accounts.objects.get(user=_authuser)
             room = Rooms.objects.get(pk=_room)
             account.favourite_rooms.add(room)
 
