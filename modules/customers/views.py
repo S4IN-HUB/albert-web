@@ -700,6 +700,39 @@ def favourite_relay(request):
 
 
 @csrf_exempt
+def favourite_room(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _room = all_params.get("room")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if _room:
+
+            account = Accounts.objects.filter(user=_authuser)
+            room = Rooms.objects.get(pk=_room)
+            account.favourite_rooms.add(room)
+
+            return HttpResponse("OK")
+
+        else:
+
+            response_message = "Please select a room to add into favourites."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def delete_room(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
