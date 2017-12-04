@@ -1221,7 +1221,7 @@ def get_ir_buttons(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
     token = all_params.get("token")
-    device_id = all_params.get("device_id", None)
+    device_id = all_params.get("device_id")
     _authuser = check_user_session(token)
     response_data = []
     response_status = False
