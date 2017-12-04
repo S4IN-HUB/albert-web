@@ -905,6 +905,9 @@ def get_favourite_rooms(request):
         response_status = False
         response_message = "Oturum kapalı"
 
+
+    print response_status, response_message, response_data
+
     return json_responser(response_status, response_message, response_data)
 
 
