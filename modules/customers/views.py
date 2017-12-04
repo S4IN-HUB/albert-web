@@ -815,6 +815,43 @@ def favourite_room(request):
 
 
 @csrf_exempt
+def set_ir_shortcut(request):
+
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    button_id = all_params.get("button_id")
+    spec = all_params.get("spec")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if button_id:
+
+            _button = IrButton.objects.get(pk=button_id,device__account__user=_authuser)
+            _button.spec = spec
+            _button.save()
+
+            response_status = True
+            response_message = "Buton kısa yol olarak tanımlandı"
+
+        else:
+
+            response_message = "Please select a room to add into favourites."
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+
+@csrf_exempt
 def get_favourite_rooms(request):
     """BURAYA AÇIKLAMA GELECEK"""
 
