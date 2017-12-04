@@ -123,19 +123,20 @@ class Devices(models.Model):
 
 
 Icons = (
-    ('light', 'Ampül'),
-    ('aircond', 'Klima'),
-    ('fan', 'Havalandırma'),
-    ('watervalve', 'Su Vanası'),
-    ('gas', 'Gaz Vanası'),
-    ('blinds', 'Pajnur'),
-    ('television', 'Televizyon'),
-    ('satellite', 'Uydu'),
-    ('digitalreceiver', 'Dijital Yayın'),
-    ('musicbox', 'Müzik Seti'),
-    ('projector', 'Projektör'),
-    ('dvdplayer', 'DVD Oynatıcı'),
-    ('camera', 'Kamera')
+    ('flaticon-technology-2', 'Aydınlatma'),
+    ('flaticon-lightbulb', 'Ampul'),
+    ('flaticon-airconditioner', 'Klima'),
+    ('flaticon-stove', 'Fırın'),
+    ('flaticon-swimming-pool', 'Yüzme Havuzu'),
+    ('flaticon-blinds', 'Panjur'),
+    ('flaticon-garage', 'Garaj Kapısı Aç'),
+    ('flaticon-garage-1', 'Garaj Kapısı Kapat'),
+    ('flaticon-monitor', 'Televizyon'),
+    ('flaticon-water-valve', 'Musluk'),
+    ('flaticon-gas-pipe', 'Doğalgaz Vanası'),
+    ('flaticon-valve', 'Su Vanası'),
+    ('flaticon-lock-1', 'Kapı Kilidi Aç'),
+    ('flaticon-lock', 'Kapı Kilitle')
 )
 
 
