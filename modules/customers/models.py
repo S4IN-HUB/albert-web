@@ -162,7 +162,7 @@ class Relays(models.Model):
 
     relay_no = models.IntegerField(verbose_name="Röle No")
     type = models.CharField(max_length=20, choices=RelayTypes, verbose_name="Anahtar Tipi")
-    icon = models.CharField(max_length=20, choices=Icons, verbose_name="Simge")
+    icon = models.CharField(max_length=40, choices=Icons, verbose_name="Simge")
 
     total_instant_current = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Akım", default=0)
     total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt", default=0)
@@ -250,7 +250,7 @@ class Crons(models.Model):
 class IrButton(models.Model):
     device = models.ForeignKey(Devices, related_name="IrButtons", verbose_name="Cihaz", null=True, blank=True)
     name = models.CharField(verbose_name="Buton Adı", max_length=50)
-    icon = models.CharField(max_length=20, choices=Icons, verbose_name="Simge")
+    icon = models.CharField(max_length=40, choices=Icons, verbose_name="Simge")
     ir_type = models.CharField(max_length=20, verbose_name="IR Tipi", null=True, blank=True)
     ir_code = models.CharField(max_length=16, verbose_name="IR Code", null=True, blank=True)
     ir_bits = models.IntegerField(verbose_name="Bits", null=True, blank=True)
