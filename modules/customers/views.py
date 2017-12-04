@@ -1152,6 +1152,53 @@ def relay_control(request):
     return HttpResponse('OK')
 
 
+@csrf_exempt
+def relay_command(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _relay = all_params.get("relay")
+    _action = all_params.get("action")
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+        response_message = ""
+
+        if _relay:
+            relay = Relays.objects.get(pk=request.GET.get("relay"))
+
+            if _action == "open":
+
+                _cmd = cache.get(relay.device.name, [])
+                _command = "RC#%s#%s" % (relay.relay_no, 1)
+                _cmd.append({"CMD": _command, })
+                cache.set(relay.device.name, _cmd)
+                relay.pressed = True
+
+            elif _action == "close":
+                _cmd = cache.get(relay.device.name, [])
+                _command = "RC#%s#%s" % (relay.relay_no, 0)
+                _cmd.append({"CMD": _command, })
+                cache.set(relay.device.name, _cmd)
+                relay.pressed = False
+
+            relay.save()
+
+            print cache.get(relay.device.name, [])
+
+            return HttpResponse('OK')
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
 def cron_control(request):
     """BURAYA AÇIKLAMA GELECEK"""
     open_count = 0
