@@ -683,7 +683,7 @@ def favourite_relay(request):
 
         if _relay:
 
-            account = Accounts.objects.filter(user=_authuser)
+            account = Accounts.objects.get(user=_authuser)
             relay = Relays.objects.get(pk=_relay)
             account.favourite_relays.add(relay)
 
