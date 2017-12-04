@@ -260,6 +260,16 @@ class IrButton(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.device, self.name)
 
+    def save(self, *args, **kwargs):
+
+        super(IrButton, self).save(*args, **kwargs)
+
+        _all = IrButton.objects.filter(device=self.device,spec=self.spec).exclude(pk=self.id)
+        for item in _all:
+            item.spec = 0
+            item.save()
+
+
     class Meta(object):
         verbose_name = "IR Buton"
         verbose_name_plural = "IR Butonları"
