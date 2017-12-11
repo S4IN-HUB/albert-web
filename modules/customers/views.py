@@ -947,6 +947,7 @@ def get_room_info(request):
                         'name': room.name,
                         'location': room.location.name if room.location else '',
                         'temperature': int(ir_device.temperature),
+                        'target_temp': int(ir_device.target_temperature),
                         'humidity': int(ir_device.humidity),
                         'device': get_device_json(room.Devices.all()) if room.Devices.all().count() > 0 else False,
                         'have_ir': True,
