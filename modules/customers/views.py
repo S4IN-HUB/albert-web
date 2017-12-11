@@ -977,7 +977,7 @@ def get_room_info(request):
         response_status = False
         response_message = "Oturum kapalı"
 
-    return json_responser(response_status, response_message, response_data[0])
+    return json_responser(response_status, response_message, response_data)
 
 
 @csrf_exempt
