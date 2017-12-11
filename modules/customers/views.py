@@ -912,6 +912,75 @@ def get_favourite_rooms(request):
 
 
 @csrf_exempt
+def get_room_info(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    room_id = all_params.get("room_id")
+
+    _authuser = check_user_session(token)
+
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+        response_data = []
+
+        account = Accounts.objects.get(user=_authuser)
+
+        room = Rooms.objects.get(id=room_id, account=account)
+
+        if room:
+
+            if room.Devices.all().filter(type='ir').count() > 0:
+
+                try:
+                    ir_device = room.Devices.all().get(type='ir')
+                except:
+                    ir_device = None
+
+                if ir_device:
+                    response_data.append({
+                        'id': room.id,
+                        'name': room.name,
+                        'location': room.location.name if room.location else '',
+                        'temperature': int(ir_device.temperature),
+                        'humidity': int(ir_device.humidity),
+                        'device': get_device_json(room.Devices.all()) if room.Devices.all().count() > 0 else False,
+                        'have_ir': True,
+                        'ir_cold': ir_device.IrButtons.all().filter(spec=1)[
+                            0].id if ir_device.IrButtons.all().filter(
+                            spec=1).count() > 0 else False,
+                        'ir_hot': ir_device.IrButtons.all().filter(spec=2)[
+                            0].id if ir_device.IrButtons.all().filter(
+                            spec=2).count() > 0 else False,
+                        'ir_off': ir_device.IrButtons.all().filter(spec=3)[
+                            0].id if ir_device.IrButtons.all().filter(
+                            spec=3).count() > 0 else False,
+
+                    })
+
+            else:
+                response_data.append({
+
+                    'id': room.id,
+                    'name': room.name,
+                    'location': room.location.name if room.location else '',
+                    'have_ir': False,
+                })
+
+        response_status = True
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def delete_room(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
