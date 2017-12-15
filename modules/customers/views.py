@@ -1509,13 +1509,9 @@ def relay_command(request):
 
             relay.save()
 
-            response_data.append({
-                'pressed': relay.pressed,
-            })
-
             print cache.get(relay.device.name, [])
 
-            return json_responser(response_status, response_message, response_data)
+            return HttpResponse('OK')
 
     else:
         response_status = False
@@ -1545,12 +1541,7 @@ def relay_command_update(request):
             relay.pressed = False
             relay.save()
 
-            response_status = True
-
-            response_data.append({
-                'pressed': relay.pressed,
-            })
-        return json_responser(response_status, response_message, response_data)
+        return HttpResponse('OK')
 
     else:
         response_status = False
