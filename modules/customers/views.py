@@ -1525,6 +1525,41 @@ def relay_command(request):
 
 
 @csrf_exempt
+def relay_command_update(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _relay = all_params.get("relay")
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+        response_message = ""
+
+        if _relay:
+            relay = Relays.objects.get(pk=_relay)
+
+            relay.pressed = False
+            relay.save()
+
+            response_status = True
+
+            response_data.append({
+                'pressed': relay.pressed,
+            })
+        return json_responser(response_status, response_message, response_data)
+
+    else:
+        response_status = False
+        response_message = "Oturum kapalı"
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def cron_control(request):
     """BURAYA AÇIKLAMA GELECEK"""
     open_count = 0
