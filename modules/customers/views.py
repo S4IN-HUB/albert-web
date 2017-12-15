@@ -150,6 +150,7 @@ def get_user(request):
     # return Data
 
 
+@csrf_exempt
 def get_user_json(remote_user, **kwargs):
     """BURAYA AÇIKLAMA GELECEK"""
     get_all_info = kwargs.get("get_all", False)
@@ -189,6 +190,7 @@ def get_user_json(remote_user, **kwargs):
     return json_content
 
 
+@csrf_exempt
 def login_user(request, remote_user):
     if remote_user.is_active:
         remote_user.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -204,6 +206,7 @@ def login_user(request, remote_user):
     return status, message, json_content
 
 
+@csrf_exempt
 def base_login(request, **kwargs):
     """Logins user. Required parameters are:
             username, password.
@@ -260,6 +263,7 @@ def base_login(request, **kwargs):
     return status, message, json_content
 
 
+@csrf_exempt
 def check_user_session(token):
     """Checks wheather user is online or not.
     If user is online means: user has a session, it returns user object, if not: returns False
@@ -1176,6 +1180,7 @@ def get_temp(request):
     return json_responser(response_status, response_message, response_data)
 
 
+@csrf_exempt
 def get_device_json(devices):
     """BURAYA AÇIKLAMA GELECEK"""
     data = {}
@@ -1197,6 +1202,7 @@ def get_device_json(devices):
     return data
 
 
+@csrf_exempt
 def get_room_json(room):
     """BURAYA AÇIKLAMA GELECEK"""
     if room:
@@ -1411,7 +1417,6 @@ def send_command(request, device=None, command=None):
     except ObjectDoesNotExist:
         _relay = None
 
-
     if _relay is not None and (_relay.type == 'switch' or _relay.type == 'push'):
 
         if _command == '1':
@@ -1437,9 +1442,10 @@ def send_command(request, device=None, command=None):
             _cmd = cache.get(device.name, [])
             _cmd.append({"CMD": _command})
 
-
     return json_responser(status=True, data="required params token, command, device_id")
 
+
+@csrf_exempt
 def relay_control(request):
     """BURAYA AÇIKLAMA GELECEK"""
     if request.GET.get("relay"):
@@ -1514,6 +1520,7 @@ def relay_command(request):
     return json_responser(response_status, response_message, response_data)
 
 
+@csrf_exempt
 def cron_control(request):
     """BURAYA AÇIKLAMA GELECEK"""
     open_count = 0
@@ -1571,6 +1578,7 @@ def cron_control(request):
             str(open_count), str(close_count), now_date.strftime('%H:%M')))
 
 
+@csrf_exempt
 def send_ir_command(request):
     """
     IR Modülünü Kumandalarına ait herhangi bir butonun IR Komutunu seçilen butona SET edebilmek için
@@ -1599,6 +1607,7 @@ def send_ir_command(request):
     return HttpResponse('OK')
 
 
+@csrf_exempt
 def read_ir(request):
 
     _device = Devices.objects.get(pk=request.GET.get('device_id'))
