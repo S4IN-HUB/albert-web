@@ -1509,9 +1509,13 @@ def relay_command(request):
 
             relay.save()
 
+            response_data.append({
+                'pressed': relay.pressed,
+            })
+
             print cache.get(relay.device.name, [])
 
-            return HttpResponse('OK')
+            return json_responser(response_status, response_message, response_data)
 
     else:
         response_status = False
