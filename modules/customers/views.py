@@ -1150,6 +1150,7 @@ def change_target_temp(request):
         if device_id and value:
 
             device = Devices.objects.get(id=device_id)
+            return HttpResponse("device found")
 
             if value == 0:
                 device.target_temperature -= 1
