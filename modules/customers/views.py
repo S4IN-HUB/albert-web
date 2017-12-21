@@ -1150,14 +1150,13 @@ def change_target_temp(request):
         if device_id and value:
 
             device = Devices.objects.get(id=device_id)
-            return HttpResponse("device found")
 
-            if value == 0:
+            if value == '0':
                 device.target_temperature -= 1
                 device.save()
                 return HttpResponse("Derece azaltıldı.")
 
-            if value == 1:
+            if value == '1':
                 device.target_temperature += 1
                 device.save()
                 return HttpResponse('Derece arttırıldı')
