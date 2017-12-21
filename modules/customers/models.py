@@ -99,6 +99,9 @@ class Devices(models.Model):
     temperature = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Sıcaklık")
     humidity = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Nem")
 
+    oto_on_off = models.BooleanField(default=False, verbose_name="Oto. Aç/Kapat")
+    spec = models.PositiveSmallIntegerField(default=0, choices=((1, 'Klima Yaz Modu'), (2, 'Klima Kış Modu'), (3, 'Klima Kapat')), verbose_name="Özel Tanım")
+
     @property
     def total_instant_current(self):
         total_current = 0
