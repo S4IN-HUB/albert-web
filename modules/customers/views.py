@@ -1133,6 +1133,51 @@ def get_devices(request):
 
 
 @csrf_exempt
+def change_target_temp(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    device_id = all_params.get("device_id")
+    value = all_params.get("value")
+    _authuser = check_user_session(token)
+    response_data = []
+
+    if _authuser:
+        response_status = True
+        response_message = ""
+
+        if device_id and value:
+
+            device = Devices.objects.get(id=device_id)
+            targetTemp = device.target_temperature
+
+            if value == 0:
+
+                targetTemp -= 1
+                device.target_temperature = targetTemp
+                device.save()
+
+            if value == 1:
+                targetTemp += 1
+                device.target_temperature = targetTemp
+                device.save()
+
+            return HttpResponse('OK')
+
+        else:
+
+            response_status = False
+            response_message = "Eksik parametre gönderdiniz."
+
+    else:
+        response_status = False
+        response_message = "Kullanıcı doğrulanamadı."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def get_locations(request):
     """BURAYA AÇIKLAMA GELECEK"""
     all_params = get_params(request)
