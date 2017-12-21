@@ -95,7 +95,7 @@ class Devices(models.Model):
     ip = models.CharField(max_length=50,blank=True, null=True, verbose_name="IP adresi", default='0.0.0.0')
     status = models.BooleanField(default=True, verbose_name="Durum")
 
-    target_temperature = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Hedef Sıcaklık")
+    target_temperature = models.DecimalField(max_digits=5, decimal_places=2, default=25, verbose_name="Hedef Sıcaklık")
     temperature = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Sıcaklık")
     humidity = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Nem")
 
