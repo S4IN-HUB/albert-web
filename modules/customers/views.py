@@ -574,6 +574,7 @@ def add_device(request):
                     location=location,
                     type=device_type,
                     name=device_name,
+                    description=device_name,
                     room=room,
                 )
                 new_ir_device.save()
