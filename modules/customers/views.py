@@ -1324,27 +1324,37 @@ def get_relay_settings(request):
         response_data = []
         response_message = ""
 
-        if room_id and device_id:
+        if relay_id and device_id:
 
             response_status = True
-
-            new_relay_room = Rooms.objects.get(id=room_id)
-            new_relay_device = Devices.objects.get(id=device_id)
             update_relay = Relays.objects.get(id=relay_id)
+            new_relay_device = Devices.objects.get(id=device_id)
 
-            update_relay.room = new_relay_room
             update_relay.device = new_relay_device
-            update_relay.name = relay_name
-            update_relay.type = relay_type
-            update_relay.icon = relay_icon
             update_relay.save()
+
+            if room_id:
+                new_relay_room = Rooms.objects.get(id=room_id)
+                update_relay.room = new_relay_room
+                update_relay.save()
+
+            if relay_name:
+                update_relay.name = relay_name
+                update_relay.save()
+
+            if relay_type:
+                update_relay.type = relay_type
+                update_relay.save()
+
+            if relay_icon:
+                update_relay.icon = relay_icon
+                update_relay.save()
 
     else:
 
         response_message = "Oturum kapalı"
 
     return json_responser(response_status, response_message, response_data)
-
 
 @csrf_exempt
 def get_device_relays(request):
