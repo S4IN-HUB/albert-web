@@ -1564,7 +1564,7 @@ def relay_command(request):
 
             print cache.get(relay.device.name, [])
 
-            return HttpResponse('OK')
+            return json_responser(True, "OK", {})
 
     else:
         response_status = False
