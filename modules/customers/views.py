@@ -563,43 +563,54 @@ def add_device(request):
             account = Accounts.objects.get(user=_authuser)
             location = Locations.objects.get(id=location_id, account=account)
 
+            chack_device = Devices.objects.filter(type=device_type,name=device_name)
+            if chack_device.count() > 0:
+                if chack_device[0].account != None and chack_device[0].account != account:
+                    return json_responser(False, "Bu cihaz zaten başka bir kullanıcıya tanımlanmış", response_data)
+
             if device_type == "IR":
 
                 room_id = all_params.get("room_id")
                 room = Rooms.objects.get(id=room_id, account=account)
 
-                new_ir_device = Devices(
-                    account=account,
-                    location=location,
-                    type=device_type,
-                    name=device_name,
-                    description=device_name,
-                    room=room,
-                )
+                if chack_device.count() > 0:
+                    new_ir_device = chack_device[0]
+                    new_ir_device.account = account
+                    new_ir_device.location = location
+                    new_ir_device.type = device_type
+                    new_ir_device.name = device_name
+                    new_ir_device.description = device_name
+                    new_ir_device.room = room
+
+                else:
+                    new_ir_device = Devices(
+                        account=account,
+                        location=location,
+                        type=device_type,
+                        name=device_name,
+                        description=device_name,
+                        room=room,
+                    )
                 new_ir_device.save()
 
             else:
-                new_device = Devices(
 
-                    account=account,
-                    location=location,
-                    type=device_type,
-                    name=device_name,
-                )
+                if chack_device.count() > 0:
+                    new_device = chack_device[0]
+                    new_device.account = account
+                    new_device.location = location
+                    new_device.type = device_type
+                    new_device.name = device_name
+                    new_device.description = device_name
+                else:
+                    new_device = Devices(
+                        account=account,
+                        location=location,
+                        type=device_type,
+                        name=device_name,
+                        description=device_name,
+                    )
                 new_device.save()
-
-                # for item in range(0, 15):
-                #     new_relay = Relays(
-                #
-                #         device=new_device,
-                #         name=item,
-                #         relay_no=item,
-                #         type="switch",
-                #         icon="light",
-                #         total_instant_current=0,
-                #         total_instant_power=0
-                #     )
-                #     new_relay.save()
 
             response_status = True
             response_message = "Device is added."
