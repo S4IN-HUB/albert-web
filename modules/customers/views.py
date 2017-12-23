@@ -569,7 +569,6 @@ def add_device(request):
                 room = Rooms.objects.get(id=room_id, account=account)
 
                 new_ir_device = Devices(
-
                     account=account,
                     location=location,
                     type=device_type,
