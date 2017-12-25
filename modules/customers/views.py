@@ -1391,7 +1391,7 @@ def get_device_relays(request):
         for relay in _relays:
             response_data.append({
                 'id': relay.id,
-                'room_id': relay.room.id,
+                'room_id': relay.room.id if relay.room else None,
                 'room': get_room_json(relay.room),
                 'pressed': relay.pressed,
                 'name': relay.name,
