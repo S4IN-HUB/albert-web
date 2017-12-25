@@ -130,7 +130,7 @@ class Devices(models.Model):
 
 Icons = (
     ('flaticon-technology-2', 'Aydınlatma'),
-    ('flaticon-lightbulb', 'Ampul'),
+    ('flaticon-light-bulb', 'Ampul'),
     ('flaticon-airconditioner', 'Klima'),
     ('flaticon-stove', 'Fırın'),
     ('flaticon-swimming-pool', 'Yüzme Havuzu'),
@@ -156,8 +156,6 @@ class Relays(models.Model):
     RelayTypes = (
         ('switch', 'Aç / Kapat'),
         ('push', 'Bas - çek'),
-        ('count', 'Geri Sayım'),
-        ('scheduled', 'Zamanlanmış'),
     )
     room = models.ForeignKey(Rooms, null=True,blank=True, related_name="Relays", verbose_name="Oda")
     device = models.ForeignKey(Devices, related_name="Relays", verbose_name="Cihaz")
@@ -166,8 +164,8 @@ class Relays(models.Model):
     pressed = models.BooleanField(default=False, verbose_name="Basılı mı?")
 
     relay_no = models.IntegerField(verbose_name="Röle No")
-    type = models.CharField(max_length=20, choices=RelayTypes, verbose_name="Anahtar Tipi")
-    icon = models.CharField(max_length=40, choices=Icons, verbose_name="Simge")
+    type = models.CharField(max_length=20, default='switch', choices=RelayTypes, verbose_name="Anahtar Tipi")
+    icon = models.CharField(max_length=40, default='flaticon-light-bulb', choices=Icons, verbose_name="Simge")
 
     total_instant_current = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Akım", default=0)
     total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt", default=0)
