@@ -1782,3 +1782,35 @@ def ir_command(request):
         response_message = "Please login first."
 
     return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def delete_ir_button(request):
+    """ BURAYA AÇIKLAMA GELECEK """
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    ir_button_id = all_params.get("button_id")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+
+        response_status = True
+
+        try:
+            button = IrButton.objects.get(pk=ir_button_id, device__account__user=_authuser)
+            button.delete()
+            response_message = "IR butonu silindi."
+
+        except ObjectDoesNotExist:
+            messages.error(request, "Buton tanımına erişilemiyor")
+            return HttpResponseRedirect(request.META.get("HTTP _REFERER"))
+
+    else:
+        response_message = "Please login first."
+
+    return json_responser(response_status, response_message, response_data)
