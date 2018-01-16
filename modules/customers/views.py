@@ -1846,3 +1846,37 @@ def delete_rl_button(request):
         response_message = "Lütfen giriş yapınız."
 
     return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def change_ir_button(request):
+    """ BURAYA AÇIKLAMA GELECEK """
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    ir_button_id = all_params.get("button_id")
+    ir_button_name = all_params.get("button_name")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+
+        response_status = True
+
+        try:
+            button = IrButton.objects.get(pk=ir_button_id, device__account__user=_authuser)
+            button.name = ir_button_name
+            button.save()
+            response_message = "IR butonu ismi değiştirildi."
+
+        except ObjectDoesNotExist:
+            messages.error(request, "Buton tanımına erişilemiyor")
+            return HttpResponseRedirect(request.META.get("HTTP _REFERER"))
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
