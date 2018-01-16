@@ -1811,6 +1811,38 @@ def delete_ir_button(request):
             return HttpResponseRedirect(request.META.get("HTTP _REFERER"))
 
     else:
-        response_message = "Please login first."
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def delete_rl_button(request):
+    """ BURAYA AÇIKLAMA GELECEK """
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    rl_button_id = all_params.get("button_id")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    if _authuser:
+
+        response_status = True
+
+        try:
+            button = Relays.objects.get(pk=rl_button_id, device__account__user=_authuser)
+            button.delete()
+            response_message = "RL butonu silindi."
+
+        except ObjectDoesNotExist:
+            messages.error(request, "Buton tanımına erişilemiyor")
+            return HttpResponseRedirect(request.META.get("HTTP _REFERER"))
+
+    else:
+        response_message = "Lütfen giriş yapınız."
 
     return json_responser(response_status, response_message, response_data)

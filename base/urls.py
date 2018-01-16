@@ -23,7 +23,7 @@ from modules.customers.views import (api_login, api_logout, get_rooms, get_relay
                                      get_ir_buttons, relay_command, favourite_relay, delete_room, delete_location,
                                      favourite_room,ir_command,read_ir_button,set_ir_shortcut, get_favourite_relays,
                                      get_room_info, get_favourite_rooms, delete_favourite_relay, relay_command_update,
-                                     change_target_temp, delete_ir_button)
+                                     change_target_temp, delete_ir_button, delete_rl_button)
 from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
@@ -49,6 +49,7 @@ urlpatterns = [
     url(r'^api/delete_room/$', delete_room),
     url(r'^api/delete_location/$', delete_location),
     url(r'^api/delete_ir_button/$', delete_ir_button),
+    url(r'^api/delete_rl_button/$', delete_rl_button),
     url(r'^api/list/locations/$', get_locations),
     url(r'^api/list/rooms/$', get_rooms),
     url(r'^api/list/devices/$', get_devices),
