@@ -352,10 +352,10 @@ def api_register(request):
                 response_message = "Login succeed."
 
         else:
-            response_message = "Email already exists."
+            response_message = "E-mail zaten kayıtlı."
 
     else:
-        response_message = "Please fill all the fields."
+        response_message = "Lütfen bütün alanları doldurunuz."
 
     return json_responser(response_status, response_message, response_data)
 
