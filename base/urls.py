@@ -23,7 +23,7 @@ from modules.customers.views import (api_login, api_logout, get_rooms, get_relay
                                      get_ir_buttons, relay_command, favourite_relay, delete_room, delete_location,
                                      favourite_room,ir_command,read_ir_button,set_ir_shortcut, get_favourite_relays,
                                      get_room_info, get_favourite_rooms, delete_favourite_relay, relay_command_update,
-                                     change_target_temp, delete_ir_button, delete_rl_button, change_ir_button)
+                                     change_target_temp, delete_ir_button, delete_rl_button, change_ir_button, add_new_scenario)
 from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
@@ -43,6 +43,7 @@ urlpatterns = [
     url(r'^api/add_room/$', add_room),
     url(r'^api/add_device/$', add_device),
     url(r'^api/add_relay/$', add_relay),
+    url(r'^api/add_scenario/$', add_new_scenario),
     url(r'^api/favourite_relay/$', favourite_relay),
     url(r'^api/delete_fav_relay/$', delete_favourite_relay),
     url(r'^api/favourite_room/$', favourite_room),
@@ -68,6 +69,6 @@ urlpatterns = [
     url(r'^api/change_target_temp/$', change_target_temp),
     url(r'^api/ir_command/$', ir_command),
     url(r'^api/read_ir_button/$', read_ir_button),
-    url(r'^api/set/ir_shortcut/$', set_ir_shortcut)
+    url(r'^api/set/ir_shortcut/$', set_ir_shortcut),
 
 ]

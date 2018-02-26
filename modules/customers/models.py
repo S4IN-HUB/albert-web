@@ -187,7 +187,7 @@ class TempValues(models.Model):
 
     device = models.ForeignKey(Devices, related_name="TempValues", verbose_name="Cihaz")
     temperature = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Sıcaklık")
-    humidity = models.DecimalField(max_digits=5, decimal_places=2, default=0,verbose_name="Nem")
+    humidity = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Nem")
     create_date = models.DateTimeField(verbose_name='Eklenme Tarihi', auto_now_add=True)
 
     def __unicode__(self):
@@ -256,8 +256,7 @@ class IrButton(models.Model):
     ir_type = models.CharField(max_length=20, verbose_name="IR Tipi", null=True, blank=True)
     ir_code = models.CharField(max_length=16, verbose_name="IR Code", null=True, blank=True)
     ir_bits = models.IntegerField(verbose_name="Bits", null=True, blank=True)
-    spec = models.PositiveSmallIntegerField(default=0, choices=((0,'Tanımsız'),(1,'Klima Yaz Modu'),(2,'Klima Kış Modu'),(3,'Klima Kapat')) ,verbose_name="Özel Tanım")
-
+    spec = models.PositiveSmallIntegerField(default=0, choices=((0,'Tanımsız'),(1,'Klima Yaz Modu'),(2,'Klima Kış Modu'),(3,'Klima Kapat')), verbose_name="Özel Tanım")
 
     def __unicode__(self):
         return "%s" %  self.name
@@ -272,7 +271,21 @@ class IrButton(models.Model):
                 item.spec = 0
                 item.save()
 
-
     class Meta(object):
         verbose_name = "IR Buton"
         verbose_name_plural = "IR Butonları"
+
+
+class Scenarios(models.Model):
+
+    account = models.ForeignKey(Accounts, null=True, blank=True, related_name="Scenarios", verbose_name="Hesap")
+    name = models.CharField(max_length=50, verbose_name="Senaryo Adı", default='')
+    scenario_relays = models.ManyToManyField('customers.Relays', related_name="scenario_relays", verbose_name="Senaryo Röleleri", null=True, blank=True)
+    scenario_ir_buttons = models.ManyToManyField('customers.IrButton', related_name="scenario_ir_buttons", verbose_name="Senaryo IR Butonları", null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s" % self.name
+
+    class Meta(object):
+        verbose_name = "Senaryo"
+        verbose_name_plural = "Senaryolar"

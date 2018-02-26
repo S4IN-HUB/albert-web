@@ -16,7 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 
-from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations
+from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations, Scenarios
 
 
 @csrf_exempt
@@ -1875,6 +1875,37 @@ def change_ir_button(request):
         except ObjectDoesNotExist:
             messages.error(request, "Buton tanımına erişilemiyor")
             return HttpResponseRedirect(request.META.get("HTTP _REFERER"))
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def add_new_scenario(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    scneario_name = all_params.get("scenario_name")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+
+        account = Accounts.objects.get(user=_authuser)
+
+        new_scenario = Scenarios(
+            account=account,
+            name= scneario_name
+        )
+        new_scenario.save()
+
+        response_message = "Senaryo eklendi."
+        response_status = True
 
     else:
         response_message = "Lütfen giriş yapınız."
