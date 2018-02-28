@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from modules.customers.models import (Accounts, Locations, Plans, Rooms, Devices, Relays, Crons, RelayCurrentValues,
-                                      IrButton, TempValues)
+                                      IrButton, TempValues, IrCrons)
 
 
 @admin.register(Plans)
@@ -131,7 +131,6 @@ class DevicesAdmin(admin.ModelAdmin):
     room_location.short_description = 'Konum'
     room_location.admin_order_field = 'room'
 
-
     def read_ir_button(self,obj):
         if obj.type == 'IR':
             return '<a class="btn btn-info" href="/read-ir/?device_id=' + str(obj.id) + '"  target="process"><i class="fa fa-power-off" aria-hidden="true"></i> IR Oku</a>'
@@ -140,7 +139,6 @@ class DevicesAdmin(admin.ModelAdmin):
 
     read_ir_button.allow_tags = True
     read_ir_button.short_description = 'IR Oku'
-
 
     list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'status',
                     'temperature','humidity',
@@ -233,7 +231,6 @@ class RelayAdmin(admin.ModelAdmin):
     inlines = [InlineCrons, ]
 
 
-
 @admin.register(RelayCurrentValues)
 class RelayCurrentValuesAdmin(admin.ModelAdmin):
     """BURAYA AÇIKLAMA GELECEK"""
@@ -258,6 +255,7 @@ class RelayCurrentValuesAdmin(admin.ModelAdmin):
 
         return super(RelayCurrentValuesAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 @admin.register(TempValues)
 class TempValuesAdmin(admin.ModelAdmin):
 
@@ -271,12 +269,20 @@ class TempValuesAdmin(admin.ModelAdmin):
             return qs.filter(device__account__user=request.user)
 
 
+class InlineIrCrons(admin.StackedInline):
+    """BURAYA AÇIKLAMA GELECEK"""
+    model = IrCrons
+    extra = 1
+
+
 @admin.register(IrButton)
 class IrButtonAdmin(admin.ModelAdmin):
     """IR Kumanda butonları yönetim paneli"""
 
     list_display = ('icon', 'name', 'device', 'ir_type', 'ir_code', 'ir_bits', 'send_ir_command')
     list_display_links = ('icon', 'name', 'device')
+
+    inlines = [InlineIrCrons, ]
 
     def send_ir_command(self, obj):
         """

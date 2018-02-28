@@ -1617,8 +1617,7 @@ def relay_command_update(request):
 @csrf_exempt
 def cron_control(request):
     """BURAYA AÇIKLAMA GELECEK"""
-    open_count = 0
-    close_count = 0
+
     now_date = datetime.now()
 
     _devices = Crons.objects.filter(day=now_date.weekday(),
@@ -1631,10 +1630,6 @@ def cron_control(request):
 
         _device = Devices.objects.get(pk=device_id)
 
-        _inprocess = cache.get("in_process", {})
-        _inprocess.update({_device.name: True})
-        cache.set("in_process", _inprocess)
-
         crons = Crons.objects.filter(day=now_date.weekday(),
                                      switch_on_time__hour=now_date.strftime('%H'),
                                      switch_on_time__minute=now_date.strftime('%M'),
@@ -1643,9 +1638,10 @@ def cron_control(request):
         for item in crons:
             try:
                 _cmd = cache.get(item.relay.device.name, [])
-                _cmd.append({"CMD": "RC", "RN": item.relay.relay_no, "ST": 1})
+                _command = "RC#%s#%s" % (item.relay.relay_no, 1)
+                _cmd.append({"CMD": _command, })
                 cache.set(item.relay.device.name, _cmd)
-                open_count += 1
+                item.relay.pressed = True
             except:
                 pass
 
@@ -1657,19 +1653,12 @@ def cron_control(request):
         for item in crons:
             try:
                 _cmd = cache.get(item.relay.device.name, [])
-                _cmd.append({"CMD": "RC", "RN": item.relay.relay_no, "ST": 0})
+                _command = "RC#%s#%s" % (item.relay.relay_no, 0)
+                _cmd.append({"CMD": _command, })
                 cache.set(item.relay.device.name, _cmd)
-                open_count += 1
+                item.relay.pressed = False
             except:
                 pass
-
-        _inprocess = cache.get("in_process", {})
-        del _inprocess[_device.name]
-        cache.set("in_process", _inprocess)
-
-    return HttpResponse(
-        "Open : %s, Close: %s Time: %s," % (
-            str(open_count), str(close_count), now_date.strftime('%H:%M')))
 
 
 @csrf_exempt

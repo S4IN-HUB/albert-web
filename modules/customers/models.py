@@ -235,6 +235,7 @@ DAYS = (
     (4, "Cuma"),
     (5, "Cumartesi"),
     (6, "Pazar"),
+    (7, "Her gün")
 )
 
 
@@ -274,6 +275,17 @@ class IrButton(models.Model):
     class Meta(object):
         verbose_name = "IR Buton"
         verbose_name_plural = "IR Butonları"
+
+
+class IrCrons(models.Model):
+    ir_button = models.ForeignKey(IrButton, related_name="IrCrons", verbose_name="IR Butonu")
+    day = models.IntegerField(choices=DAYS, verbose_name="Uygulanacak Günler")
+    switch_on_time = models.TimeField(verbose_name="Açma Zaman")
+    switch_off_time = models.TimeField(verbose_name="Kapama Zaman")
+
+    class Meta(object):
+        verbose_name = "Zamanlama"
+        verbose_name_plural = "Zamanlamalar"
 
 
 class Scenarios(models.Model):
