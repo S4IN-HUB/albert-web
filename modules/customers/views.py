@@ -1123,11 +1123,12 @@ def get_devices(request):
         response_message = ""
 
         for device in _authuser.Accounts.Devices.all():
+
             response_data.append({
                 'id': device.id,
                 'name': device.name,
                 'type': device.type,
-                'location': device.location.id,
+                'location': device.location.id if device.location else None,
                 'room': get_room_json(device.room),
                 'description': device.description,
                 'wan_ip': device.wan_ip,
@@ -1136,6 +1137,7 @@ def get_devices(request):
                 'temperature': device.temperature,
                 'humidity': device.humidity
             })
+
     else:
         response_status = False
         response_message = "Oturum kapalı"
