@@ -1891,12 +1891,124 @@ def add_new_scenario(request):
 
         new_scenario = Scenarios(
             account=account,
-            name= scneario_name
+            name=scneario_name
         )
         new_scenario.save()
 
         response_message = "Senaryo eklendi."
         response_status = True
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def list_user_scenarios(request):
+    """KULLANICININ TANIMLADIĞI SENARYOLARI GETİRİR"""
+
+    response_status = False
+    response_data = []
+
+    all_params = get_params(request)
+
+    token = all_params.get('token')
+
+    _authuser = check_user_session(token)
+
+    if _authuser:
+
+        account = Accounts.objects.get(user=_authuser)
+
+        scenarios = Scenarios.objects.filter(account=account)
+
+        if scenarios.count() > 0:
+
+            for scenario in scenarios:
+
+                response_data.append({
+                    'scenario_id': scenario.id,
+                    'scenario_name': scenario.name
+                })
+
+            response_status = True
+            response_message = "Senaryolar"
+
+        else:
+            response_message = "Senaryo bulunamadı"
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def add_relay_to_scenario(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _scenario = all_params.get("scenario")
+    _relay = all_params.get("relay")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if _relay:
+
+            account = Accounts.objects.get(user=_authuser)
+            scenario = Scenarios.objects.get(id=_scenario, account=account)
+            relay = Relays.objects.get(pk=_relay)
+            scenario.scenario_relays.add(relay)
+
+            response_status = True
+            response_message = "Röle senaryoya eklendi."
+
+        else:
+
+            response_message = "Röle bulunamadı."
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def delete_relay_from_scenario(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    _scenario = all_params.get("scenario")
+    _relay = all_params.get("relay")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+        response_data = []
+
+        if _relay:
+
+            account = Accounts.objects.get(user=_authuser)
+            scenario = Scenarios.objects.get(id=_scenario, account=account)
+            relay = Relays.objects.get(pk=_relay)
+            scenario.scenario_relays.remove(relay)
+
+            response_status = True
+            response_message = "Röle senaryodan çıkarıldı"
+
+        else:
+
+            response_message = "Röle bulunmadı"
 
     else:
         response_message = "Lütfen giriş yapınız."
