@@ -56,7 +56,7 @@ class Locations(models.Model):
     lon = models.DecimalField(default=0, max_digits=10, decimal_places=8, verbose_name="Boylam")
 
     def __unicode__(self):
-        return "%s" % self.name
+        return "%s : %s" % ( self.name , self.account.user.username if self.account else '' )
 
     class Meta(object):
         verbose_name = "Konum"
@@ -69,7 +69,7 @@ class Rooms(models.Model):
     name = models.CharField(max_length=50, verbose_name="Oda Tanımı")
 
     def __unicode__(self):
-        return "%s" % self.name
+        return "%s : %s " % ( self.name , self.account.user.username if self.account else '' )
 
     class Meta(object):
         verbose_name = "Odalar"
@@ -121,7 +121,7 @@ class Devices(models.Model):
         return total_power
 
     def __unicode__(self):
-        return "%s" % self.name
+        return "%s : %s  : %s - %s" % (self.name, self.account , self.location , self.room )
 
     class Meta(object):
         verbose_name = "Cihaz"
@@ -172,7 +172,7 @@ class Relays(models.Model):
 
     def __unicode__(self):
         if self.device.room:
-            return "%s %s" % (self.name, self.device.room.name)
+            return "%s %s" % (self.name, self.device.room.name )
         else:
             return "%s %s" % (self.name, '')
 
