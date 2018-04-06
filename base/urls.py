@@ -24,7 +24,7 @@ from modules.customers.views import (api_login, api_logout, get_rooms, get_relay
                                      favourite_room,ir_command,read_ir_button,set_ir_shortcut, get_favourite_relays,
                                      get_room_info, get_favourite_rooms, delete_favourite_relay, relay_command_update,
                                      change_target_temp, delete_ir_button, delete_rl_button, change_ir_button, add_new_scenario,
-                                     list_user_scenarios)
+                                     list_user_scenarios, add_relay_to_scenario)
 from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^api/add_device/$', add_device),
     url(r'^api/add_relay/$', add_relay),
     url(r'^api/add_scenario/$', add_new_scenario),
+    url(r'^api/add_relay_to_scenario/$', add_relay_to_scenario),
     url(r'^api/favourite_relay/$', favourite_relay),
     url(r'^api/delete_fav_relay/$', delete_favourite_relay),
     url(r'^api/favourite_room/$', favourite_room),
