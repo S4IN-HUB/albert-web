@@ -27,7 +27,12 @@ class CronFunctions(object):
         _switch_on_crons = Crons.objects.filter(day__in=[now_date.weekday(), 8], switch_on_time__hour=now_date.strftime('%H'),
                                                 switch_on_time__minute=now_date.strftime('%M')).values_list('relay')
 
+        print "*************"
+        print _switch_on_crons
+
         for item in _switch_on_crons:
+            print "-------------"
+            print item
             try:
                 _cmd = cache.get(item.relay.device.name, [])
                 _command = "RC#%s#%s" % (item.relay.relay_no, 1)
