@@ -32,7 +32,7 @@ class CronFunctions(object):
 
         for item in _switch_on_crons:
             print "-------------"
-            print item
+            print item.relay
             try:
                 _cmd = cache.get(item.relay.device.name, [])
                 _command = "RC#%s#%s" % (item.relay.relay_no, 1)
