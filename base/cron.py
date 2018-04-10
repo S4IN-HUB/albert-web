@@ -42,6 +42,8 @@ class CronFunctions(object):
             except:
                 pass
 
+            item.relay.save()
+
         _switch_off_crons = Crons.objects.filter(day__in=[now_date.weekday(), 8], switch_off_time__hour=now_date.strftime('%H'),
                                                  switch_off_time__minute=now_date.strftime('%M')).values_list('relay')
 
@@ -54,6 +56,8 @@ class CronFunctions(object):
                 item.relay.pressed = False
             except:
                 pass
+
+                item.relay.save()
 
     def control_ir_buttons(self):
 
