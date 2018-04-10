@@ -30,15 +30,10 @@ class CronFunctions(object):
         for item in _switch_on_crons:
             try:
                 _cmd = cache.get(item.relay.device.name, [])
-                print "*" * 30
                 _command = "RC#%s#%s" % (item.relay.relay_no, 1)
-                print "-" * 30
                 _cmd.append({"CMD": _command, })
-                print "+" * 30
                 cache.set(item.relay.device.name, _cmd)
-                print "!" * 30
                 item.relay.pressed = True
-                print "=" * 30
             except:
                 pass
 
