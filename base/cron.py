@@ -1,8 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import django
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
+django.setup()
+
 from modules.customers.models import Crons, IrCrons
 from datetime import datetime
-import sys
 from django.core.cache import cache
 
 
