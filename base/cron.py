@@ -15,7 +15,7 @@ from datetime import datetime
 from django.core.cache import cache
 
 
-class CronFunctions:
+class CronFunctions(object):
 
     def __init__(self):
         return
@@ -86,7 +86,7 @@ class CronFunctions:
 if __name__ == "__main__":
 
     args = sys.argv
-    cronList = CronFunctions
+    cronList = CronFunctions()
 
     for arg in args:
 
