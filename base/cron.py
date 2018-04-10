@@ -40,7 +40,7 @@ class CronFunctions(object):
             item.relay.save()
 
         _switch_off_crons = Crons.objects.filter(day__in=[now_date.weekday(), 8], switch_off_time__hour=now_date.strftime('%H'),
-                                                 switch_off_time__minute=now_date.strftime('%M')).values_list('relay')
+                                                 switch_off_time__minute=now_date.strftime('%M'))
 
         for item in _switch_off_crons:
             try:
