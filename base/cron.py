@@ -60,7 +60,7 @@ class CronFunctions(object):
 
         _switch_on_crons = IrCrons.objects.filter(day__in=[now_date.weekday(), 8],
                                                   switch_on_time__hour=now_date.strftime('%H'),
-                                                  switch_on_time__minute=now_date.strftime('%M')).values_list('ir_button')
+                                                  switch_on_time__minute=now_date.strftime('%M'))
 
         for item in _switch_on_crons:
             try:
@@ -74,7 +74,7 @@ class CronFunctions(object):
 
         _switch_off_crons = IrCrons.objects.filter(day__in=[now_date.weekday(), 8],
                                                    switch_off_time__hour=now_date.strftime('%H'),
-                                                   switch_off_time__minute=now_date.strftime('%M')).values_list('ir_button')
+                                                   switch_off_time__minute=now_date.strftime('%M'))
 
         for item in _switch_off_crons:
             try:
