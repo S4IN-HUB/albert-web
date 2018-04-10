@@ -52,7 +52,7 @@ class CronFunctions(object):
             except:
                 pass
 
-                item.relay.save()
+            item.relay.save()
 
     def control_ir_buttons(self):
 
