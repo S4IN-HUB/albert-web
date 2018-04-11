@@ -24,7 +24,7 @@ class CronFunctions(object):
 
         now_date = datetime.now()
 
-        _switch_on_crons = Crons.objects.filter(day__in=[now_date.weekday(), 8], switch_on_time__hour=now_date.strftime('%H'),
+        _switch_on_crons = Crons.objects.filter(day__in=[now_date.weekday(), 7], switch_on_time__hour=now_date.strftime('%H'),
                                                 switch_on_time__minute=now_date.strftime('%M'))
 
         for item in _switch_on_crons:
@@ -39,7 +39,7 @@ class CronFunctions(object):
 
             item.relay.save()
 
-        _switch_off_crons = Crons.objects.filter(day__in=[now_date.weekday(), 8], switch_off_time__hour=now_date.strftime('%H'),
+        _switch_off_crons = Crons.objects.filter(day__in=[now_date.weekday(), 7], switch_off_time__hour=now_date.strftime('%H'),
                                                  switch_off_time__minute=now_date.strftime('%M'))
 
         for item in _switch_off_crons:

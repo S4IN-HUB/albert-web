@@ -292,8 +292,8 @@ class Scenarios(models.Model):
 
     account = models.ForeignKey(Accounts, null=True, blank=True, related_name="Scenarios", verbose_name="Hesap")
     name = models.CharField(max_length=50, verbose_name="Senaryo Adı", default='')
-    scenario_relays = models.ManyToManyField('customers.Relays', related_name="scenario_relays", verbose_name="Senaryo Röleleri", null=True, blank=True)
-    scenario_ir_buttons = models.ManyToManyField('customers.IrButton', related_name="scenario_ir_buttons", verbose_name="Senaryo IR Butonları", null=True, blank=True)
+    status = models.BooleanField(default=True, verbose_name="Aktif")
+    switch_on_time = models.TimeField(verbose_name="Açma Zaman", default="10:00")
 
     def __unicode__(self):
         return "%s" % self.name
@@ -301,3 +301,23 @@ class Scenarios(models.Model):
     class Meta(object):
         verbose_name = "Senaryo"
         verbose_name_plural = "Senaryolar"
+
+
+ACTION = (
+    (1, "Aç"),
+    (2, "Kapat")
+)
+
+
+class ScenarioRelays(models.Model):
+
+    scenario = models.ForeignKey(Scenarios, verbose_name="Bağlı olduğu senaryo")
+    relay = models.ForeignKey(Relays, verbose_name="Röle")
+    action = models.PositiveSmallIntegerField(choices=ACTION, default=1, verbose_name="İşlem")
+
+    def __unicode__(self):
+        return "%s Rölesi" % self.scenario
+
+    class Meta(object):
+        verbose_name = "Senaryo Rölesi"
+        verbose_name_plural = "Senaryo Röleleri"

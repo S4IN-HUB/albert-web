@@ -15,8 +15,10 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
+from unidecode import unidecode
 
-from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations, Scenarios
+from modules.customers.models import Accounts, Relays, Crons, Devices, IrButton, Rooms, Locations, Scenarios, \
+    ScenarioRelays
 
 
 @csrf_exempt
@@ -279,7 +281,6 @@ def check_user_session(token):
 
 @csrf_exempt
 def api_register(request):
-
     response_status = False
     response_message = ""
     response_data = []
@@ -334,7 +335,6 @@ def api_register(request):
                 response_status = False
 
             if remote_user and remote_user.is_active:
-
                 remote_user.backend = 'django.contrib.auth.backends.ModelBackend'
                 do_login(request, remote_user)
 
@@ -491,7 +491,6 @@ def delete_location(request):
     return json_responser(response_status, response_message, response_data[0])
 
 
-
 @csrf_exempt
 def add_room(request):
     """BURAYA AÇIKLAMA GELECEK"""
@@ -563,7 +562,7 @@ def add_device(request):
             account = Accounts.objects.get(user=_authuser)
             location = Locations.objects.get(id=location_id, account=account)
 
-            chack_device = Devices.objects.filter(type=device_type,name=device_name)
+            chack_device = Devices.objects.filter(type=device_type, name=device_name)
             if chack_device.count() > 0:
                 if chack_device[0].account != None and chack_device[0].account != account:
                     return json_responser(False, "Bu cihaz zaten başka bir kullanıcıya tanımlanmış", response_data)
@@ -831,7 +830,6 @@ def favourite_room(request):
 
 @csrf_exempt
 def set_ir_shortcut(request):
-
     """BURAYA AÇIKLAMA GELECEK"""
 
     all_params = get_params(request)
@@ -848,7 +846,7 @@ def set_ir_shortcut(request):
 
         if button_id:
 
-            _button = IrButton.objects.get(pk=button_id,device__account__user=_authuser)
+            _button = IrButton.objects.get(pk=button_id, device__account__user=_authuser)
             _button.spec = int(spec)
             _button.save()
 
@@ -863,7 +861,6 @@ def set_ir_shortcut(request):
         response_message = "Please login first."
 
     return json_responser(response_status, response_message, response_data)
-
 
 
 @csrf_exempt
@@ -906,13 +903,18 @@ def get_favourite_rooms(request):
                             'spec': ir_device.spec,
                             'targetTemp': int(ir_device.target_temperature),
                             'humidity': int(ir_device.humidity),
-                            'device': get_device_json(room.Devices.all().filter(type='ir')) if room.Devices.all().filter(type='ir').count() > 0 else False,
+                            'device': get_device_json(
+                                room.Devices.all().filter(type='ir')) if room.Devices.all().filter(
+                                type='ir').count() > 0 else False,
                             'have_ir': True if ir_device else False,
-                            'ir_cold': ir_device.IrButtons.all().filter(spec=1)[0].id if ir_device.IrButtons.all().filter(
+                            'ir_cold': ir_device.IrButtons.all().filter(spec=1)[
+                                0].id if ir_device.IrButtons.all().filter(
                                 spec=1).count() > 0 else False,
-                            'ir_hot': ir_device.IrButtons.all().filter(spec=2)[0].id if ir_device.IrButtons.all().filter(
+                            'ir_hot': ir_device.IrButtons.all().filter(spec=2)[
+                                0].id if ir_device.IrButtons.all().filter(
                                 spec=2).count() > 0 else False,
-                            'ir_off': ir_device.IrButtons.all().filter(spec=3)[0].id if ir_device.IrButtons.all().filter(
+                            'ir_off': ir_device.IrButtons.all().filter(spec=3)[
+                                0].id if ir_device.IrButtons.all().filter(
                                 spec=3).count() > 0 else False,
 
                         })
@@ -922,7 +924,6 @@ def get_favourite_rooms(request):
     else:
         response_status = False
         response_message = "Oturum kapalı"
-
 
     print response_status, response_message, response_data
 
@@ -967,7 +968,8 @@ def get_room_info(request):
                         'temperature': int(ir_device.temperature),
                         'targetTemp': int(ir_device.target_temperature),
                         'humidity': int(ir_device.humidity),
-                        'device': get_device_json(room.Devices.filter(type='ir')) if room.Devices.filter(type='ir').count() > 0 else False,
+                        'device': get_device_json(room.Devices.filter(type='ir')) if room.Devices.filter(
+                            type='ir').count() > 0 else False,
                         'have_ir': True,
                         'ir_cold': ir_device.IrButtons.all().filter(spec=1)[
                             0].id if ir_device.IrButtons.all().filter(
@@ -1123,7 +1125,6 @@ def get_devices(request):
         response_message = ""
 
         for device in _authuser.Accounts.Devices.all():
-
             response_data.append({
                 'id': device.id,
                 'name': device.name,
@@ -1369,6 +1370,7 @@ def get_relay_settings(request):
 
     return json_responser(response_status, response_message, response_data)
 
+
 @csrf_exempt
 def get_device_relays(request):
     """BURAYA AÇIKLAMA GELECEK"""
@@ -1450,7 +1452,6 @@ def get_ir_buttons(request):
 
 @csrf_exempt
 def send_command(request, device=None, command=None):
-
     """BURAYA AÇIKLAMA GELECEK"""
 
     AllParams = get_params(request) if request is not None else None
@@ -1694,10 +1695,9 @@ def send_ir_command(request):
 
 @csrf_exempt
 def read_ir(request):
-
     _device = Devices.objects.get(pk=request.GET.get('device_id'))
     _cmd = cache.get(_device.name, [])
-    _cmd.append({'CMD':'READIR',})
+    _cmd.append({'CMD': 'READIR', })
     cache.set(_device.name, _cmd)
 
     return HttpResponse('OK')
@@ -1758,7 +1758,7 @@ def ir_command(request):
         response_status = True
 
         try:
-            button = IrButton.objects.get(pk=button_id,device__account__user=_authuser)
+            button = IrButton.objects.get(pk=button_id, device__account__user=_authuser)
         except ObjectDoesNotExist:
             messages.error(request, "Buton tanımına erişilemiyor.")
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
@@ -1879,7 +1879,7 @@ def add_new_scenario(request):
 
     all_params = get_params(request)
     token = all_params.get("token")
-    scneario_name = all_params.get("scenario_name")
+    scenario_name = all_params.get("scenario_name")
 
     _authuser = check_user_session(token)
     response_data = []
@@ -1891,11 +1891,38 @@ def add_new_scenario(request):
 
         new_scenario = Scenarios(
             account=account,
-            name=scneario_name
+            name=scenario_name
         )
         new_scenario.save()
 
         response_message = "Senaryo eklendi."
+        response_status = True
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def delete_scenario(request):
+    """BURAYA AÇIKLAMA GELECEK"""
+
+    all_params = get_params(request)
+    token = all_params.get("token")
+    scenario_id = all_params.get("scenario_id")
+
+    _authuser = check_user_session(token)
+    response_data = []
+    response_status = False
+
+    if _authuser:
+
+        account = Accounts.objects.get(user=_authuser)
+        scenario = Scenarios.objects.get(account=account, pk=scenario_id)
+        scenario.delete()
+
+        response_message = "Senaryo silindi."
         response_status = True
 
     else:
@@ -1926,10 +1953,10 @@ def list_user_scenarios(request):
         if scenarios.count() > 0:
 
             for scenario in scenarios:
-
                 response_data.append({
                     'scenario_id': scenario.id,
-                    'scenario_name': scenario.name
+                    'scenario_name': scenario.name,
+                    'timer': scenario.switch_on_time.strftime('%H-%M')
                 })
 
             response_status = True
@@ -1945,6 +1972,51 @@ def list_user_scenarios(request):
 
 
 @csrf_exempt
+def list_scenario_relays(request):
+    """Seçili senaryodaki röleleri listeler"""
+
+    response_data = []
+    response_message = ""
+    response_status = False
+
+    all_params = get_params(request)
+
+    token = all_params.get('token')
+    scenario_id = all_params.get('scenario_id')
+
+    _authUser = check_user_session(token)
+
+    if _authUser:
+
+        scenario = Scenarios.objects.get(pk=scenario_id)
+        scenario_relays = ScenarioRelays.objects.filter(scenario=scenario)
+
+        if scenario_relays.count() > 0:
+
+            for item in scenario_relays:
+
+                response_data.append({
+                    'id': item.id,
+                    'relay_id': item.relay.id,
+                    'room': get_room_json(item.relay.room),
+                    'name': item.relay.name,
+                    'icon': item.relay.icon,
+                    'pressed': item.relay.pressed,
+                })
+
+            response_status = True
+
+        else:
+            response_status = True
+            response_message = "Senaryo rölesi bulunamadı."
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
 def add_relay_to_scenario(request):
     """BURAYA AÇIKLAMA GELECEK"""
 
@@ -1952,6 +2024,7 @@ def add_relay_to_scenario(request):
     token = all_params.get("token")
     _scenario = all_params.get("scenario")
     _relay = all_params.get("relay")
+    action = all_params.get("action")
 
     _authuser = check_user_session(token)
     response_data = []
@@ -1965,10 +2038,21 @@ def add_relay_to_scenario(request):
             account = Accounts.objects.get(user=_authuser)
             scenario = Scenarios.objects.get(id=_scenario, account=account)
             relay = Relays.objects.get(pk=_relay)
-            scenario.scenario_relays.add(relay)
 
-            response_status = True
-            response_message = "Röle senaryoya eklendi."
+            if not ScenarioRelays.objects.filter(scenario=scenario, relay=relay).count() > 0:
+
+                new_scenario_relay = ScenarioRelays(
+                    scenario=scenario,
+                    relay=relay,
+                    action=action
+                )
+                new_scenario_relay.save()
+
+                response_status = True
+                response_message = "Röle senaryoya eklendi."
+
+            else:
+                response_message = "Röle zaten senaryoda bulunuyor"
 
         else:
 
@@ -2001,7 +2085,9 @@ def delete_relay_from_scenario(request):
             account = Accounts.objects.get(user=_authuser)
             scenario = Scenarios.objects.get(id=_scenario, account=account)
             relay = Relays.objects.get(pk=_relay)
-            scenario.scenario_relays.remove(relay)
+
+            scenario_relay = ScenarioRelays.objects.get(scenario=scenario, relay=relay)
+            scenario_relay.delete()
 
             response_status = True
             response_message = "Röle senaryodan çıkarıldı"
@@ -2009,6 +2095,172 @@ def delete_relay_from_scenario(request):
         else:
 
             response_message = "Röle bulunmadı"
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def activate_scenario(request):
+    """Senaryoyu aktif etmek için kullanılır"""
+
+    response_data = []
+    response_status = False
+
+    all_params = get_params(request)
+
+    token = all_params.get('token')
+    scenario_id = all_params.get('scenario_id')
+
+    _authUser = check_user_session(token)
+
+    if _authUser:
+
+        account = Accounts.objects.get(user=_authUser)
+        scenario = Scenarios.objects.get(id=scenario_id, account=account)
+
+        scenario_relays = ScenarioRelays.objects.filter(scenario=scenario)
+
+        if scenario_relays.count() > 0:
+
+            for item in scenario_relays:
+
+                if item.action == 1:
+
+                    _cmd = cache.get(item.relay.device.name, [])
+                    _command = "RC#%s#%s" % (item.relay.relay_no, 1)
+                    _cmd.append({"CMD": _command, })
+                    cache.set(item.relay.device.name, _cmd)
+                    item.relay.pressed = True
+
+                elif item.action == 2:
+                    _cmd = cache.get(item.relay.device.name, [])
+                    _command = "RC#%s#%s" % (item.relay.relay_no, 0)
+                    _cmd.append({"CMD": _command, })
+                    cache.set(item.relay.device.name, _cmd)
+                    item.relay.pressed = False
+
+                item.relay.save()
+
+            response_status = True
+            response_message = "Senaryo röleleri aktifleştirildi."
+
+        else:
+            response_status = True
+            response_message = "Senaryo rölesi bulunamadı."
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def list_relay_crons(request):
+    """Röleye ait zamanlamaları listeler"""
+
+    response_data = []
+    response_message = ""
+    response_status = False
+
+    all_params = get_params(request)
+
+    token = all_params.get('token')
+    relay_id = all_params.get('relay_id')
+
+    _authUser = check_user_session(token)
+
+    if _authUser:
+
+        account = Accounts.objects.get(user=_authUser)
+        relay = Relays.objects.get(device__account=account, pk=relay_id)
+        crons = Crons.objects.filter(relay=relay)
+
+        if crons.count() > 0:
+
+            for cron in crons:
+
+                response_data.append({
+                    'id': cron.id,
+                    'day': unidecode(cron.get_day_display()),
+                    'open_time': cron.switch_on_time.strftime('%H:%M'),
+                    'close_time': cron.switch_off_time.strftime('%H:%M')
+                })
+
+            response_status = True
+
+        else:
+            response_status = True
+            response_message = "Tanımlanmış zamanlama bulunamadı."
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def delete_relay_cron(request):
+    """Seçili röle cronunu siler"""
+
+    response_data = []
+    response_message = ""
+    response_status = False
+
+    all_params = get_params(request)
+
+    token = all_params.get('token')
+    cron_id = all_params.get('cron_id')
+
+    _authUser = check_user_session(token)
+
+    if _authUser:
+
+        cron = Crons.objects.get(pk=cron_id)
+        cron.delete()
+
+        response_status = True
+
+    else:
+        response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+
+@csrf_exempt
+def add_new_relay_cron(request):
+    """Yeni röle cronu eklemeyi sağlar"""
+
+    response_data = []
+    response_status = False
+    response_message = ""
+
+    all_params = get_params(request)
+
+    token = all_params.get('token')
+    relay_id = all_params.get('relay_id')
+    day = all_params.get('cron_day')
+    open_time = all_params.get('open_time')
+    close_time = all_params.get('close_time')
+
+    _authUser = check_user_session(token)
+
+    if _authUser:
+
+        account = Accounts.objects.get(user=_authUser)
+        relay = Relays.objects.get(device__account=account, pk=relay_id)
+
+        new_cron = Crons(
+            relay=relay,
+            day=day,
+            switch_on_time=open_time,
+            switch_off_time=close_time
+        )
+        new_cron.save()
+
+        response_status = True
 
     else:
         response_message = "Lütfen giriş yapınız."

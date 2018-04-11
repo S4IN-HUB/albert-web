@@ -24,7 +24,8 @@ from modules.customers.views import (api_login, api_logout, get_rooms, get_relay
                                      favourite_room,ir_command,read_ir_button,set_ir_shortcut, get_favourite_relays,
                                      get_room_info, get_favourite_rooms, delete_favourite_relay, relay_command_update,
                                      change_target_temp, delete_ir_button, delete_rl_button, change_ir_button, add_new_scenario,
-                                     list_user_scenarios, add_relay_to_scenario)
+                                     delete_scenario, list_user_scenarios, add_relay_to_scenario, delete_relay_from_scenario,
+                                     list_relay_crons, delete_relay_cron, add_new_relay_cron, list_scenario_relays, activate_scenario)
 from modules.masterpage.views import index, about_us, contact, send_message
 
 urlpatterns = [
@@ -40,19 +41,27 @@ urlpatterns = [
     url(r'^api/login/$', api_login),
     url(r'^api/register/$', api_register),
     url(r'^api/logout/$', api_logout),
+
     url(r'^api/add_location/$', add_location),
     url(r'^api/add_room/$', add_room),
     url(r'^api/add_device/$', add_device),
     url(r'^api/add_relay/$', add_relay),
     url(r'^api/add_scenario/$', add_new_scenario),
     url(r'^api/add_relay_to_scenario/$', add_relay_to_scenario),
+    url(r'^api/add_new_relay_cron/$', add_new_relay_cron),
+
     url(r'^api/favourite_relay/$', favourite_relay),
     url(r'^api/delete_fav_relay/$', delete_favourite_relay),
     url(r'^api/favourite_room/$', favourite_room),
     url(r'^api/delete_room/$', delete_room),
+    url(r'^api/delete_scenario/$', delete_scenario),
     url(r'^api/delete_location/$', delete_location),
     url(r'^api/delete_ir_button/$', delete_ir_button),
     url(r'^api/delete_rl_button/$', delete_rl_button),
+    url(r'^api/delete_relay_from_scenario/$', delete_relay_from_scenario),
+    url(r'^api/delete_relay_cron/$', delete_relay_cron),
+    url(r'^api/delete_location/$', delete_location),
+
     url(r'^api/settings_ir_button/$', change_ir_button),
     url(r'^api/list/locations/$', get_locations),
     url(r'^api/list/rooms/$', get_rooms),
@@ -66,6 +75,9 @@ urlpatterns = [
     url(r'^api/list/favourite_relays/$', get_favourite_relays),
     url(r'^api/list/favourite_rooms/$', get_favourite_rooms),
     url(r'^api/list/user_scenarios/$', list_user_scenarios),
+    url(r'^api/list/list_scenario_relays/$', list_scenario_relays),
+    url(r'^api/list/relay_crons/$', list_relay_crons),
+
     url(r'^api/relay_command/$', relay_command),
     url(r'^api/relay_command_update/$', relay_command_update),
     url(r'^api/get_room_info/$', get_room_info),
@@ -73,5 +85,6 @@ urlpatterns = [
     url(r'^api/ir_command/$', ir_command),
     url(r'^api/read_ir_button/$', read_ir_button),
     url(r'^api/set/ir_shortcut/$', set_ir_shortcut),
+    url(r'^api/activate_scenario/$', activate_scenario),
 
 ]
