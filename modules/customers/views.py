@@ -2135,6 +2135,12 @@ def activate_scenario(request):
                     cache.set(item.relay.device.name, _cmd)
                     item.relay.pressed = True
 
+
+                    _cmd = cache.get(item.relay.device.name, [])
+                    _command = "#LST#"
+                    _cmd.append({"CMD": _command, })
+                    cache.set(item.relay.device.name, _cmd)
+
                 elif item.action == 2:
                     _cmd = cache.get(item.relay.device.name, [])
                     _command = "RC#%s#%s" % (item.relay.relay_no, 0)
