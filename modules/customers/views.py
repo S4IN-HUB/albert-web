@@ -1567,6 +1567,11 @@ def relay_command(request):
                 cache.set(relay.device.name, _cmd)
                 relay.pressed = True
 
+                _cmd = cache.get(relay.device.name, [])
+                _command = "#LST#"
+                _cmd.append({"CMD": _command, })
+                cache.set(relay.device.name, _cmd)
+
             elif _action == "close":
                 _cmd = cache.get(relay.device.name, [])
                 _command = "RC#%s#%s" % (relay.relay_no, 0)
@@ -1646,10 +1651,7 @@ def cron_control(request):
                 cache.set(item.relay.device.name, _cmd)
                 item.relay.pressed = True
 
-                _cmd = cache.get(item.relay.device.name, [])
-                _command = "#LST#"
-                _cmd.append({"CMD": _command, })
-                cache.set(item.relay.device.name, _cmd)
+
 
             except:
                 pass
