@@ -1522,7 +1522,6 @@ def relay_control(request):
 
             _cmd = cache.get(relay.device.name, [])
             _command = "RC#%s#%s" % (relay.relay_no, 1)
-            _command = "ST"
             _cmd.append({"CMD": _command, })
             cache.set(relay.device.name, _cmd)
             relay.pressed = True
@@ -1539,7 +1538,6 @@ def relay_control(request):
         print cache.get(relay.device.name, [])
 
     return HttpResponse('OK')
-
 
 
 @csrf_exempt
@@ -1568,8 +1566,6 @@ def relay_command(request):
                 _cmd.append({"CMD": _command, })
                 cache.set(relay.device.name, _cmd)
                 relay.pressed = True
-
-
 
             elif _action == "close":
                 _cmd = cache.get(relay.device.name, [])
