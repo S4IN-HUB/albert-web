@@ -1522,6 +1522,7 @@ def relay_control(request):
 
             _cmd = cache.get(relay.device.name, [])
             _command = "RC#%s#%s" % (relay.relay_no, 1)
+            _command = "ST" % (relay.relay_no, 1)
             _cmd.append({"CMD": _command, })
             cache.set(relay.device.name, _cmd)
             relay.pressed = True
