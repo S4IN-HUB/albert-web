@@ -1645,6 +1645,12 @@ def cron_control(request):
                 _cmd.append({"CMD": _command, })
                 cache.set(item.relay.device.name, _cmd)
                 item.relay.pressed = True
+
+                _cmd = cache.get(item.relay.device.name, [])
+                _command = "#LST#"
+                _cmd.append({"CMD": _command, })
+                cache.set(item.relay.device.name, _cmd)
+
             except:
                 pass
 
@@ -2135,11 +2141,6 @@ def activate_scenario(request):
                     cache.set(item.relay.device.name, _cmd)
                     item.relay.pressed = True
 
-
-                    _cmd = cache.get(item.relay.device.name, [])
-                    _command = "#LST#"
-                    _cmd.append({"CMD": _command, })
-                    cache.set(item.relay.device.name, _cmd)
 
                 elif item.action == 2:
                     _cmd = cache.get(item.relay.device.name, [])
