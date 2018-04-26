@@ -1541,6 +1541,7 @@ def relay_control(request):
     return HttpResponse('OK')
 
 
+
 @csrf_exempt
 def relay_command(request):
     """BURAYA AÇIKLAMA GELECEK"""
