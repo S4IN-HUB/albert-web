@@ -1568,7 +1568,7 @@ def relay_command(request):
                 relay.pressed = True
 
                 _cmd = cache.get(relay.device.name, [])
-                _command = "#LST#"
+                _command = "LST"
                 _cmd.append({"CMD": _command, })
                 cache.set(relay.device.name, _cmd)
 
