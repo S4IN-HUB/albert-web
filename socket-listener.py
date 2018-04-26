@@ -68,6 +68,8 @@ class DataHandler(object):
 
         for _data in self.parsed_data:
 
+            print _data
+
             if _data is None or not _data:
                 continue
 
