@@ -134,7 +134,6 @@ class DataHandler(object):
 
                     RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
 
-
             elif _data[0] == "IRENCODE":
 
 
