@@ -81,16 +81,15 @@ class DataHandler(object):
                 try:
                     self.device = Devices.objects.get(name=_data[1])
                     self.device.wan_ip = self.client_addr[0]
+                    self.device.status=True
                     self.device.save()
-
-                    if not self.device.status:
-                        raise PermissionDenied("Device is disabled via admin!")
 
                 except ObjectDoesNotExist:
                     self.device = Devices(name=_data[1])
                     self.device.type = _data[2]
                     self.device.description = _data[1]
                     self.device.wan_ip = self.client_addr[0]
+                    self.device.status = True
                     self.device.save()
 
                 try:
