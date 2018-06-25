@@ -1518,6 +1518,9 @@ def relay_control(request):
     if request.GET.get("relay"):
         relay = Relays.objects.get(pk=request.GET.get("relay"))
 
+        if relay.device.status == False:
+            return HttpResponse("Cihaz internet bağlantısı yok, Lütfen Alberto Wifi ayarlarını kontrol ediniz.")
+
         if request.GET.get("action", "") == "open":
 
             _cmd = cache.get(relay.device.name, [])
@@ -1559,6 +1562,9 @@ def relay_command(request):
 
         if _relay:
             relay = Relays.objects.get(pk=_relay)
+
+            if relay.device.status == False:
+                return json_responser(False, "Cihaz internet bağlantısı yok, Lütfen Alberto Wifi ayarlarını kontrol ediniz.", {})
 
             if _action == "open":
 
@@ -1626,7 +1632,7 @@ def cron_control(request):
 
     now_date = datetime.now()
 
-    _devices = Crons.objects.filter(day=now_date.weekday(),
+    _devices = Crons.objects.filter(relay__device__status=True, day=now_date.weekday(),
                                     switch_on_time__hour=now_date.strftime('%H'),
                                     switch_on_time__minute=now_date.strftime('%M')).values('relay__device').distinct()
 
@@ -1654,7 +1660,7 @@ def cron_control(request):
             except:
                 pass
 
-        crons = Crons.objects.filter(day=now_date.weekday(),
+        crons = Crons.objects.filter(relay__device__status=True, day=now_date.weekday(),
                                      switch_off_time__hour=now_date.strftime('%H'),
                                      switch_off_time__minute=now_date.strftime('%M'),
                                      relay__device=_device
