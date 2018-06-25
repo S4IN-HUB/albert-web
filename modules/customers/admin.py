@@ -35,7 +35,7 @@ class AccountsAdmin(admin.ModelAdmin):
 class LocationsAdmin(admin.ModelAdmin):
     """BURAYA AÇIKLAMA GELECEK"""
     list_display = ('account', 'name', 'lat', 'lon')
-
+    list_filter = ('account',)
     def get_queryset(self, request):
         qs = super(LocationsAdmin, self).get_queryset(request)
         if request.user.is_superuser:
@@ -57,6 +57,7 @@ class LocationsAdmin(admin.ModelAdmin):
 class RoomsAdmin(admin.ModelAdmin):
     """BURAYA AÇIKLAMA GELECEK"""
     list_display = ('location_account', 'name', 'location')
+    list_filter = ('account',)
 
     def location_account(self, obj):
         return obj.location.account
@@ -144,6 +145,8 @@ class DevicesAdmin(admin.ModelAdmin):
                     'temperature','humidity',
                     'get_total_instant_current', 'get_total_instant_power','read_ir_button')
 
+    list_filter = ('account', 'status')
+
     def generate_relays(self, request, queryset):
 
         devices = queryset
@@ -228,6 +231,9 @@ class RelayAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'relay_no', 'type', 'device', 'pressed', 'open_relay', 'close_relay',
                     'total_instant_current', 'total_instant_power')
+
+    list_filter = ('device__account','device','pressed')
+
     inlines = [InlineCrons, ]
 
 

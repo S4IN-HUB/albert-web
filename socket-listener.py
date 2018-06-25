@@ -150,6 +150,25 @@ class DataHandler(object):
 
             elif _data[0] == "HELLO":
                 pass
+
+            elif _data[0] == "ST":
+
+                try:
+                    self.device = Devices.objects.get(name=_data[1])
+                    self.device.status = True
+                    self.device.save()
+
+                    _relay_states = _data[3]
+                    _relays = Relays.objects.get(device=self.device, relay_no=int(_data[3]))
+                    for rly in self.device.Relays.all():
+
+                        if rly.pressed == bool(int(_relay_states[rly.relay_no:rly.relay_no+1])):
+                            rly.pressed = False if bool(int(_relay_states[rly.relay_no:rly.relay_no+1])) == True else True
+                            rly.save()
+
+                except:
+                    pass
+
             else:
                 print "Unexpected data: %s" % _data
 
