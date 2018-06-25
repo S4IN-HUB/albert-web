@@ -49,10 +49,10 @@ class DataHandler(object):
             item.status = False
             item.save()
 
-            _cmd = cache.get(item.name, [])
-            _command = "ST"
-            _cmd.append({"CMD": _command, })
-            cache.set(item.name, _cmd)
+            # _cmd = cache.get(item.name, [])
+            # _command = "ST"
+            # _cmd.append({"CMD": _command, })
+            # cache.set(item.name, _cmd)
 
 
 
