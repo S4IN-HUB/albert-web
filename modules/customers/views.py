@@ -1250,6 +1250,7 @@ def get_device_json(devices):
                     'name': device.name,
                     'lan_ip': device.ip,
                     'wan_ip': device.wan_ip,
+                    'status': device.status,
                 }
             })
             dev_nr += 1
