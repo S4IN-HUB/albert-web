@@ -1399,6 +1399,7 @@ def get_device_relays(request):
                 'room_id': relay.room.id if relay.room else None,
                 'room': get_room_json(relay.room) if relay.room else None,
                 'pressed': relay.pressed,
+                'status': relay.device.status,
                 'name': relay.name,
                 'relay_no': relay.relay_no,
                 'type': relay.type,
