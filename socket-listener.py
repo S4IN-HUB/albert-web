@@ -406,6 +406,7 @@ def test_notify():
 
     req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
 
+    print "-"*20
     print req.status_code, req.reason
 
 if __name__ == "__main__":
