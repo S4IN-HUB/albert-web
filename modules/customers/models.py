@@ -163,6 +163,7 @@ class Relays(models.Model):
     name = models.CharField(max_length=50, verbose_name="Röle Tanımı")
 
     pressed = models.BooleanField(default=False, verbose_name="Basılı mı?")
+    notify = models.BooleanField(default=False, verbose_name="Bildirim Yapılsın mı?")
 
     relay_no = models.IntegerField(verbose_name="Röle No")
     type = models.CharField(max_length=20, default='switch', choices=RelayTypes, verbose_name="Anahtar Tipi")
