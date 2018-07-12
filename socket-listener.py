@@ -406,13 +406,8 @@ def test_notify():
 
     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
                "include_player_ids": ["e1f67bf4-1d01-40ea-828c-e889f7a6a36a"],
-               "email_subject": "%s %s" % ("deneme", " acildi" if True else " kapandi"),
-               "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanimli %(rly_no)s nolu  %(durum)s </p></body></html>" % (
-               {
-                   "rly_name": "deneme",
-                   "durum": " acildi" if True else " kapatildi",
-                   "rly_no": 7,
-               })}
+               "email_subject": "Welcome to Cat Facts!",
+               "email_body": "<html><head>Welcome to Cat Facts</head><body><h1>Welcome to Cat Facts<h1><h4>Learn more about everyone's favorite furry companions!</h4><hr/><p>Hi Nick,</p><p>Thanks for subscribing to Cat Facts! We can't wait to surprise you with funny details about your favorite animal.</p><h5>Today's Cat Fact (March 27)</h5><p>In tigers and tabbies, the middle of the tongue is covered in backward-pointing spines, used for breaking off and gripping meat.</p><a href='https://catfac.ts/welcome'>Show me more Cat Facts</a><hr/><p><small>(c) 2018 Cat Facts, inc</small></p><p><small><a href='[unsubscribe_url]'>Unsubscribe</a></small></p></body></html>" }
 
 
     print json.dumps(payload)
