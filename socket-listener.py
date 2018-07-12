@@ -404,6 +404,11 @@ def test_notify():
                    "rly_no": 7,
                })}
 
+    payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
+               "include_player_ids": ["ead0557fbf7823a4"],
+               "contents": {"en": "English Message"}}
+
+
     print json.dumps(payload)
 
     req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
