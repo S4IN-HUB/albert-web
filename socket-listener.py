@@ -389,53 +389,62 @@ class SocketServer(object):
         self.socket.close()
 
 
-    def test_notify(self):
+def test_notify():
 
-        header = {"Content-Type": "application/json; charset=utf-8",
-                  "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
+    header = {"Content-Type": "application/json; charset=utf-8",
+              "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
-        payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
-                   "include_player_ids": ["ead0557fbf7823a4"],
-                   "email_subject": "%s %s" % ("deneme", " açıldı" if True else " kapatıldı"),
-                   "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanımlı %(rly_no)s nolu  %(durum)s </p></body></html>" % (
-                   {
-                       "rly_name": "deneme",
-                       "durum": " açıldı" if True else " kapatıldı",
-                       "rly_no": 7,
-                   })}
+    payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
+               "include_player_ids": ["ead0557fbf7823a4"],
+               "email_subject": "%s %s" % ("deneme", " açıldı" if True else " kapatıldı"),
+               "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanımlı %(rly_no)s nolu  %(durum)s </p></body></html>" % (
+               {
+                   "rly_name": "deneme",
+                   "durum": " açıldı" if True else " kapatıldı",
+                   "rly_no": 7,
+               })}
 
-        req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+    req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
 
-        print req.status_code, req.reason
+    print req.status_code, req.reason
 
 if __name__ == "__main__":
-    this_proc = os.getpid()
 
-    greped_proc = False
-    for proc in psutil.process_iter():
-        if proc.name() == 'python' and len(proc.cmdline()) > 1:
+    if "test_notify" in sys.argv:
 
-            if sys.argv[0] == proc.cmdline()[1]:
-                greped_proc = proc.pid
+        test_notify()
 
-                if this_proc != greped_proc:
-                    print "Bu islem zaten aktif"
-                    sys.exit()
+    else:
+        this_proc = os.getpid()
 
-    if not len(sys.argv) < 2:
+        greped_proc = False
+        for proc in psutil.process_iter():
+            if proc.name() == 'python' and len(proc.cmdline()) > 1:
+
+                if sys.argv[0] == proc.cmdline()[1]:
+                    greped_proc = proc.pid
+
+                    if this_proc != greped_proc:
+                        print "Bu islem zaten aktif"
+                        sys.exit()
+
+        if not len(sys.argv) < 2:
+            try:
+                port = int(sys.argv[1])
+            except:
+                print "Usage: "
+                print "\t# python socket-listener.py [port_number]"
+                print " "
+                print "- If port number not specified, server associated with default %s numbered port." % port
+                print "- Port number must be numeric."
+                sys.exit()
+
         try:
-            port = int(sys.argv[1])
-        except:
-            print "Usage: "
-            print "\t# python socket-listener.py [port_number]"
-            print " "
-            print "- If port number not specified, server associated with default %s numbered port." % port
-            print "- Port number must be numeric."
+            SocketServer = SocketServer(port)
+        except Exception as uee:
+            print uee
             sys.exit()
-    try:
-        SocketServer = SocketServer(port)
-    except Exception as uee:
-        print uee
-        sys.exit()
+
+
     else:
         SocketServer.runserver()
