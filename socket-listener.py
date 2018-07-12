@@ -129,21 +129,19 @@ class DataHandler(object):
                         if relay.device:
                             if relay.device.account:
                                 if relay.device.account.device_token:
+                                    header = {"Content-Type": "application/json; charset=utf-8",
+                                              "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
+                                    payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
+                                               "include_player_ids": [ relay.device.account.device_token ],
+                                               "email_subject": "%s %s" % ( relay.name, " açıldı" if relay.pressed else " kapatıldı" ) ,
+                                               "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanımlı %(rly_no)s nolu  %(durum)s </p></body></html>" % ({
+                                                   "rly_name":relay.name,
+                                                   "durum": " açıldı" if relay.pressed else " kapatıldı",
+                                                   "rly_no": relay.no,
+                                               }) }
 
-                            header = {"Content-Type": "application/json; charset=utf-8",
-                                      "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
-
-                            payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
-                                       "include_player_ids": [ relay.device.account.device_token ],
-                                       "email_subject": "%s %s" % ( relay.name, " açıldı" if relay.pressed else " kapatıldı" ) ,
-                                       "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanımlı %(rly_no)s nolu  %(durum)s </p></body></html>" % ({
-                                           "rly_name":relay.name,
-                                           "durum": " açıldı" if relay.pressed else " kapatıldı",
-                                           "rly_no": relay.no,
-                                       }) }
-
-                            req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+                                    req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
                     except:
                         pass
 
