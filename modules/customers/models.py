@@ -18,6 +18,7 @@ class Accounts(models.Model):
     user_type = models.PositiveSmallIntegerField(default=0, choices=account_types, verbose_name="Hesap Tipi")
     favourite_relays = models.ManyToManyField('customers.Relays', related_name="favourited_relays", null=True, blank=True)
     favourite_rooms = models.ManyToManyField('customers.Rooms', related_name="favourited_rooms", null=True, blank=True)
+    device_token = models.TextField(null=True, blank=True, verbose_name="Push Token")
 
     def __unicode__(self):
         return "%s" % self.user.username

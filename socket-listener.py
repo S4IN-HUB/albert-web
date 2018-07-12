@@ -14,6 +14,9 @@ import socket
 from thread import start_new_thread
 from time import sleep
 
+import requests
+import json
+
 import django
 
 django.setup()
@@ -121,6 +124,17 @@ class DataHandler(object):
                     relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[3]))
                     relay.pressed = True if int(_data[4]) == 1 else False
                     relay.save()
+
+
+                    header = {"Content-Type": "application/json; charset=utf-8",
+                              "Authorization": "Basic NGEwMGZmMjItY2NkNy0xMWUzLTk5ZDUtMDAwYzI5NDBlNjJj"}
+
+                    payload = {"app_id": "5eb5a37e-b458-11e3-ac11-000c2940e62c",
+                               "include_player_ids": ["6392d91a-b206-4b7b-a620-cd68e32c3a76"],
+                               "email_subject": "Welcome to Cat Facts!",
+                               "email_body": "<html><head>Welcome to Cat Facts</head><body><h1>Welcome to Cat Facts<h1><h4>Learn more about everyone's favorite furry companions!</h4><hr/><p>Hi Nick,</p><p>Thanks for subscribing to Cat Facts! We can't wait to surprise you with funny details about your favorite animal.</p><h5>Today's Cat Fact (March 27)</h5><p>In tigers and tabbies, the middle of the tongue is covered in backward-pointing spines, used for breaking off and gripping meat.</p><a href='https://catfac.ts/welcome'>Show me more Cat Facts</a><hr/><p><small>(c) 2018 Cat Facts, inc</small></p><p><small><a href='[unsubscribe_url]'>Unsubscribe</a></small></p></body></html>"}
+
+                    req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
 
                 except ObjectDoesNotExist:
                     raise Exception("%s numbered relay record does not exist!" % _data[2])
