@@ -267,8 +267,8 @@ def base_login(request, **kwargs):
     if remote_user:
         
         try:
-            remote_user.device_token = device_token
-            remote_user.save()
+            remote_user.Accounts.device_token = device_token
+            remote_user.Accounts.save()
         except: pass
 
         return login_user(request, remote_user)
