@@ -404,7 +404,7 @@ def test_notify():
                    "rly_no": 7,
                })}
 
-    print payload
+    print json.dumps(payload)
 
     req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
 
