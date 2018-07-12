@@ -146,6 +146,8 @@ class DataHandler(object):
                             req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
                     except:
                         pass
+
+
                 except ObjectDoesNotExist:
                     raise Exception("%s numbered relay record does not exist!" % _data[2])
 
