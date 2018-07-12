@@ -405,12 +405,14 @@ def test_notify():
                })}
 
     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
-               "included_segments": ["All"],
-               "contents": {
-                   "tr": "<h1>Turkce</h1> <p>Messag</p>",
-                   "en": "<h1>english</h1> <p> Message</p>"
-                  }
-               }
+               "include_player_ids": ["e1f67bf4-1d01-40ea-828c-e889f7a6a36a"],
+               "email_subject": "%s %s" % ("deneme", " açıldı" if True else " kapatıldı"),
+               "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanımlı %(rly_no)s nolu  %(durum)s </p></body></html>" % (
+               {
+                   "rly_name": "deneme",
+                   "durum": " açıldı" if True else " kapatıldı",
+                   "rly_no": 7,
+               })}
 
 
     print json.dumps(payload)
