@@ -125,6 +125,7 @@ class DataHandler(object):
                     relay.pressed = True if int(_data[4]) == 1 else False
                     relay.save()
 
+
                     try:
                         if relay.device:
                             if relay.device.account:
