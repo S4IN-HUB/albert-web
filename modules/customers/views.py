@@ -197,6 +197,10 @@ def login_user(request, remote_user):
     if remote_user.is_active:
         remote_user.backend = 'django.contrib.auth.backends.ModelBackend'
         do_login(request, remote_user)
+
+
+
+
         json_content = get_user_json(remote_user)
         json_content.update({'token': str(request.session.session_key)})
         message = "Giriş Başarılı"
@@ -235,6 +239,7 @@ def base_login(request, **kwargs):
     json_content = {}
     user_name = all_params.get("username")
     password = all_params.get("password")
+    device_token = all_params.get("device_token")
     print user_name, password
 
     remote_user = None
@@ -260,6 +265,12 @@ def base_login(request, **kwargs):
             status = False
 
     if remote_user:
+        
+        try:
+            remote_user.device_token = device_token
+            remote_user.save()
+        except: pass
+
         return login_user(request, remote_user)
 
     return status, message, json_content

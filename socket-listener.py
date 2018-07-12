@@ -125,17 +125,27 @@ class DataHandler(object):
                     relay.pressed = True if int(_data[4]) == 1 else False
                     relay.save()
 
+                    try:
+                        if relay.device:
+                            if relay.device.account:
+                                if relay.device.account.device_token:
 
-                    header = {"Content-Type": "application/json; charset=utf-8",
-                              "Authorization": "Basic NGEwMGZmMjItY2NkNy0xMWUzLTk5ZDUtMDAwYzI5NDBlNjJj"}
 
-                    payload = {"app_id": "5eb5a37e-b458-11e3-ac11-000c2940e62c",
-                               "include_player_ids": ["6392d91a-b206-4b7b-a620-cd68e32c3a76"],
-                               "email_subject": "Welcome to Cat Facts!",
-                               "email_body": "<html><head>Welcome to Cat Facts</head><body><h1>Welcome to Cat Facts<h1><h4>Learn more about everyone's favorite furry companions!</h4><hr/><p>Hi Nick,</p><p>Thanks for subscribing to Cat Facts! We can't wait to surprise you with funny details about your favorite animal.</p><h5>Today's Cat Fact (March 27)</h5><p>In tigers and tabbies, the middle of the tongue is covered in backward-pointing spines, used for breaking off and gripping meat.</p><a href='https://catfac.ts/welcome'>Show me more Cat Facts</a><hr/><p><small>(c) 2018 Cat Facts, inc</small></p><p><small><a href='[unsubscribe_url]'>Unsubscribe</a></small></p></body></html>"}
+                            header = {"Content-Type": "application/json; charset=utf-8",
+                                      "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
-                    req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+                            payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
+                                       "include_player_ids": [ relay.device.account.device_token ],
+                                       "email_subject": "%s %s" % ( relay.name, " açıldı" if relay.pressed else " kapatıldı" ) ,
+                                       "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanımlı %(rly_no)s nolu  %(durum)s </p></body></html>" % ({
+                                           "rly_name":relay.name,
+                                           "durum": " açıldı" if relay.pressed else " kapatıldı",
+                                           "rly_no": relay.no,
+                                       }) }
 
+                            req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+                    except:
+                        pass
                 except ObjectDoesNotExist:
                     raise Exception("%s numbered relay record does not exist!" % _data[2])
 
