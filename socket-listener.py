@@ -405,7 +405,7 @@ def test_notify():
                })}
 
     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
-               "include_player_ids": ["All",],
+               "included_segments": ["All"],
                "contents": {"en": "English Message"}}
 
 
