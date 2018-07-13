@@ -125,37 +125,37 @@ class DataHandler(object):
                     relay.pressed = True if int(_data[4]) == 1 else False
                     relay.save()
 
+                    if relay.notify:
+                        try:
+                            #print "try notify"
+                            if relay.device:
+                                #print "try notify", relay.device
+                                if relay.device.account:
+                                    #print "try notify", relay.device.account
+                                    if relay.device.account.device_token:
+                                        #print "try notify", relay.device.account.device_token
+                                        header = {"Content-Type": "application/json; charset=utf-8",
+                                                  "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
-                    try:
-                        #print "try notify"
-                        if relay.device:
-                            #print "try notify", relay.device
-                            if relay.device.account:
-                                #print "try notify", relay.device.account
-                                if relay.device.account.device_token:
-                                    #print "try notify", relay.device.account.device_token
-                                    header = {"Content-Type": "application/json; charset=utf-8",
-                                              "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
+                                        status = u" açıldı" if relay.pressed else u" kapatıldı"
+                                        room_name = relay.room.name + u" > " if relay.room else ""
 
-                                    status = u" açıldı" if relay.pressed else u" kapatıldı"
-                                    room_name = relay.room.name + u" > " if relay.room else ""
+                                        payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
+                                                   "include_player_ids": [ relay.device.account.device_token ],
+                                                   "contents":{
+                                                       "tr": "%s %s %s" % ( room_name, relay.name , status ) ,
+                                                       "en": "%s %s %s" % ( room_name, relay.name , status )
+                                                   },
+                                                }
+                                        #print payload
 
-                                    payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
-                                               "include_player_ids": [ relay.device.account.device_token ],
-                                               "contents":{
-                                                   "tr": "%s %s %s" % ( room_name, relay.name , status ) ,
-                                                   "en": "%s %s %s" % ( room_name, relay.name , status )
-                                               },
-                                            }
-                                    #print payload
-
-                                    req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
-                                    #print "-" * 20
-                                    #print req.status_code, req.reason
-                    except Exception as e:
-                        print e
-                        pass
+                                        req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+                                        #print "-" * 20
+                                        #print req.status_code, req.reason
+                        except Exception as e:
+                            print e
+                            pass
 
 
                 except ObjectDoesNotExist:
