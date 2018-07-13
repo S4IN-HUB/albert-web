@@ -135,12 +135,11 @@ class DataHandler(object):
 
                                     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
                                                "include_player_ids": [ relay.device.account.device_token ],
-                                               "email_subject": "%s %s" % ( relay.name, " açıldı" if relay.pressed else " kapatıldı" ) ,
-                                               "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanımlı %(rly_no)s nolu  %(durum)s </p></body></html>" % ({
-                                                   "rly_name":relay.name,
-                                                   "durum": " açıldı" if relay.pressed else " kapatıldı",
-                                                   "rly_no": relay.no,
-                                               }) }
+                                               "contents":{
+                                                   "tr": "%s %s" % ( relay.name, " açıldı" if relay.pressed else " kapatıldı" ) ,
+                                                   "en": "%s %s" % ( relay.name, " açıldı" if relay.pressed else " kapatıldı" )
+                                               },
+                                            }
 
                                     req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
                     except:
@@ -395,19 +394,8 @@ def test_notify():
               "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
-               "include_player_ids": ["ead0557fbf7823a4"],
-               "email_subject": "%s %s" % ("deneme", " acildi" if True else " kapandi"),
-               "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanimli %(rly_no)s nolu  %(durum)s </p></body></html>" % (
-               {
-                   "rly_name": "deneme",
-                   "durum": " acildi" if True else " kapatildi",
-                   "rly_no": 7,
-               })}
-
-    payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
                "include_player_ids": ["e1f67bf4-1d01-40ea-828c-e889f7a6a36a"],
-               "contents": {"en":  "%s %s" % ("deneme", " açıldı" if True else " kapandi"), "tr": "%s %s" % ("deneme", " acildi" if True else " kapandi")},
-               }
+               "contents": {"en":  "%s %s" % ("deneme", " açıldı" if True else " kapandi"), "tr": "%s %s" % ("deneme", " acildi" if True else " kapandi")}, }
 
 
     print json.dumps(payload)
