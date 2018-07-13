@@ -138,7 +138,7 @@ class DataHandler(object):
                                               "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
 
-                                    status = " açıldı" if relay.pressed else " kapatıldı"
+                                    status = u" açıldı" if relay.pressed else u" kapatıldı"
 
                                     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
                                                "include_player_ids": [ relay.device.account.device_token ],
