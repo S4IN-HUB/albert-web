@@ -406,7 +406,7 @@ def test_notify():
 
     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
                "include_player_ids": ["e1f67bf4-1d01-40ea-828c-e889f7a6a36a"],
-               "contents": {"en":  "%s %s" % ("deneme", " acildi" if True else " kapandi"), "tr": "%s %s" % ("deneme", " acildi" if True else " kapandi")},
+               "contents": {"en":  "%s %s" % ("deneme", " açıldı" if True else " kapandi"), "tr": "%s %s" % ("deneme", " acildi" if True else " kapandi")},
                }
 
 
