@@ -405,7 +405,7 @@ def test_notify():
                })}
 
     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
-               "include_player_ids": ["98a83253-ef3d-4f25-97d5-480bc6b99605"],
+               "include_player_ids": ["e1f67bf4-1d01-40ea-828c-e889f7a6a36a"],
                "email_subject": "%s %s" % ("deneme", " acildi" if True else " kapandi"),
                "email_body": "<html><head>%(rly_name)s %(durum)s</head><body><p>%(rly_name)s tanimli %(rly_no)s nolu  %(durum)s </p></body></html>" % (
                {
