@@ -127,9 +127,13 @@ class DataHandler(object):
 
 
                     try:
+                        print "try notify"
                         if relay.device:
+                            print "try notify", relay.device
                             if relay.device.account:
+                                print "try notify", relay.device.account
                                 if relay.device.account.device_token:
+                                    print "try notify", relay.device.account.device_token
                                     header = {"Content-Type": "application/json; charset=utf-8",
                                               "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
@@ -140,8 +144,11 @@ class DataHandler(object):
                                                    "en": "%s %s" % ( relay.name, " açıldı" if relay.pressed else " kapatıldı" )
                                                },
                                             }
+                                    print payload
 
                                     req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+                                    print "-" * 20
+                                    print req.status_code, req.reason
                     except:
                         pass
 
