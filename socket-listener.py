@@ -139,12 +139,13 @@ class DataHandler(object):
 
 
                                     status = u" açıldı" if relay.pressed else u" kapatıldı"
+                                    room_name = relay.room.name if relay.room else ""
 
                                     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
                                                "include_player_ids": [ relay.device.account.device_token ],
                                                "contents":{
-                                                   "tr": "%s %s" % ( relay.name , status ) ,
-                                                   "en": "%s %s" % ( relay.name , status )
+                                                   "tr": "%s %s %s" % ( room_name, relay.name , status ) ,
+                                                   "en": "%s %s %s" % ( room_name, relay.name , status )
                                                },
                                             }
                                     print payload
