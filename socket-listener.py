@@ -56,7 +56,7 @@ class DataHandler(object):
             for item in self.splitted_data:
                 if len(item) > 1:
                     self.parsed_data.append(item.strip('#').split('#'))
-            print "Parsed DATA: ", self.parsed_data
+            #print "Parsed DATA: ", self.parsed_data
         else:
 
             self.parsed_data = self.client_data.strip()
@@ -154,7 +154,7 @@ class DataHandler(object):
                                         #print "-" * 20
                                         #print req.status_code, req.reason
                         except Exception as e:
-                            print e
+                            # print e
                             pass
 
 
@@ -183,10 +183,8 @@ class DataHandler(object):
 
             elif _data[0] == "OK":
                 pass
-
             elif _data[0] == "HELLO":
                 pass
-
             elif _data[0] == "ST":
 
                 try:
@@ -234,13 +232,13 @@ class DataHandler(object):
                 if len(commands):
 
                     if not socket_lock:
-                        print "locked."
+                        #print "locked."
                         return
 
                     for cmd in commands:
                         parsed_command = "#{cmd}#".format(cmd=cmd['CMD'])
 
-                        print parsed_command
+                        #print parsed_command
 
                         try:
                             self.client_conn.send(parsed_command)
@@ -249,9 +247,9 @@ class DataHandler(object):
 
                         except Exception as uee:
                             cmd.update({'send': False})
-                            print uee
+                            #print uee
                             # self.client_conn.close()
-                            print('Unable to send command %s to Client' % parsed_command)
+                            #print('Unable to send command %s to Client' % parsed_command)
                             break
 
                     for cmd in commands:
@@ -273,7 +271,7 @@ class DataHandler(object):
         """
         self.client_conn = client_conn
         self.client_addr = client_addr
-        print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
+        #print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
 
 
@@ -282,7 +280,7 @@ class DataHandler(object):
             try:
                 # self.send_command()
                 self.client_data = self.client_conn.recv(128)
-                print "Raw DATA: ", self.client_data
+                #print "Raw DATA: ", self.client_data
                 if self.client_data:
                     # add redis lock to device, then release the lock.
                     socket_locked = False
@@ -291,7 +289,7 @@ class DataHandler(object):
                         socket_lock = cache.get("socket_locks", {})
                         socket_lock.update({self.device.name: True})
                         cache.set("socket_locks", socket_lock)
-                        print "%s locked" % self.device.name
+                        #print "%s locked" % self.device.name
 
                     self.parse_data()
                     self.process_data()
@@ -300,10 +298,10 @@ class DataHandler(object):
                         socket_lock = cache.get("in_process_socket", {})
                         socket_lock.update({self.device.name: False})
                         cache.set("in_process_socket", socket_lock)
-                        print "%s unlocked" % self.device.name
+                        #print "%s unlocked" % self.device.name
 
                 if not self.client_data:
-                    print "No incoming data, breaking connection."
+                    #print "No incoming data, breaking connection."
                     self.client_conn.close()
                     return False
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
