@@ -388,10 +388,7 @@ class SocketServer(object):
                 start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
 
-                if self.device:
-                    print self.device
-                else:
-                    print "no device", self.client_addr
+
 
                 print "Socket read timed out, retrying..."
                 self.client_conn.close()
