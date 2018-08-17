@@ -560,6 +560,10 @@ def add_device(request):
     device_type = all_params.get("device_type")
     device_name = all_params.get("device_name")
 
+    print "*" * 30
+    print device_name
+    print device_type
+
     _authuser = check_user_session(token)
     response_data = []
     response_status = False
