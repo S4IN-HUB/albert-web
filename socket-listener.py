@@ -50,7 +50,7 @@ class DataHandler(object):
         """
 
         if '#' in self.client_data:
-            print self.client_data
+            # print self.client_data
             self.splitted_data = self.client_data.split('\r\n')
             self.parsed_data = []
             for item in self.splitted_data:
