@@ -616,6 +616,8 @@ def add_device(request):
 
                 if chack_device.count() > 0:
                     new_device = chack_device[0]
+                    print "#" * 30
+                    print new_device
                     new_device.account = account
                     new_device.location = location
                     new_device.type = device_type
