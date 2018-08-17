@@ -50,7 +50,7 @@ class DataHandler(object):
         """
 
         if '#' in self.client_data:
-
+            print self.client_data
             self.splitted_data = self.client_data.split('\r\n')
             self.parsed_data = []
             for item in self.splitted_data:
@@ -389,7 +389,11 @@ class SocketServer(object):
                 start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
 
-                try: print data_handler.device
+                try:
+                    print data_handler.device
+                    data_handler.device.status = False
+                    data_handler.device.save()
+
                 except: print "no device info"
 
                 print "Socket read timed out, retrying..."
