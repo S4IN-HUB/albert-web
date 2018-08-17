@@ -358,7 +358,7 @@ class SocketServer(object):
         :return:
         """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(15)
+        self.socket.settimeout(30)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             self.socket.bind((self.host_addr, self.host_port))
@@ -388,10 +388,12 @@ class SocketServer(object):
                 start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
 
-                try:
-                    print self.device.name
-                except: pass
+                if self.device:
+                    print self.device
+
+
                 print "Socket read timed out, retrying..."
+                self.client_conn.close()
                 continue
             except PermissionDenied as pd:
                 print pd
