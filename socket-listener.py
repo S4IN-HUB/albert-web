@@ -395,7 +395,6 @@ class SocketServer(object):
                     data_handler.device.save()
                 except: print "no device info"
                 print "Socket read timed out, retrying..."
-                self.client_conn.close()
                 continue
             except PermissionDenied as pd:
                 print pd
