@@ -386,7 +386,7 @@ class SocketServer(object):
                 start_new_thread(data_handler.read, (self.client_conn, self.client_addr))
                 start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
-                # print "Socket read timed out, retrying..."
+                print "Socket read timed out, retrying..."
                 continue
             except PermissionDenied as pd:
                 print pd
