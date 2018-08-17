@@ -578,6 +578,11 @@ def add_device(request):
             location = Locations.objects.get(id=location_id, account=account)
 
             chack_device = Devices.objects.filter(type=device_type, name=device_name)
+
+            print "-" * 30
+            print chack_device.count()
+            print chack_device
+
             if chack_device.count() > 0:
                 if chack_device[0].account != None and chack_device[0].account != account:
                     return json_responser(False, "Bu cihaz zaten başka bir kullanıcıya tanımlanmış", response_data)
