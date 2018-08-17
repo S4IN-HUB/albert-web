@@ -390,7 +390,8 @@ class SocketServer(object):
 
                 if self.device:
                     print self.device
-
+                else:
+                    print "no device", self.client_addr
 
                 print "Socket read timed out, retrying..."
                 self.client_conn.close()
