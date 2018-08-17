@@ -380,6 +380,7 @@ class SocketServer(object):
         Run seocket server
         :return:
         """
+        data_handler = DataHandler()
         while True:
             try:
                 self.client_conn, self.client_addr = self.socket.accept()
@@ -388,7 +389,8 @@ class SocketServer(object):
                 start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
 
-
+                try: print data_handler.device
+                except: print "no device info"
 
                 print "Socket read timed out, retrying..."
                 self.client_conn.close()
