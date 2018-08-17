@@ -560,6 +560,10 @@ def add_device(request):
     device_type = all_params.get("device_type")
     device_name = all_params.get("device_name")
 
+    print "*" * 30
+    print device_name
+    print device_type
+
     _authuser = check_user_session(token)
     response_data = []
     response_status = False
@@ -574,6 +578,11 @@ def add_device(request):
             location = Locations.objects.get(id=location_id, account=account)
 
             chack_device = Devices.objects.filter(type=device_type, name=device_name)
+
+            print "-" * 30
+            print chack_device.count()
+            print chack_device
+
             if chack_device.count() > 0:
                 if chack_device[0].account != None and chack_device[0].account != account:
                     return json_responser(False, "Bu cihaz zaten başka bir kullanıcıya tanımlanmış", response_data)
@@ -607,6 +616,8 @@ def add_device(request):
 
                 if chack_device.count() > 0:
                     new_device = chack_device[0]
+                    print "#" * 30
+                    print new_device
                     new_device.account = account
                     new_device.location = location
                     new_device.type = device_type
