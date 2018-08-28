@@ -141,7 +141,7 @@ class DevicesAdmin(admin.ModelAdmin):
     read_ir_button.allow_tags = True
     read_ir_button.short_description = 'IR Oku'
 
-    list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'status',
+    list_display = ('name', 'description', 'room_location', 'room', 'wan_ip', 'status', 'last_connect'
                     'temperature','humidity',
                     'get_total_instant_current', 'get_total_instant_power','read_ir_button')
 
