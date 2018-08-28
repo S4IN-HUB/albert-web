@@ -103,6 +103,8 @@ class Devices(models.Model):
     oto_on_off = models.BooleanField(default=False, verbose_name="Oto. Aç/Kapat")
     spec = models.PositiveSmallIntegerField(default=0, choices=((1, 'Klima Yaz Modu'), (2, 'Klima Kış Modu'), (3, 'Klima Kapat')), verbose_name="Özel Tanım")
 
+    last_connect = models.DateTimeField(auto_now_add=True, verbose_name="Son baglanti")
+
     @property
     def total_instant_current(self):
         total_current = 0

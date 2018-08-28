@@ -13,7 +13,7 @@ import psutil
 import socket
 from thread import start_new_thread
 from time import sleep
-
+from datetime import datetime
 import requests
 import json
 
@@ -85,6 +85,7 @@ class DataHandler(object):
                     self.device = Devices.objects.get(name=_data[1])
                     self.device.wan_ip = self.client_addr[0]
                     self.device.status=True
+                    self.device.last_connect=datetime.now()
                     self.device.save()
 
                 except ObjectDoesNotExist:
