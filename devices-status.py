@@ -48,7 +48,7 @@ class DataHandler(object):
         _devices = Devices.objects.filter(status=True)
         for item in _devices:
 
-            during = datetime.now() - item.last_connect
+            during = datetime.today() - item.last_connect
             if during.seconds > 10:
                 item.status = False
                 item.save()
