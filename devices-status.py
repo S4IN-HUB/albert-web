@@ -51,7 +51,7 @@ class DataHandler(object):
 
             during = timezone.now() - item.last_connect
             print "during", during.seconds , item.Name
-            if during.seconds > 20:
+            if during.seconds > 30:
                 item.status = False
                 item.save()
 
