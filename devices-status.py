@@ -18,6 +18,7 @@ from time import sleep
 import django
 django.setup()
 
+from datetime import datetime
 from django.core.cache import cache
 from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton,TempValues
 
@@ -46,8 +47,11 @@ class DataHandler(object):
         """
         _devices = Devices.objects.filter(status=True)
         for item in _devices:
-            item.status = False
-            item.save()
+
+            during = datetime.now() - item.last_connect
+            if during.seconds > 10:
+                item.status = False
+                item.save()
 
             # _cmd = cache.get(item.name, [])
             # _command = "ST"
