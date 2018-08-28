@@ -19,6 +19,7 @@ import django
 django.setup()
 
 from datetime import datetime
+from django.utils import timezone
 from django.core.cache import cache
 from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton,TempValues
 
@@ -48,7 +49,8 @@ class DataHandler(object):
         _devices = Devices.objects.filter(status=True)
         for item in _devices:
 
-            during = datetime.today() - item.last_connect
+            during = timezone.now() - item.last_connect
+            print "during",during
             if during.seconds > 10:
                 item.status = False
                 item.save()
