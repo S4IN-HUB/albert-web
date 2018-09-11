@@ -78,11 +78,14 @@ WSGI_APPLICATION = 'base.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+
+db_name = BASE_DIR.split('/')[-1].split('-')[1]
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'scops',
-        'USER': 'scops',
+        'NAME': db_name,
+        'USER': db_name,
         'PASSWORD': 'BGP2iJXrL19',
         'HOST': 'localhost',
     }
