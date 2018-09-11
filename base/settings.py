@@ -79,13 +79,13 @@ WSGI_APPLICATION = 'base.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 
-db_name = BASE_DIR.split('/')[-1].split('-')[0]
+DBNAME = BASE_DIR.split('/')[-1].split('-')[0]
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': db_name,
-        'USER': db_name,
+        'NAME': DBNAME,
+        'USER': DBNAME,
         'PASSWORD': 'BGP2iJXrL19',
         'HOST': 'localhost',
     }
@@ -134,7 +134,7 @@ STATIC_URL = '/static/'
 
 SUIT_CONFIG = {
     # header
-    'ADMIN_NAME': 'Alberto Teknoloji',
+    'ADMIN_NAME': 'Scops Teknoloji',
     'HEADER_DATE_FORMAT': 'l, j F Y',
     'HEADER_TIME_FORMAT': 'H:i',
 
@@ -149,7 +149,7 @@ CACHES = {
         'BACKEND': 'redis_cache.RedisCache',
         'LOCATION': '127.0.0.1:6379',
         'OPTIONS': {
-            'DB': 1,
+            'DB': 1 if DBNAME == 'albert' else 2,
             "CLIENT_CLASS": "redis_cache.client.DefaultClient",
         },
     },
