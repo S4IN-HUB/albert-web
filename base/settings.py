@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'base.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 
-db_name = BASE_DIR.split('/')[-1].split('-')[1]
+db_name = BASE_DIR.split('/')[-1].split('-')[0]
 
 DATABASES = {
     'default': {
