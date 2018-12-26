@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
+import json, time
 from datetime import datetime
 
 from django.contrib import messages
@@ -2181,6 +2181,7 @@ def activate_scenario(request):
 
                 item.relay.save()
 
+                time.sleep(0.3)
             response_status = True
             response_message = "Senaryo röleleri aktifleştirildi."
 

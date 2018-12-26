@@ -22,11 +22,14 @@ import django
 django.setup()
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-
+from django.conf import settings
 from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton,TempValues
 
-port = 8080
 
+if settings.DBNAME == 'albert':
+    port = 8080
+else:
+    port = 8888
 
 class DataHandler(object):
     """
