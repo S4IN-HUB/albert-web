@@ -159,6 +159,9 @@ class Relays(models.Model):
     RelayTypes = (
         ('switch', 'Aç / Kapat'),
         ('push', 'Bas - çek'),
+        ('push3', 'Bas - çek 3sn'),
+        ('push5', 'Bas - çek 5sn'),
+        ('push10', 'Bas - çek 10sn'),
     )
     room = models.ForeignKey(Rooms, null=True,blank=True, related_name="Relays", verbose_name="Oda")
     device = models.ForeignKey(Devices, related_name="Relays", verbose_name="Cihaz")
