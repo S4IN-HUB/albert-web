@@ -18,6 +18,7 @@ class Accounts(models.Model):
     user_type = models.PositiveSmallIntegerField(default=0, choices=account_types, verbose_name="Hesap Tipi")
     favourite_relays = models.ManyToManyField('customers.Relays', related_name="favourited_relays", null=True, blank=True)
     favourite_rooms = models.ManyToManyField('customers.Rooms', related_name="favourited_rooms", null=True, blank=True)
+    device_token = models.TextField(null=True, blank=True, verbose_name="Push Token")
 
     def __unicode__(self):
         return "%s" % self.user.username
@@ -102,6 +103,8 @@ class Devices(models.Model):
     oto_on_off = models.BooleanField(default=False, verbose_name="Oto. Aç/Kapat")
     spec = models.PositiveSmallIntegerField(default=0, choices=((1, 'Klima Yaz Modu'), (2, 'Klima Kış Modu'), (3, 'Klima Kapat')), verbose_name="Özel Tanım")
 
+    last_connect = models.DateTimeField(auto_now_add=True, verbose_name="Son baglanti")
+
     @property
     def total_instant_current(self):
         total_current = 0
@@ -165,6 +168,7 @@ class Relays(models.Model):
     name = models.CharField(max_length=50, verbose_name="Röle Tanımı")
 
     pressed = models.BooleanField(default=False, verbose_name="Basılı mı?")
+    notify = models.BooleanField(default=False, verbose_name="Bildirim Yapılsın mı?")
 
     relay_no = models.IntegerField(verbose_name="Röle No")
     type = models.CharField(max_length=20, default='switch', choices=RelayTypes, verbose_name="Anahtar Tipi")

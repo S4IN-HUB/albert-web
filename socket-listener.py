@@ -13,17 +13,23 @@ import psutil
 import socket
 from thread import start_new_thread
 from time import sleep
+from datetime import datetime
+import requests
+import json
 
 import django
 
 django.setup()
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-
+from django.conf import settings
 from modules.customers.models import RelayCurrentValues, Relays, Devices, IrButton,TempValues
 
-port = 8080
 
+if settings.DBNAME == 'albert':
+    port = 8080
+else:
+    port = 8888
 
 class DataHandler(object):
     """
@@ -47,13 +53,13 @@ class DataHandler(object):
         """
 
         if '#' in self.client_data:
-
+            # print self.client_data
             self.splitted_data = self.client_data.split('\r\n')
             self.parsed_data = []
             for item in self.splitted_data:
                 if len(item) > 1:
                     self.parsed_data.append(item.strip('#').split('#'))
-            print "Parsed DATA: ", self.parsed_data
+            #print "Parsed DATA: ", self.parsed_data
         else:
 
             self.parsed_data = self.client_data.strip()
@@ -81,16 +87,16 @@ class DataHandler(object):
                 try:
                     self.device = Devices.objects.get(name=_data[1])
                     self.device.wan_ip = self.client_addr[0]
+                    self.device.status=True
+                    self.device.last_connect=datetime.now()
                     self.device.save()
-
-                    if not self.device.status:
-                        raise PermissionDenied("Device is disabled via admin!")
 
                 except ObjectDoesNotExist:
                     self.device = Devices(name=_data[1])
                     self.device.type = _data[2]
                     self.device.description = _data[1]
                     self.device.wan_ip = self.client_addr[0]
+                    self.device.status = True
                     self.device.save()
 
                 try:
@@ -123,6 +129,39 @@ class DataHandler(object):
                     relay.pressed = True if int(_data[4]) == 1 else False
                     relay.save()
 
+                    if relay.notify:
+                        try:
+                            #print "try notify"
+                            if relay.device:
+                                #print "try notify", relay.device
+                                if relay.device.account:
+                                    #print "try notify", relay.device.account
+                                    if relay.device.account.device_token:
+                                        #print "try notify", relay.device.account.device_token
+                                        header = {"Content-Type": "application/json; charset=utf-8",
+                                                  "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
+
+
+                                        status = u" açıldı" if relay.pressed else u" kapatıldı"
+                                        room_name = relay.room.name + u" > " if relay.room else ""
+
+                                        payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
+                                                   "include_player_ids": [ relay.device.account.device_token ],
+                                                   "contents":{
+                                                       "tr": "%s %s %s" % ( room_name, relay.name , status ) ,
+                                                       "en": "%s %s %s" % ( room_name, relay.name , status )
+                                                   },
+                                                }
+                                        #print payload
+
+                                        req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+                                        #print "-" * 20
+                                        #print req.status_code, req.reason
+                        except Exception as e:
+                            # print e
+                            pass
+
+
                 except ObjectDoesNotExist:
                     raise Exception("%s numbered relay record does not exist!" % _data[2])
 
@@ -134,7 +173,6 @@ class DataHandler(object):
                         raise Exception("%s numbered relay record does not exist!" % _data[2])
 
                     RelayCurrentValues(relay=relay, current_value=_data[3], power_cons=_data[4]).save()
-
 
             elif _data[0] == "IRENCODE":
 
@@ -149,9 +187,26 @@ class DataHandler(object):
 
             elif _data[0] == "OK":
                 pass
-
             elif _data[0] == "HELLO":
                 pass
+            elif _data[0] == "ST":
+
+                try:
+                    self.device = Devices.objects.get(name=_data[1])
+                    self.device.status = True
+                    self.device.save()
+
+                    _relay_states = _data[3]
+                    _relays = Relays.objects.get(device=self.device, relay_no=int(_data[3]))
+                    for rly in self.device.Relays.all():
+
+                        if rly.pressed == bool(int(_relay_states[rly.relay_no:rly.relay_no+1])):
+                            rly.pressed = False if bool(int(_relay_states[rly.relay_no:rly.relay_no+1])) == True else True
+                            rly.save()
+
+                except:
+                    pass
+
             else:
                 print "Unexpected data: %s" % _data
 
@@ -181,13 +236,13 @@ class DataHandler(object):
                 if len(commands):
 
                     if not socket_lock:
-                        print "locked."
+                        #print "locked."
                         return
 
                     for cmd in commands:
                         parsed_command = "#{cmd}#".format(cmd=cmd['CMD'])
 
-                        print parsed_command
+                        #print parsed_command
 
                         try:
                             self.client_conn.send(parsed_command)
@@ -196,9 +251,9 @@ class DataHandler(object):
 
                         except Exception as uee:
                             cmd.update({'send': False})
-                            print uee
+                            #print uee
                             # self.client_conn.close()
-                            print('Unable to send command %s to Client' % parsed_command)
+                            #print('Unable to send command %s to Client' % parsed_command)
                             break
 
                     for cmd in commands:
@@ -220,7 +275,7 @@ class DataHandler(object):
         """
         self.client_conn = client_conn
         self.client_addr = client_addr
-        print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
+        #print 'Client connected from %s:%s address' % (self.client_addr[0], self.client_addr[1])
 
 
 
@@ -229,7 +284,7 @@ class DataHandler(object):
             try:
                 # self.send_command()
                 self.client_data = self.client_conn.recv(128)
-                print "Raw DATA: ", self.client_data
+                #print "Raw DATA: ", self.client_data
                 if self.client_data:
                     # add redis lock to device, then release the lock.
                     socket_locked = False
@@ -238,7 +293,7 @@ class DataHandler(object):
                         socket_lock = cache.get("socket_locks", {})
                         socket_lock.update({self.device.name: True})
                         cache.set("socket_locks", socket_lock)
-                        print "%s locked" % self.device.name
+                        #print "%s locked" % self.device.name
 
                     self.parse_data()
                     self.process_data()
@@ -247,10 +302,10 @@ class DataHandler(object):
                         socket_lock = cache.get("in_process_socket", {})
                         socket_lock.update({self.device.name: False})
                         cache.set("in_process_socket", socket_lock)
-                        print "%s unlocked" % self.device.name
+                        #print "%s unlocked" % self.device.name
 
                 if not self.client_data:
-                    print "No incoming data, breaking connection."
+                    #print "No incoming data, breaking connection."
                     self.client_conn.close()
                     return False
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
@@ -307,6 +362,7 @@ class SocketServer(object):
         :return:
         """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.settimeout(100)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             self.socket.bind((self.host_addr, self.host_port))
@@ -316,7 +372,7 @@ class SocketServer(object):
             self.socket.close()
             sys.exit()
         try:
-            self.socket.listen(300)
+            self.socket.listen(1000)
             print 'Socket begin to listen.'
         except Exception as uee:
             print uee
@@ -328,6 +384,7 @@ class SocketServer(object):
         Run seocket server
         :return:
         """
+        data_handler = DataHandler()
         while True:
             try:
                 self.client_conn, self.client_addr = self.socket.accept()
@@ -335,7 +392,13 @@ class SocketServer(object):
                 start_new_thread(data_handler.read, (self.client_conn, self.client_addr))
                 start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
             except socket.timeout:
-                # print "Socket read timed out, retrying..."
+
+                try:
+                    print data_handler.device
+                    data_handler.device.status = False
+                    data_handler.device.save()
+                except: print "no device info"
+                print "Socket read timed out, retrying..."
                 continue
             except PermissionDenied as pd:
                 print pd
@@ -347,34 +410,60 @@ class SocketServer(object):
         self.socket.close()
 
 
+def test_notify():
+
+    header = {"Content-Type": "application/json; charset=utf-8",
+              "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
+
+    payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
+               "include_player_ids": ["e1f67bf4-1d01-40ea-828c-e889f7a6a36a"],
+               "contents": {"en":  "%s %s" % ("deneme", " açıldı" if True else " kapandi"), "tr": "%s %s" % ("deneme", " acildi" if True else " kapandi")}, }
+
+
+    print json.dumps(payload)
+
+    req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+
+    print "-"*20
+    print req.status_code, req.reason
+
 if __name__ == "__main__":
-    this_proc = os.getpid()
 
-    greped_proc = False
-    for proc in psutil.process_iter():
-        if proc.name() == 'python' and len(proc.cmdline()) > 1:
+    if "test_notify" in sys.argv:
 
-            if sys.argv[0] == proc.cmdline()[1]:
-                greped_proc = proc.pid
+        test_notify()
 
-                if this_proc != greped_proc:
-                    print "Bu islem zaten aktif"
-                    sys.exit()
-
-    if not len(sys.argv) < 2:
-        try:
-            port = int(sys.argv[1])
-        except:
-            print "Usage: "
-            print "\t# python socket-listener.py [port_number]"
-            print " "
-            print "- If port number not specified, server associated with default %s numbered port." % port
-            print "- Port number must be numeric."
-            sys.exit()
-    try:
-        SocketServer = SocketServer(port)
-    except Exception as uee:
-        print uee
-        sys.exit()
     else:
-        SocketServer.runserver()
+        this_proc = os.getpid()
+
+        greped_proc = False
+        for proc in psutil.process_iter():
+            if proc.name() == 'python' and len(proc.cmdline()) > 1:
+
+                if sys.argv[0] == proc.cmdline()[1]:
+                    greped_proc = proc.pid
+
+                    if this_proc != greped_proc:
+                        print "Bu islem zaten aktif"
+                        sys.exit()
+
+        if not len(sys.argv) < 2:
+            try:
+                port = int(sys.argv[1])
+            except:
+                print "Usage: "
+                print "\t# python socket-listener.py [port_number]"
+                print " "
+                print "- If port number not specified, server associated with default %s numbered port." % port
+                print "- Port number must be numeric."
+                sys.exit()
+
+        try:
+            SocketServer = SocketServer(port)
+        except Exception as uee:
+            print uee
+            sys.exit()
+
+
+        else:
+            SocketServer.runserver()

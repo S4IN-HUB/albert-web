@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
+import json, time
 from datetime import datetime
 
 from django.contrib import messages
@@ -197,6 +197,10 @@ def login_user(request, remote_user):
     if remote_user.is_active:
         remote_user.backend = 'django.contrib.auth.backends.ModelBackend'
         do_login(request, remote_user)
+
+
+
+
         json_content = get_user_json(remote_user)
         json_content.update({'token': str(request.session.session_key)})
         message = "Giriş Başarılı"
@@ -235,6 +239,7 @@ def base_login(request, **kwargs):
     json_content = {}
     user_name = all_params.get("username")
     password = all_params.get("password")
+    device_token = all_params.get("device_token")
     print user_name, password
 
     remote_user = None
@@ -260,6 +265,12 @@ def base_login(request, **kwargs):
             status = False
 
     if remote_user:
+        
+        try:
+            remote_user.Accounts.device_token = device_token
+            remote_user.Accounts.save()
+        except: pass
+
         return login_user(request, remote_user)
 
     return status, message, json_content
@@ -549,6 +560,10 @@ def add_device(request):
     device_type = all_params.get("device_type")
     device_name = all_params.get("device_name")
 
+    print "*" * 30
+    print device_name
+    print device_type
+
     _authuser = check_user_session(token)
     response_data = []
     response_status = False
@@ -563,6 +578,11 @@ def add_device(request):
             location = Locations.objects.get(id=location_id, account=account)
 
             chack_device = Devices.objects.filter(type=device_type, name=device_name)
+
+            print "-" * 30
+            print chack_device.count()
+            print chack_device
+
             if chack_device.count() > 0:
                 if chack_device[0].account != None and chack_device[0].account != account:
                     return json_responser(False, "Bu cihaz zaten başka bir kullanıcıya tanımlanmış", response_data)
@@ -596,6 +616,8 @@ def add_device(request):
 
                 if chack_device.count() > 0:
                     new_device = chack_device[0]
+                    print "#" * 30
+                    print new_device
                     new_device.account = account
                     new_device.location = location
                     new_device.type = device_type
@@ -1250,6 +1272,7 @@ def get_device_json(devices):
                     'name': device.name,
                     'lan_ip': device.ip,
                     'wan_ip': device.wan_ip,
+                    'status': device.status,
                 }
             })
             dev_nr += 1
@@ -1398,6 +1421,7 @@ def get_device_relays(request):
                 'room_id': relay.room.id if relay.room else None,
                 'room': get_room_json(relay.room) if relay.room else None,
                 'pressed': relay.pressed,
+                'status': relay.device.status,
                 'name': relay.name,
                 'relay_no': relay.relay_no,
                 'type': relay.type,
@@ -1518,6 +1542,9 @@ def relay_control(request):
     if request.GET.get("relay"):
         relay = Relays.objects.get(pk=request.GET.get("relay"))
 
+        if relay.device.status == False:
+            return HttpResponse("Cihaz internet bağlantısı yok, Lütfen Alberto Wifi ayarlarını kontrol ediniz.")
+
         if request.GET.get("action", "") == "open":
 
             _cmd = cache.get(relay.device.name, [])
@@ -1540,6 +1567,7 @@ def relay_control(request):
     return HttpResponse('OK')
 
 
+
 @csrf_exempt
 def relay_command(request):
     """BURAYA AÇIKLAMA GELECEK"""
@@ -1559,6 +1587,9 @@ def relay_command(request):
         if _relay:
             relay = Relays.objects.get(pk=_relay)
 
+            if relay.device.status == False:
+                return json_responser(False, "Cihaz internet bağlantısı yok, Lütfen Alberto Wifi ayarlarını kontrol ediniz.", {})
+
             if _action == "open":
 
                 _cmd = cache.get(relay.device.name, [])
@@ -1566,6 +1597,8 @@ def relay_command(request):
                 _cmd.append({"CMD": _command, })
                 cache.set(relay.device.name, _cmd)
                 relay.pressed = True
+
+
 
             elif _action == "close":
                 _cmd = cache.get(relay.device.name, [])
@@ -1623,7 +1656,7 @@ def cron_control(request):
 
     now_date = datetime.now()
 
-    _devices = Crons.objects.filter(day=now_date.weekday(),
+    _devices = Crons.objects.filter(relay__device__status=True, day=now_date.weekday(),
                                     switch_on_time__hour=now_date.strftime('%H'),
                                     switch_on_time__minute=now_date.strftime('%M')).values('relay__device').distinct()
 
@@ -1645,10 +1678,13 @@ def cron_control(request):
                 _cmd.append({"CMD": _command, })
                 cache.set(item.relay.device.name, _cmd)
                 item.relay.pressed = True
+
+
+
             except:
                 pass
 
-        crons = Crons.objects.filter(day=now_date.weekday(),
+        crons = Crons.objects.filter(relay__device__status=True, day=now_date.weekday(),
                                      switch_off_time__hour=now_date.strftime('%H'),
                                      switch_off_time__minute=now_date.strftime('%M'),
                                      relay__device=_device
@@ -2135,6 +2171,7 @@ def activate_scenario(request):
                     cache.set(item.relay.device.name, _cmd)
                     item.relay.pressed = True
 
+
                 elif item.action == 2:
                     _cmd = cache.get(item.relay.device.name, [])
                     _command = "RC#%s#%s" % (item.relay.relay_no, 0)
@@ -2144,6 +2181,7 @@ def activate_scenario(request):
 
                 item.relay.save()
 
+                time.sleep(0.3)
             response_status = True
             response_message = "Senaryo röleleri aktifleştirildi."
 
