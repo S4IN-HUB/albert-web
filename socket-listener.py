@@ -145,11 +145,23 @@ class DataHandler(object):
                                         status = u" açıldı" if relay.pressed else u" kapatıldı"
                                         room_name = relay.room.name + u" > " if relay.room else ""
 
+                                        notif_text_tr =  "%s %s %s" % ( room_name, relay.name , status )
+                                        notif_text_en =  "%s %s %s" % ( room_name, relay.name , status )
+
+                                        if relay.on_notify and relay.on_notify != '' and relay.pressed:
+                                            notif_text_tr = relay.on_notify
+                                            notif_text_en = relay.on_notify
+
+                                        if relay.on_notify and relay.on_notify != '' and not relay.pressed:
+                                            notif_text_tr = relay.off_notify
+                                            notif_text_en = relay.off_notify
+
+
                                         payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
                                                    "include_player_ids": [ relay.device.account.device_token ],
                                                    "contents":{
-                                                       "tr": "%s %s %s" % ( room_name, relay.name , status ) ,
-                                                       "en": "%s %s %s" % ( room_name, relay.name , status )
+                                                       "tr": notif_text_tr ,
+                                                       "en": notif_text_en
                                                    },
                                                 }
                                         #print payload
