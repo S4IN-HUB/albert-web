@@ -170,6 +170,9 @@ class Relays(models.Model):
     pressed = models.BooleanField(default=False, verbose_name="Basılı mı?")
     notify = models.BooleanField(default=False, verbose_name="Bildirim Yapılsın mı?")
 
+    on_notify = models.CharField(max_length=250, verbose_name="Açıldı Mesajı")
+    off_notify = models.CharField(max_length=250, verbose_name="Açıldı Mesajı")
+
     relay_no = models.IntegerField(verbose_name="Röle No")
     type = models.CharField(max_length=20, default='switch', choices=RelayTypes, verbose_name="Anahtar Tipi")
     icon = models.CharField(max_length=40, default='flaticon-light-bulb', choices=Icons, verbose_name="Simge")
