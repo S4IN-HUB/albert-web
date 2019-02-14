@@ -428,7 +428,7 @@ def test_notify():
               "Authorization": "Basic ODk2NjI4NmQtNWNlNy00N2MwLWEyMTItOGQ2NzQwNTFmYTU4"}
 
     payload = {"app_id": "6f37c2b8-ac68-4ac5-9bad-4fa0efa7e8bb",
-               "include_player_ids": ["e1f67bf4-1d01-40ea-828c-e889f7a6a36a"],
+               "include_player_ids": ["7eb41ea3-79f3-4223-b307-79887a0bf8d4"],
                "contents": {"en":  "%s %s" % ("deneme", " açıldı" if True else " kapandi"), "tr": "%s %s" % ("deneme", " acildi" if True else " kapandi")}, }
 
 
