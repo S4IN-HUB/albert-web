@@ -164,7 +164,7 @@ class DataHandler(object):
                                                        "en": notif_text_en
                                                    },
                                                 }
-                                        #print payload
+                                        print payload
 
                                         req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
                                         #print "-" * 20
