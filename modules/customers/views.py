@@ -1549,7 +1549,7 @@ def relay_control(request):
         if request.GET.get("action", "") == "open":
 
 
-            if relay.turn_off and str(relay.turn_off).strip().isdigit():
+            if relay.turn_off not None and str(relay.turn_off).strip().isdigit():
 
                 sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
                 _cmd = cache.get(sub_relay.device.name, [])
