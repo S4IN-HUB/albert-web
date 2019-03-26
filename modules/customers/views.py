@@ -1566,6 +1566,8 @@ def relay_control(request):
             cache.set(relay.device.name, _cmd)
             relay.pressed = True
 
+            return HttpResponse(_cmd)
+
         elif request.GET.get("action", "") == "close":
             _cmd = cache.get(relay.device.name, [])
             _command = "RC#%s#%s" % (relay.relay_no, 0)
