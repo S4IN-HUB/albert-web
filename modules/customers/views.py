@@ -1550,14 +1550,14 @@ def relay_control(request):
 
 
             if relay.turn_off and str(relay.turn_off).strip().isdigit():
-
-                sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
-
-                _cmd = cache.get(sub_relay.device.name, [])
-                _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
-                _cmd.append({"CMD": _command, })
-                cache.set(sub_relay.device.name, _cmd)
-                sub_relay.pressed = False
+                try:
+                    sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
+                    _cmd = cache.get(sub_relay.device.name, [])
+                    _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
+                    _cmd.append({"CMD": _command, })
+                    cache.set(sub_relay.device.name, _cmd)
+                    sub_relay.pressed = False
+                except: pass
 
 
             _cmd = cache.get(relay.device.name, [])
@@ -1607,13 +1607,14 @@ def relay_command(request):
 
                 if relay.turn_off and str(relay.turn_off).strip().isdigit():
 
-
-                    sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
-                    _cmd = cache.get(sub_relay.device.name, [])
-                    _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
-                    _cmd.append({"CMD": _command, })
-                    cache.set(sub_relay.device.name, _cmd)
-                    sub_relay.pressed = False
+                    try:
+                        sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
+                        _cmd = cache.get(sub_relay.device.name, [])
+                        _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
+                        _cmd.append({"CMD": _command, })
+                        cache.set(sub_relay.device.name, _cmd)
+                        sub_relay.pressed = False
+                    except: pass
 
 
                 _cmd = cache.get(relay.device.name, [])
