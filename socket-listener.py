@@ -266,6 +266,9 @@ class DataHandler(object):
                         except Exception as uee:
                             cmd.update({'send': False})
                             print uee
+                            exc_type, exc_obj, exc_tb = sys.exc_info()
+                            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                            print(exc_type, fname, exc_tb.tb_lineno)
                             # self.client_conn.close()
                             #print('Unable to send command %s to Client' % parsed_command)
                             break
@@ -350,8 +353,11 @@ class DataHandler(object):
                 self.send_command()
             except Exception as uee:
                 print uee
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
                 self.client_conn.close()
-                return False
+                break
 
 
 class SocketServer(object):
@@ -383,6 +389,9 @@ class SocketServer(object):
             print 'Socket created!'
         except Exception as uee:
             print uee
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             self.socket.close()
             sys.exit()
         try:
@@ -390,6 +399,9 @@ class SocketServer(object):
             print 'Socket begin to listen.'
         except Exception as uee:
             print uee
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             self.socket.close()
             sys.exit()
 
@@ -419,6 +431,10 @@ class SocketServer(object):
                 continue
             except Exception as uee:
                 print uee
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
+
                 self.client_conn.close()
                 break
         self.socket.close()
@@ -476,6 +492,9 @@ if __name__ == "__main__":
             SocketServer = SocketServer(port)
         except Exception as uee:
             print uee
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             sys.exit()
 
 
