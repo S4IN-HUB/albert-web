@@ -177,7 +177,7 @@ class Relays(models.Model):
     type = models.CharField(max_length=20, default='switch', choices=RelayTypes, verbose_name="Anahtar Tipi")
     icon = models.CharField(max_length=40, default='flaticon-light-bulb', choices=Icons, verbose_name="Simge")
 
-    turn_off = models.ForeignKey("self", null=True,blank=True,  verbose_name="Önce Bu Röleyi Kapat")
+    turn_off = models.IntegerField( null=True,blank=True,  verbose_name="Önce Bu Röleyi Kapat")
 
     total_instant_current = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Akım", default=0)
     total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt", default=0)
