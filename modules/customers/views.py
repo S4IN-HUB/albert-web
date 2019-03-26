@@ -1556,6 +1556,7 @@ def relay_control(request):
                     _cmd.append({"CMD": _command, })
                     cache.set(sub_relay.device.name, _cmd)
                     sub_relay.pressed = False
+                    time.sleep(0.5)
             except:
                 pass
 
@@ -1618,6 +1619,7 @@ def relay_command(request):
                             _cmd.append({"CMD": _command, })
                             cache.set(sub_relay.device.name, _cmd)
                             sub_relay.pressed = False
+                            time.sleep(0.5)
                     except: pass
 
 
