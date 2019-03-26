@@ -272,11 +272,11 @@ class DataHandler(object):
                         if cmd.pop('send', False) is False:
                             unsend_commands.append(cmd)
 
-                    if len(unsend_commands) > 0:
-                        cache.set(self.device.name, unsend_commands)
-                        raise Exception("There are unsend commands in stack!")
-                    else:
-                        cache.delete(self.device.name)
+                    # if len(unsend_commands) > 0:
+                    #     cache.set(self.device.name, unsend_commands)
+                    #     # raise Exception("There are unsend commands in stack!")
+                    # else:
+                    #     cache.delete(self.device.name)
 
     def read(self, client_conn, client_addr):
         """

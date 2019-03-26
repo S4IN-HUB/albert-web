@@ -1545,7 +1545,20 @@ def relay_control(request):
         if relay.device.status == False:
             return HttpResponse("Cihaz internet bağlantısı yok, Lütfen Alberto Wifi ayarlarını kontrol ediniz.")
 
+
         if request.GET.get("action", "") == "open":
+
+
+            if relay.turn_off and relay.turn_off.strip().isdigit():
+
+                sub_relay = Relays.objects.get(pk=relay.turn_off.strip())
+
+                _cmd = cache.get(sub_relay.device.name, [])
+                _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
+                _cmd.append({"CMD": _command, })
+                cache.set(sub_relay.device.name, _cmd)
+                sub_relay.pressed = False
+
 
             _cmd = cache.get(relay.device.name, [])
             _command = "RC#%s#%s" % (relay.relay_no, 1)
@@ -1591,6 +1604,16 @@ def relay_command(request):
                 return json_responser(False, "Cihaz internet bağlantısı yok, Lütfen Alberto Wifi ayarlarını kontrol ediniz.", {})
 
             if _action == "open":
+
+                if relay.turn_off and relay.turn_off.strip().isdigit():
+
+                    sub_relay = Relays.objects.get(pk=relay.turn_off.strip())
+                    _cmd = cache.get(sub_relay.device.name, [])
+                    _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
+                    _cmd.append({"CMD": _command, })
+                    cache.set(sub_relay.device.name, _cmd)
+                    sub_relay.pressed = False
+
 
                 _cmd = cache.get(relay.device.name, [])
                 _command = "RC#%s#%s" % (relay.relay_no, 1)
