@@ -254,7 +254,7 @@ class DataHandler(object):
                     for cmd in commands:
                         parsed_command = "#{cmd}#".format(cmd=cmd['CMD'])
 
-                        #print parsed_command
+                        print parsed_command
 
                         try:
                             self.client_conn.send(parsed_command)
@@ -263,7 +263,7 @@ class DataHandler(object):
 
                         except Exception as uee:
                             cmd.update({'send': False})
-                            #print uee
+                            print uee
                             # self.client_conn.close()
                             #print('Unable to send command %s to Client' % parsed_command)
                             break
@@ -272,11 +272,11 @@ class DataHandler(object):
                         if cmd.pop('send', False) is False:
                             unsend_commands.append(cmd)
 
-                    # if len(unsend_commands) > 0:
-                    #     cache.set(self.device.name, unsend_commands)
-                    #     # raise Exception("There are unsend commands in stack!")
-                    # else:
-                    #     cache.delete(self.device.name)
+                    if len(unsend_commands) > 0:
+                        cache.set(self.device.name, unsend_commands)
+                        # raise Exception("There are unsend commands in stack!")
+                    else:
+                        cache.delete(self.device.name)
 
     def read(self, client_conn, client_addr):
         """
