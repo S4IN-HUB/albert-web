@@ -124,6 +124,8 @@ class DataHandler(object):
 
             elif _data[0] == "RC":
 
+                print _data
+
                 try:
                     relay = Relays.objects.get(device__name=_data[1], relay_no=int(_data[3]))
                     relay.pressed = True if int(_data[4]) == 1 else False
