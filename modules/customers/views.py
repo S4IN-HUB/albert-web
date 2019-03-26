@@ -1607,7 +1607,7 @@ def relay_command(request):
 
             if _action == "open":
 
-                if relay.turn_off and str(relay.turn_off).strip().isdigit():
+                if relay.turn_off != None and str(relay.turn_off).strip().isdigit():
 
                     try:
                         sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
