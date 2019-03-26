@@ -1551,7 +1551,7 @@ def relay_control(request):
 
             if relay.turn_off and str(relay.turn_off).strip().isdigit():
 
-                sub_relay = Relays.objects.get(pk=str(relay.turn_off).strip())
+                sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
 
                 _cmd = cache.get(sub_relay.device.name, [])
                 _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
@@ -1607,7 +1607,8 @@ def relay_command(request):
 
                 if relay.turn_off and str(relay.turn_off).strip().isdigit():
 
-                    sub_relay = Relays.objects.get(pk=str(relay.turn_off).strip())
+
+                    sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
                     _cmd = cache.get(sub_relay.device.name, [])
                     _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
                     _cmd.append({"CMD": _command, })
