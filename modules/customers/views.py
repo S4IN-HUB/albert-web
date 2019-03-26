@@ -1557,8 +1557,7 @@ def relay_control(request):
                 _cmd.append({"CMD": _command, })
                 cache.set(sub_relay.device.name, _cmd)
                 sub_relay.pressed = False
-
-                return HttpResponse(_cmd)
+                time.sleep(0.2)
 
 
             _cmd = cache.get(relay.device.name, [])
