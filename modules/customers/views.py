@@ -1548,14 +1548,14 @@ def relay_control(request):
 
         if request.GET.get("action", "") == "open":
 
-
-            sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
-            _cmd = cache.get(sub_relay.device.name, [])
-            _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
-            _cmd.append({"CMD": _command, })
-            cache.set(sub_relay.device.name, _cmd)
-            sub_relay.pressed = False
-            time.sleep(0.5)
+            if relay.turn_off:
+                sub_relay = Relays.objects.get(device=relay.device, relay_no=str(relay.turn_off).strip())
+                _cmd = cache.get(sub_relay.device.name, [])
+                _command = "RC#%s#%s" % (sub_relay.relay_no, 0)
+                _cmd.append({"CMD": _command, })
+                cache.set(sub_relay.device.name, _cmd)
+                sub_relay.pressed = False
+                time.sleep(0.5)
 
 
 
