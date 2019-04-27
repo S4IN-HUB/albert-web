@@ -382,7 +382,7 @@ class SocketServer(object):
         :return:
         """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(100)
+        self.socket.settimeout(500)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             self.socket.bind((self.host_addr, self.host_port))
