@@ -297,12 +297,10 @@ class DataHandler(object):
 
 
         while True:
-
             try:
-                # self.send_command()
                 self.client_data = self.client_conn.recv(128)
                 #print "Raw DATA: ", self.client_data
-                if self.client_data:
+                if self.client_data and len(self.client_data) > 3:
                     # add redis lock to device, then release the lock.
                     socket_locked = False
                     if self.device:
@@ -321,13 +319,15 @@ class DataHandler(object):
                         cache.set("in_process_socket", socket_lock)
                         #print "%s unlocked" % self.device.name
 
-                if not self.client_data:
-                    #print "No incoming data, breaking connection."
-                    self.client_conn.close()
-                    return False
+                # if not self.client_data:
+                #     #print "No incoming data, breaking connection."
+                #     self.client_conn.close()
+                #     return False
+
                     # Bu olmadığı zaman cihaz bağlantısı düştüğünde socket doğru sonlandırılmadığı için
                     # saçmalıyor. O yüzden bağlantının kapatılması için while'dan çıkılması gerekmekte.
                     # continue
+
             except Exception as uee:
                 print uee
                 exc_type, exc_obj, exc_tb = sys.exc_info()
