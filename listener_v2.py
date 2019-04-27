@@ -407,8 +407,8 @@ class SocketServer(object):
         data_handler = DataHandler()
         while True:
 
+            print "listen"
             self.client_conn, self.client_addr = self.socket.accept()
-
             print self.client_conn, self.client_addr
 
         self.socket.close()
