@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json, time
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as do_login
 from django.contrib.auth.models import User
@@ -2329,5 +2330,20 @@ def add_new_relay_cron(request):
 
     else:
         response_message = "Lütfen giriş yapınız."
+
+    return json_responser(response_status, response_message, response_data)
+
+@csrf_exempt
+def list_relays(request):
+    """Lists all relays"""
+
+    response_data = []
+    response_status = False
+    response_message = ""
+    if settings.IS_RASPBERRY is False:
+        return json_responser(response_status, response_message, response_data)
+    all_relays = list(Relays.objects.all().values('id', 'name', 'pressed', 'relay_no'))
+    response_status = True
+    response_data = all_relays
 
     return json_responser(response_status, response_message, response_data)
