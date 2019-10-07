@@ -16,8 +16,8 @@ class Accounts(models.Model):
     """ Kullanıcı Hesapları, genişletilmiş Django AuthUser modeli. """
     user = models.OneToOneField(User, related_name="Accounts", verbose_name="Kullanıcı")
     user_type = models.PositiveSmallIntegerField(default=0, choices=account_types, verbose_name="Hesap Tipi")
-    favourite_relays = models.ManyToManyField('customers.Relays', related_name="favourited_relays", null=True, blank=True)
-    favourite_rooms = models.ManyToManyField('customers.Rooms', related_name="favourited_rooms", null=True, blank=True)
+    favourite_relays = models.ManyToManyField('customers.Relays', related_name="favourited_relays", blank=True)
+    favourite_rooms = models.ManyToManyField('customers.Rooms', related_name="favourited_rooms", blank=True)
     device_token = models.TextField(null=True, blank=True, verbose_name="Push Token")
 
     def __unicode__(self):
@@ -57,7 +57,7 @@ class Locations(models.Model):
     lon = models.DecimalField(default=0, max_digits=10, decimal_places=8, verbose_name="Boylam")
 
     def __unicode__(self):
-        return "%s : %s" % ( self.name , self.account.user.username if self.account else '' )
+        return "%s : %s" % (self.name, self.account.user.username if self.account else '')
 
     class Meta(object):
         verbose_name = "Konum"
@@ -70,7 +70,7 @@ class Rooms(models.Model):
     name = models.CharField(max_length=50, verbose_name="Oda Tanımı")
 
     def __unicode__(self):
-        return "%s : %s " % ( self.name , self.account.user.username if self.account else '' )
+        return "%s : %s " % (self.name, self.account.user.username if self.account else '')
 
     class Meta(object):
         verbose_name = "Odalar"
@@ -78,7 +78,6 @@ class Rooms(models.Model):
 
 
 class Devices(models.Model):
-
     """Cihazların kayıt edildiği model"""
 
     device_types = (
@@ -93,7 +92,7 @@ class Devices(models.Model):
     name = models.CharField(max_length=50, verbose_name="Cihaz Adı", default='')
     description = models.CharField(max_length=50, verbose_name="Cihaz Tanımı", default='')
     wan_ip = models.CharField(max_length=50, verbose_name="WAN IP adresi", default='0.0.0.0')
-    ip = models.CharField(max_length=50,blank=True, null=True, verbose_name="IP adresi", default='0.0.0.0')
+    ip = models.CharField(max_length=50, blank=True, null=True, verbose_name="IP adresi", default='0.0.0.0')
     status = models.BooleanField(default=True, verbose_name="Durum")
 
     target_temperature = models.DecimalField(max_digits=5, decimal_places=2, default=25, verbose_name="Hedef Sıcaklık")
@@ -101,7 +100,9 @@ class Devices(models.Model):
     humidity = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Nem")
 
     oto_on_off = models.BooleanField(default=False, verbose_name="Oto. Aç/Kapat")
-    spec = models.PositiveSmallIntegerField(default=0, choices=((1, 'Klima Yaz Modu'), (2, 'Klima Kış Modu'), (3, 'Klima Kapat')), verbose_name="Özel Tanım")
+    spec = models.PositiveSmallIntegerField(default=0,
+                                            choices=((1, 'Klima Yaz Modu'), (2, 'Klima Kış Modu'), (3, 'Klima Kapat')),
+                                            verbose_name="Özel Tanım")
 
     last_connect = models.DateTimeField(auto_now_add=True, verbose_name="Son baglanti")
 
@@ -124,7 +125,7 @@ class Devices(models.Model):
         return total_power
 
     def __unicode__(self):
-        return "%s : %s  : %s - %s" % (self.name, self.account , self.location , self.room )
+        return "%s : %s  : %s - %s" % (self.name, self.account, self.location, self.room)
 
     class Meta(object):
         verbose_name = "Cihaz"
@@ -163,28 +164,29 @@ class Relays(models.Model):
         ('push5', 'Bas - çek 5sn'),
         ('push10', 'Bas - çek 10sn'),
     )
-    room = models.ForeignKey(Rooms, null=True,blank=True, related_name="Relays", verbose_name="Oda")
+    room = models.ForeignKey(Rooms, null=True, blank=True, related_name="Relays", verbose_name="Oda")
     device = models.ForeignKey(Devices, related_name="Relays", verbose_name="Cihaz")
     name = models.CharField(max_length=50, verbose_name="Röle Tanımı")
 
     pressed = models.BooleanField(default=False, verbose_name="Basılı mı?")
     notify = models.BooleanField(default=False, verbose_name="Bildirim Yapılsın mı?")
 
-    on_notify = models.CharField(max_length=250, null=True,blank=True, verbose_name="Açıldı Mesajı")
-    off_notify = models.CharField(max_length=250, null=True,blank=True, verbose_name="Kapandı Mesajı")
+    on_notify = models.CharField(max_length=250, null=True, blank=True, verbose_name="Açıldı Mesajı")
+    off_notify = models.CharField(max_length=250, null=True, blank=True, verbose_name="Kapandı Mesajı")
 
     relay_no = models.IntegerField(verbose_name="Röle No")
     type = models.CharField(max_length=20, default='switch', choices=RelayTypes, verbose_name="Anahtar Tipi")
     icon = models.CharField(max_length=40, default='flaticon-light-bulb', choices=Icons, verbose_name="Simge")
 
-    turn_off = models.IntegerField(null=True, blank=True,  verbose_name="Önce Bu Röleyi Kapat", help_text="Röle İndexi girini, 0-15")
+    turn_off = models.IntegerField(null=True, blank=True, verbose_name="Önce Bu Röleyi Kapat",
+                                   help_text="Röle İndexi girini, 0-15")
 
     total_instant_current = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Akım", default=0)
     total_instant_power = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Anlık Watt", default=0)
 
     def __unicode__(self):
         if self.device.room:
-            return "%s %s" % (self.name, self.device.room.name )
+            return "%s %s" % (self.name, self.device.room.name)
         else:
             return "%s %s" % (self.name, '')
 
@@ -192,11 +194,11 @@ class Relays(models.Model):
         verbose_name = "Röle"
         verbose_name_plural = "Röleler"
 
+
 sensor_types = (('current', 'Akın Sensörü'),)
 
 
 class TempValues(models.Model):
-
     device = models.ForeignKey(Devices, related_name="TempValues", verbose_name="Cihaz")
     temperature = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Sıcaklık")
     humidity = models.DecimalField(max_digits=5, decimal_places=2, default=0, verbose_name="Nem")
@@ -269,17 +271,18 @@ class IrButton(models.Model):
     ir_type = models.CharField(max_length=20, verbose_name="IR Tipi", null=True, blank=True)
     ir_code = models.CharField(max_length=16, verbose_name="IR Code", null=True, blank=True)
     ir_bits = models.IntegerField(verbose_name="Bits", null=True, blank=True)
-    spec = models.PositiveSmallIntegerField(default=0, choices=((0,'Tanımsız'),(1,'Klima Yaz Modu'),(2,'Klima Kış Modu'),(3,'Klima Kapat')), verbose_name="Özel Tanım")
+    spec = models.PositiveSmallIntegerField(default=0, choices=(
+    (0, 'Tanımsız'), (1, 'Klima Yaz Modu'), (2, 'Klima Kış Modu'), (3, 'Klima Kapat')), verbose_name="Özel Tanım")
 
     def __unicode__(self):
-        return "%s" %  self.name
+        return "%s" % self.name
 
     def save(self, *args, **kwargs):
 
         super(IrButton, self).save(*args, **kwargs)
 
         if self.spec != 0:
-            _all = IrButton.objects.filter(device=self.device,spec=self.spec).exclude(pk=self.id)
+            _all = IrButton.objects.filter(device=self.device, spec=self.spec).exclude(pk=self.id)
             for item in _all:
                 item.spec = 0
                 item.save()
@@ -301,7 +304,6 @@ class IrCrons(models.Model):
 
 
 class Scenarios(models.Model):
-
     account = models.ForeignKey(Accounts, null=True, blank=True, related_name="Scenarios", verbose_name="Hesap")
     name = models.CharField(max_length=50, verbose_name="Senaryo Adı", default='')
     status = models.BooleanField(default=True, verbose_name="Aktif")
@@ -322,7 +324,6 @@ ACTION = (
 
 
 class ScenarioRelays(models.Model):
-
     scenario = models.ForeignKey(Scenarios, verbose_name="Bağlı olduğu senaryo")
     relay = models.ForeignKey(Relays, verbose_name="Röle")
     action = models.PositiveSmallIntegerField(choices=ACTION, default=1, verbose_name="İşlem")
