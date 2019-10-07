@@ -80,16 +80,27 @@ WSGI_APPLICATION = 'base.wsgi.application'
 
 
 DBNAME = BASE_DIR.split('/')[-1].split('-')[0]
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': DBNAME,
-        'USER': DBNAME,
-        'PASSWORD': 'BGP2iJXrL19',
-        'HOST': 'localhost',
+OS_UNAME = os.uname()
+IS_RASPBERRY = False
+if len(OS_UNAME) > 1 and 'raspberry' in OS_UNAME[1]:
+    print('raspberry mode activated.')
+    IS_RASPBERRY = True
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': DBNAME,
+            'USER': DBNAME,
+            'PASSWORD': 'BGP2iJXrL19',
+            'HOST': 'localhost',
+        }
+    }
 
 SMTP_USER = 'noreply@albertoakilliev.com'
 SMTP_PASS = 'tdBo717%'
