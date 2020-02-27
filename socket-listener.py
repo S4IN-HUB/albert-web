@@ -417,8 +417,8 @@ class SocketServer(object):
                 data_handler = DataHandler()
                 start_new_thread(data_handler.read, (self.client_conn, self.client_addr))
                 start_new_thread(data_handler.write, (self.client_conn, self.client_addr))
+                print("yeni thread basladi")
             except socket.timeout:
-
                 try:
                     print data_handler.device
                     data_handler.device.status = False
