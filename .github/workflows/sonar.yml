@@ -1,0 +1,29 @@
+name: Sonar Scan
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v2.0.2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Slack'e Bildirim Gönder
+        if: always()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{
+            "text": ":white_check_mark: *SonarQube taraması tamamlandı!*\nRepo: \${{ github.repository }}\nBranch: \${{ github.ref_name }}\nPanel: \${{ secrets.SONAR_HOST_URL }}/dashboard?id=albert-web"
+          }' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
